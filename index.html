@@ -740,8 +740,10 @@ body {
 .practice-textarea {
   flex: 1;
   width: 100%;
-  background: #1e2130;
-  color: var(--text);
+  height: 100%;
+  background: #1a2035;
+  color: #a8d8f0;
+  caret-color: #fff;
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
   line-height: 1.8;
@@ -751,6 +753,7 @@ body {
   resize: none;
   tab-size: 2;
 }
+.practice-textarea::placeholder { color: #3d5a7a; }
 .practice-preview-area {
   flex: 1;
   display: flex;
@@ -778,9 +781,65 @@ body {
 
 /* 모바일 연습모드 */
 @media (max-width: 768px) {
-  .practice-body { flex-direction: column; }
-  .practice-ref { width: 100%; height: 300px; border-right: none; border-bottom: 1px solid var(--border); }
-  .practice-editor-area { height: 250px; }
+  #practiceMode { height: calc(100vh - 61px); overflow: hidden; display: flex; flex-direction: column; }
+  .practice-body { flex-direction: column; flex: 1; overflow: hidden; }
+
+  /* 참고코드 */
+  .practice-ref {
+    width: 100%;
+    height: 500px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  /* 오른쪽 전체 */
+  .practice-right {
+    width: 100%;
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 에디터 - 남은 공간 꽉 채우기 */
+  .practice-editor-area {
+    flex: 1;
+    min-height: 300px;
+    height: auto;
+    border-bottom: none;
+    overflow: hidden;
+  }
+  .practice-editor-header { flex-wrap: wrap; gap: 6px; flex-shrink: 0; }
+  .practice-editor-header > div:first-child + div > span { display: none; }
+
+  /* 미리보기 숨기기 */
+  .practice-preview-area { display: none !important; }
+
+  /* 모바일 버튼 보이기 */
+  .practice-mobile-preview-btn { display: block !important; flex-shrink: 0; }
+}
+
+/* 모바일 전용 미리보기 버튼 */
+.practice-mobile-preview-btn {
+  display: none;
+  margin: 0;
+  padding: 14px;
+  background: var(--bg3);
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+.practice-mobile-preview-btn button {
+  padding: 10px 32px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  width: 100%;
 }
 </style>
 </head>
@@ -918,6 +977,11 @@ body {
             <button onclick="openPreviewWindow()" style="margin-left:auto;padding:3px 10px;border-radius:5px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;font-size:11px;transition:all 0.15s;" onmouseover="this.style.background='var(--accent)';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='var(--muted)'">⛶ 크게 보기</button>
           </div>
           <iframe class="practice-preview-frame" id="practicePreview"></iframe>
+        </div>
+
+        <!-- 모바일 전용 미리보기 버튼 -->
+        <div class="practice-mobile-preview-btn">
+          <button onclick="openPreviewWindow()">⛶ 미리보기 새 창으로 열기</button>
         </div>
 
       </div>
@@ -2785,12 +2849,12 @@ function setMode(mode, el) {
   document.getElementById('practiceMode').style.display = 'none';
   document.getElementById('practiceMode').classList.remove('show');
   document.querySelector('.sidebar').style.display = 'none';
-  document.querySelector('.mobile-type-select').style.display = 'none';
+  document.querySelector('.mobile-type-select').style.display = '';
 
   if(mode === 'code') {
     document.getElementById('codeMode').style.display = 'flex';
     document.querySelector('.sidebar').style.display = 'block';
-    document.querySelector('.mobile-type-select').style.display = 'block';
+    document.querySelector('.mobile-type-select').style.display = '';
   } else if(mode === 'memory') {
     document.getElementById('memoryMode').style.display = 'flex';
     document.getElementById('memoryMode').classList.add('show');
