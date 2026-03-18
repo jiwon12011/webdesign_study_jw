@@ -142,7 +142,7 @@ body {
 }
 
 /* ─── 메인 ─── */
-.main { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
+.main { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: visible; }
 
 /* 유형 정보 배너 */
 .type-banner {
@@ -225,8 +225,9 @@ body {
 .code-scroll {
   flex: 1;
   overflow-y: auto;
-  overflow-x: auto;
+  overflow-x: auto !important;
   background: #1e2130;
+  min-width: 0;
 }
 .code-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
 .code-scroll::-webkit-scrollbar-track { background: transparent; }
