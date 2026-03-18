@@ -536,7 +536,30 @@ body {
   .line-num { font-size: 11px; }
   .code-toolbar { padding: 6px 12px; font-size: 11px; }
 
-  .points-panel { width: 100% !important; border-left: none !important; border-top: 1px solid var(--border); max-height: none; padding: 12px; }
+  .points-panel { width: 100% !important; border-left: none !important; border-top: 1px solid var(--border); max-height: none; padding: 12px; display: none; }
+  .points-panel.mobile-open { display: flex; }
+
+  /* 핵심 포인트 토글 버튼 */
+  .mobile-points-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--bg3);
+    border-top: 1px solid var(--border);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent2);
+    user-select: none;
+  }
+  .mobile-points-toggle .toggle-arrow {
+    font-size: 12px;
+    transition: transform 0.2s;
+  }
+  .mobile-points-toggle.open .toggle-arrow {
+    transform: rotate(180deg);
+  }
 
   .memory-grid { grid-template-columns: 1fr !important; }
   #memoryMode { padding: 20px 16px; }
@@ -544,6 +567,12 @@ body {
   .quiz-wrap { width: 100%; }
   .quiz-q { font-size: 14px; }
   .quiz-opt { font-size: 13px; }
+}
+
+/* 토글 버튼 PC에서 숨기기 */
+.mobile-points-toggle { display: none; }
+@media (max-width: 768px) {
+  .mobile-points-toggle { display: flex; }
 }
 </style>
 </head>
@@ -595,6 +624,11 @@ body {
         </div>
       </div>
       <div class="points-panel" id="pointsPanel"></div>
+    </div>
+    <!-- 모바일 핵심 포인트 토글 버튼 -->
+    <div class="mobile-points-toggle" id="pointsToggle" onclick="togglePoints()">
+      <span>📌 핵심 포인트 보기</span>
+      <span class="toggle-arrow">▼</span>
     </div>
   </div>
 
@@ -2559,6 +2593,22 @@ function answerQuiz(i) {
 }
 
 function nextQuestion() { qIdx++; renderQuiz(); }
+
+// ─── 모바일 핵심 포인트 토글 ───
+function togglePoints() {
+  var panel = document.getElementById('pointsPanel');
+  var btn = document.getElementById('pointsToggle');
+  var isOpen = panel.classList.contains('mobile-open');
+  if(isOpen) {
+    panel.classList.remove('mobile-open');
+    btn.classList.remove('open');
+    btn.querySelector('span').textContent = '📌 핵심 포인트 보기';
+  } else {
+    panel.classList.add('mobile-open');
+    btn.classList.add('open');
+    btn.querySelector('span').textContent = '📌 핵심 포인트 닫기';
+  }
+}
 
 // 시작
 init();
