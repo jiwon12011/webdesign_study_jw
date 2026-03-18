@@ -588,16 +588,211 @@ body {
 @media (max-width: 768px) {
   .mobile-points-toggle { display: flex; }
 }
+
+/* ─── 연습 모드 ─── */
+#practiceMode {
+  display: none;
+  flex: 1;
+  height: calc(100vh - 61px);
+  overflow: hidden;
+}
+#practiceMode.show { display: flex; }
+
+.practice-body {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* 왼쪽 참고 코드 */
+.practice-ref {
+  width: 50%;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  overflow: hidden;
+}
+.practice-ref-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.practice-ref-header select {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 12px;
+  padding: 3px 8px;
+  font-family: 'Noto Sans KR', sans-serif;
+  outline: none;
+}
+.practice-ref-tabs {
+  display: flex;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 12px;
+  flex-shrink: 0;
+}
+.practice-ref-tab {
+  padding: 8px 14px;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  border: none;
+  background: transparent;
+  font-family: 'Noto Sans KR', sans-serif;
+  transition: all 0.15s;
+}
+.practice-ref-tab.active { color: var(--accent2); border-bottom: 2px solid var(--accent); }
+.practice-ref-scroll {
+  flex: 1;
+  overflow: auto;
+  background: #1e2130;
+}
+.practice-ref-code {
+  padding: 16px 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  line-height: 1.8;
+  white-space: pre;
+  color: var(--text);
+}
+
+/* 오른쪽 에디터 + 미리보기 */
+.practice-right {
+  width: 50%;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.practice-editor-area {
+  height: 55%;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+.practice-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.practice-editor-tabs {
+  display: flex;
+  gap: 4px;
+}
+.practice-editor-tab {
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  transition: all 0.15s;
+}
+.practice-editor-tab.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.practice-run-btn {
+  padding: 5px 16px;
+  border-radius: 6px;
+  border: none;
+  background: var(--green);
+  color: #000;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  transition: all 0.15s;
+}
+.practice-run-btn:hover { opacity: 0.85; }
+.practice-reset-btn {
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  transition: all 0.15s;
+}
+.practice-reset-btn:hover { background: var(--red); color: #fff; border-color: var(--red); }
+.practice-textarea {
+  flex: 1;
+  width: 100%;
+  background: #1e2130;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  line-height: 1.8;
+  padding: 16px 20px;
+  border: none;
+  outline: none;
+  resize: none;
+  tab-size: 2;
+}
+.practice-preview-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.practice-preview-header {
+  padding: 8px 16px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--muted);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.preview-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+.practice-preview-frame {
+  flex: 1;
+  width: 100%;
+  border: none;
+  background: #fff;
+}
+
+/* 모바일 연습모드 */
+@media (max-width: 768px) {
+  .practice-body { flex-direction: column; }
+  .practice-ref { width: 100%; height: 300px; border-right: none; border-bottom: 1px solid var(--border); }
+  .practice-editor-area { height: 250px; }
+}
 </style>
 </head>
 <body>
 
 <header class="app-header">
-  <div class="app-logo">웹디기능사 코드북 v2 <span>A ~ F 유형 · study.js 반영</span></div>
+  <div class="app-logo">웹디기능사 코드북 <span>A ~ F 유형 · study.js 반영</span></div>
   <div class="mode-btns">
     <button class="mode-btn active" onclick="setMode('code',this)">📄 코드 보기</button>
     <button class="mode-btn" onclick="setMode('memory',this)">🧠 암기 카드</button>
     <button class="mode-btn" onclick="setMode('quiz',this)">✏️ 퀴즈</button>
+    <button class="mode-btn" onclick="setMode('practice',this)">💻 연습</button>
   </div>
 </header>
 
@@ -665,6 +860,67 @@ body {
       <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="qProgress"></div></div>
       <div class="quiz-progress-label" id="qLabel"></div>
       <div id="quizArea"></div>
+    </div>
+  </div>
+
+  <!-- 연습 모드 -->
+  <div id="practiceMode">
+    <div class="practice-body">
+
+      <!-- 왼쪽: 참고 코드 -->
+      <div class="practice-ref">
+        <div class="practice-ref-header">
+          <span>📖 참고 코드</span>
+          <select id="practiceTypeSelect" onchange="updatePracticeRef()">
+            <option value="A">A유형</option>
+            <option value="B">B유형</option>
+            <option value="C">C유형</option>
+            <option value="D">D유형</option>
+            <option value="E">E유형</option>
+            <option value="F">F유형</option>
+          </select>
+        </div>
+        <div class="practice-ref-tabs">
+          <button class="practice-ref-tab active" onclick="switchPracticeRef('html',this)">HTML</button>
+          <button class="practice-ref-tab" onclick="switchPracticeRef('css',this)">CSS</button>
+          <button class="practice-ref-tab" onclick="switchPracticeRef('js',this)">JS</button>
+        </div>
+        <div class="practice-ref-scroll">
+          <div class="practice-ref-code" id="practiceRefCode"></div>
+        </div>
+      </div>
+
+      <!-- 오른쪽: 에디터 + 미리보기 -->
+      <div class="practice-right">
+
+        <!-- 에디터 -->
+        <div class="practice-editor-area">
+          <div class="practice-editor-header">
+            <div class="practice-editor-tabs">
+              <button class="practice-editor-tab active" onclick="switchEditorTab('html',this)">HTML</button>
+              <button class="practice-editor-tab" onclick="switchEditorTab('css',this)">CSS</button>
+              <button class="practice-editor-tab" onclick="switchEditorTab('js',this)">JS</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="font-size:11px;color:var(--muted);">Tab: 자동완성 · &gt;: 태그닫기 · {: 괄호닫기</span>
+              <button class="practice-reset-btn" onclick="resetEditor()">초기화</button>
+              <button class="practice-run-btn" onclick="runPreview()">▶ 실행</button>
+            </div>
+          </div>
+          <textarea class="practice-textarea" id="practiceEditor" placeholder="여기에 코드를 입력하세요..." oninput="autoRun()" onkeydown="handleEditorKey(event)"></textarea>
+        </div>
+
+        <!-- 미리보기 -->
+        <div class="practice-preview-area">
+          <div class="practice-preview-header">
+            <span class="preview-dot"></span>
+            <span>미리보기</span>
+            <button onclick="openPreviewWindow()" style="margin-left:auto;padding:3px 10px;border-radius:5px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;font-size:11px;transition:all 0.15s;" onmouseover="this.style.background='var(--accent)';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='var(--muted)'">⛶ 크게 보기</button>
+          </div>
+          <iframe class="practice-preview-frame" id="practicePreview"></iframe>
+        </div>
+
+      </div>
     </div>
   </div>
 
@@ -1297,7 +1553,9 @@ const HTML_CODE = {
 };
 
 const CSS_CODE = {
-  A:`/* ══ 리셋 ══ */
+  A:`@charset "UTF-8";
+
+/* ══ 리셋 ══ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 ul, ol { list-style: none; }
 a { text-decoration: none; color: inherit; }
@@ -1405,9 +1663,15 @@ img { display: block; width: 100%; }
   text-align: center;
 }
 .btn-close {
-  margin-top: 16px;
+  display: block;
+  margin: 16px auto 0;
   padding: 8px 20px;
+  background: #333;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
+  font-size: 14px;
 }
 
 /* ══ 푸터 ══ */
@@ -1429,7 +1693,9 @@ img { display: block; width: 100%; }
   cursor: pointer;
   font-size: 14px;
 }`,
-  B:`/* ══ 리셋 (A유형과 동일) ══ */
+  B:`@charset "UTF-8";
+
+/* ══ 리셋 (A유형과 동일) ══ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 ul, ol { list-style: none; }
 a { text-decoration: none; color: inherit; }
@@ -1503,8 +1769,11 @@ img { display: block; width: 100%; }
 .popup.on { display: flex; }
 .popup-inner { background:#fff; padding:30px; border-radius:8px; text-align:center; }
 .footer { background:#333; color:#fff; padding:20px 0; text-align:center; font-size:14px; }
-.btn-open { display:inline-block; margin-bottom:10px; padding:8px 20px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }`,
-  C:`/* ══ 리셋 ══ */
+.btn-open { display:inline-block; margin-bottom:10px; padding:8px 20px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }
+.btn-close { display:block; margin:16px auto 0; padding:8px 20px; background:#333; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }`,
+  C:`@charset "UTF-8";
+
+/* ══ 리셋 ══ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 ul, ol { list-style: none; }
 a { text-decoration: none; color: inherit; }
@@ -1582,8 +1851,11 @@ img { display: block; width: 100%; }
 .popup.on { display: flex; }
 .popup-inner { background:#fff; padding:30px; border-radius:8px; text-align:center; }
 .footer { background:#333; color:#fff; padding:20px; text-align:center; font-size:14px; }
-.btn-open { display:inline-block; margin-bottom:10px; padding:8px 20px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }`,
-  D:`/* ══ 리셋 ══ */
+.btn-open { display:inline-block; margin-bottom:10px; padding:8px 20px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }
+.btn-close { display:block; margin:16px auto 0; padding:8px 20px; background:#333; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }`,
+  D:`@charset "UTF-8";
+
+/* ══ 리셋 ══ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 ul, ol { list-style: none; }
 a { text-decoration: none; color: inherit; }
@@ -1659,8 +1931,11 @@ img { display: block; width: 100%; }
 .popup.on { display: flex; }
 .popup-inner { background:#fff; padding:30px; border-radius:8px; text-align:center; }
 .footer { background:#333; color:#fff; padding:20px; text-align:center; font-size:14px; }
-.btn-open { display:inline-block; margin-bottom:10px; padding:8px 20px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }`,
-  E:`/* ══ 리셋 ══ */
+.btn-open { display:inline-block; margin-bottom:10px; padding:8px 20px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }
+.btn-close { display:block; margin:16px auto 0; padding:8px 20px; background:#333; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }`,
+  E:`@charset "UTF-8";
+
+/* ══ 리셋 ══ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 ul, ol { list-style: none; }
 a { text-decoration: none; color: inherit; }
@@ -1750,8 +2025,11 @@ img { display: block; width: 100%; }
 .popup.on { display: flex; }
 .popup-inner { background:#fff; padding:30px; border-radius:8px; text-align:center; }
 .footer { background:#333; color:#fff; padding:20px; text-align:center; font-size:14px; }
-.btn-open { display:inline-block; margin-bottom:10px; padding:8px 20px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }`,
-  F:`/* ══ 리셋 ══ */
+.btn-open { display:inline-block; margin-bottom:10px; padding:8px 20px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }
+.btn-close { display:block; margin:16px auto 0; padding:8px 20px; background:#333; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }`,
+  F:`@charset "UTF-8";
+
+/* ══ 리셋 ══ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 ul, ol { list-style: none; }
 a { text-decoration: none; color: inherit; }
@@ -1828,7 +2106,8 @@ body { overflow-x: hidden; }
 .popup.on { display: flex; }
 .popup-inner { background:#fff; padding:30px; border-radius:8px; text-align:center; }
 .footer { background:#333; color:#fff; padding:20px; text-align:center; font-size:14px; }
-.btn-open { display:inline-block; margin-bottom:10px; padding:8px 20px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }`,
+.btn-open { display:inline-block; margin-bottom:10px; padding:8px 20px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }
+.btn-close { display:block; margin:16px auto 0; padding:8px 20px; background:#333; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }`,
 };
 
 const JS_CODE = {
@@ -2051,7 +2330,7 @@ $(function(){
     ======================================== */
 
     $(".gnb .menu > li > a").click(function(e){
-        e.preventDefault()
+        e.preventDefault()  // a태그 기본 동작(페이지 이동) 막기
         let sub = $(this).next(".sub")
 
         // 다른 서브메뉴 먼저 닫기
@@ -2115,7 +2394,7 @@ $(function(){
     ======================================== */
 
     $(".gnb .menu > li > a").click(function(e){
-        e.preventDefault()
+        e.preventDefault()  // a태그 기본 동작(페이지 이동) 막기
         let sub = $(this).next(".sub")
         $(".gnb .sub").not(sub).slideUp(200)
         sub.slideToggle(200)
@@ -2503,11 +2782,15 @@ function setMode(mode, el) {
   document.getElementById('memoryMode').classList.remove('show');
   document.getElementById('quizMode').style.display = 'none';
   document.getElementById('quizMode').classList.remove('show');
+  document.getElementById('practiceMode').style.display = 'none';
+  document.getElementById('practiceMode').classList.remove('show');
   document.querySelector('.sidebar').style.display = 'none';
+  document.querySelector('.mobile-type-select').style.display = 'none';
 
   if(mode === 'code') {
     document.getElementById('codeMode').style.display = 'flex';
     document.querySelector('.sidebar').style.display = 'block';
+    document.querySelector('.mobile-type-select').style.display = 'block';
   } else if(mode === 'memory') {
     document.getElementById('memoryMode').style.display = 'flex';
     document.getElementById('memoryMode').classList.add('show');
@@ -2515,6 +2798,10 @@ function setMode(mode, el) {
     document.getElementById('quizMode').style.display = 'flex';
     document.getElementById('quizMode').classList.add('show');
     initQuiz();
+  } else if(mode === 'practice') {
+    document.getElementById('practiceMode').style.display = 'flex';
+    document.getElementById('practiceMode').classList.add('show');
+    initPractice();
   }
 }
 
@@ -2617,6 +2904,232 @@ function answerQuiz(i) {
 }
 
 function nextQuestion() { qIdx++; renderQuiz(); }
+
+// ─── 연습 모드 ───
+var practiceRefTab = 'html';
+var practiceEditorTab = 'html';
+var practiceCode = { html: '', css: '', js: '' };
+var autoRunTimer = null;
+
+function initPractice() {
+  updatePracticeRef();
+  switchEditorTab('html', document.querySelector('.practice-editor-tab'));
+  runPreview();
+}
+
+function updatePracticeRef() {
+  var type = document.getElementById('practiceTypeSelect').value;
+  switchPracticeRef(practiceRefTab, document.querySelector('.practice-ref-tab.active'));
+}
+
+function switchPracticeRef(tab, el) {
+  practiceRefTab = tab;
+  document.querySelectorAll('.practice-ref-tab').forEach(function(b){ b.classList.remove('active'); });
+  if(el) el.classList.add('active');
+  var type = document.getElementById('practiceTypeSelect').value;
+  var codes = {html: HTML_CODE, css: CSS_CODE, js: JS_CODE};
+  var raw = (codes[tab] && codes[tab][type]) ? codes[tab][type] : '';
+  var highlighted = highlight(raw, tab);
+  document.getElementById('practiceRefCode').innerHTML = highlighted;
+}
+
+function switchEditorTab(tab, el) {
+  practiceEditorTab = tab;
+  document.querySelectorAll('.practice-editor-tab').forEach(function(b){ b.classList.remove('active'); });
+  if(el) el.classList.add('active');
+  document.getElementById('practiceEditor').value = practiceCode[tab];
+  var placeholders = { html: 'HTML 코드를 입력하세요...', css: 'CSS 코드를 입력하세요...', js: 'JS 코드를 입력하세요...' };
+  document.getElementById('practiceEditor').placeholder = placeholders[tab];
+}
+
+function autoRun() {
+  practiceCode[practiceEditorTab] = document.getElementById('practiceEditor').value;
+  clearTimeout(autoRunTimer);
+  autoRunTimer = setTimeout(runPreview, 800);
+}
+
+function runPreview() {
+  practiceCode[practiceEditorTab] = document.getElementById('practiceEditor').value;
+  var iframe = document.getElementById('practicePreview');
+  var doc = iframe.contentDocument || iframe.contentWindow.document;
+  var content = '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>' +
+    practiceCode.css + '</style></head><body>' +
+    practiceCode.html +
+    '<script>' + practiceCode.js + '<\/script></body></html>';
+  doc.open();
+  doc.write(content);
+  doc.close();
+}
+
+function resetEditor() {
+  practiceCode = { html: '', css: '', js: '' };
+  document.getElementById('practiceEditor').value = '';
+  runPreview();
+}
+
+function openPreviewWindow() {
+  var content = '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>' +
+    practiceCode.css + '</style></head><body>' +
+    practiceCode.html +
+    '<script>' + practiceCode.js + '<\/script></body></html>';
+  var win = window.open('', '_blank', 'width=1200,height=800');
+  if(!win) {
+    alert('팝업이 차단되었어요!\n브라우저 주소창 오른쪽의 팝업 차단 아이콘을 클릭해서 허용해주세요.');
+    return;
+  }
+  win.document.open();
+  win.document.write(content);
+  win.document.close();
+}
+
+// ─── 에디터 자동완성 ───
+
+// emmet 축약어 목록
+var emmetMap = {
+  // HTML 구조
+  '!':        '<!DOCTYPE html>\n<html lang="ko">\n<head>\n  <meta charset="UTF-8">\n  <title>Document</title>\n</head>\n<body>\n  \n</body>\n</html>',
+  'wrap':     '<div class="wrap">\n  \n</div>',
+  'header':   '<header class="header">\n  \n</header>',
+  'nav':      '<nav class="gnb">\n  \n</nav>',
+  'ul':       '<ul>\n  <li></li>\n</ul>',
+  'li':       '<li></li>',
+  'section':  '<section class="">\n  \n</section>',
+  'div':      '<div class="">\n  \n</div>',
+  'footer':   '<footer class="footer">\n  \n</footer>',
+  'a':        '<a href="#"></a>',
+  'img':      '<img src="" alt="">',
+  'input':    '<input type="text" placeholder="">',
+  'button':   '<button class=""></button>',
+  'h1':       '<h1></h1>',
+  'h2':       '<h2></h2>',
+  'p':        '<p></p>',
+  'span':     '<span></span>',
+  // CSS 자주 쓰는 것
+  'df':       'display: flex;',
+  'dib':      'display: inline-block;',
+  'dn':       'display: none;',
+  'db':       'display: block;',
+  'pf':       'position: fixed;',
+  'pa':       'position: absolute;',
+  'pr':       'position: relative;',
+  'ma':       'margin: 0 auto;',
+  'tac':      'text-align: center;',
+  'w100':     'width: 100%;',
+  'h100':     'height: 100%;',
+  'fl':       'float: left;',
+  'fr':       'float: right;',
+};
+
+// 괄호/따옴표 자동 닫기 쌍
+var autoPairs = {
+  '{': '}',
+  '(': ')',
+  '[': ']',
+  '"': '"',
+  "'": "'"
+};
+
+// 자동 닫히는 HTML 태그 (self-closing 제외)
+var selfClosingTags = ['area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr'];
+
+function handleEditorKey(e) {
+  var ta = document.getElementById('practiceEditor');
+  var start = ta.selectionStart;
+  var end = ta.selectionEnd;
+  var val = ta.value;
+
+  // Tab → 들여쓰기 or Emmet 처리
+  if(e.key === 'Tab') {
+    e.preventDefault();
+    // 현재 줄에서 커서 앞 단어 추출 (! 포함)
+    var lineStart = val.lastIndexOf('\n', start - 1) + 1;
+    var word = val.slice(lineStart, start).trim();
+    if(emmetMap[word] && practiceEditorTab === 'html') {
+      var expanded = emmetMap[word];
+      var before = val.slice(0, lineStart);
+      var after = val.slice(end);
+      // 커서를 빈 줄 위치에
+      var cursorOffset = expanded.indexOf('\n  \n');
+      var cursorPos = before.length + (cursorOffset !== -1 ? cursorOffset + 4 : expanded.length);
+      ta.value = before + expanded + after;
+      ta.selectionStart = ta.selectionEnd = cursorPos;
+    } else if(emmetMap[word] && practiceEditorTab === 'css') {
+      var expanded = emmetMap[word];
+      var before = val.slice(0, lineStart);
+      var after = val.slice(end);
+      ta.value = before + expanded + after;
+      ta.selectionStart = ta.selectionEnd = before.length + expanded.length;
+    } else {
+      // 일반 들여쓰기
+      ta.value = val.slice(0, start) + '  ' + val.slice(end);
+      ta.selectionStart = ta.selectionEnd = start + 2;
+    }
+    practiceCode[practiceEditorTab] = ta.value;
+    autoRun();
+    return;
+  }
+
+  // 괄호/따옴표 자동 닫기
+  if(autoPairs[e.key] && start === end) {
+    e.preventDefault();
+    var close = autoPairs[e.key];
+    ta.value = val.slice(0, start) + e.key + close + val.slice(end);
+    ta.selectionStart = ta.selectionEnd = start + 1;
+    practiceCode[practiceEditorTab] = ta.value;
+    return;
+  }
+
+  // 닫는 괄호/따옴표 위에서 그냥 넘어가기
+  var closers = Object.values(autoPairs);
+  if(closers.indexOf(e.key) !== -1 && val[start] === e.key && start === end) {
+    e.preventDefault();
+    ta.selectionStart = ta.selectionEnd = start + 1;
+    return;
+  }
+
+  // HTML 태그 자동 닫기
+  if(e.key === '>' && practiceEditorTab === 'html') {
+    var before2 = val.slice(0, start);
+    var tagMatch = before2.match(/<(\w+)([^>]*)$/);
+    if(tagMatch) {
+      var tagName = tagMatch[1].toLowerCase();
+      if(selfClosingTags.indexOf(tagName) === -1 && tagMatch[2].slice(-1) !== '/') {
+        e.preventDefault();
+        var closeTag = '</' + tagName + '>';
+        ta.value = val.slice(0, start) + '>' + closeTag + val.slice(end);
+        ta.selectionStart = ta.selectionEnd = start + 1;
+        practiceCode[practiceEditorTab] = ta.value;
+        autoRun();
+        return;
+      }
+    }
+  }
+
+  // Enter 후 자동 들여쓰기
+  if(e.key === 'Enter') {
+    e.preventDefault();
+    var lineStart2 = val.lastIndexOf('\n', start - 1) + 1;
+    var currentLine = val.slice(lineStart2, start);
+    var indent = currentLine.match(/^(\s*)/)[1];
+    // { 로 끝나면 들여쓰기 추가
+    if(currentLine.trimEnd().slice(-1) === '{') {
+      var nextChar = val[start];
+      if(nextChar === '}') {
+        var ins = '\n' + indent + '  ' + '\n' + indent;
+        ta.value = val.slice(0, start) + ins + val.slice(end);
+        ta.selectionStart = ta.selectionEnd = start + indent.length + 3;
+      } else {
+        ta.value = val.slice(0, start) + '\n' + indent + '  ' + val.slice(end);
+        ta.selectionStart = ta.selectionEnd = start + indent.length + 3;
+      }
+    } else {
+      ta.value = val.slice(0, start) + '\n' + indent + val.slice(end);
+      ta.selectionStart = ta.selectionEnd = start + indent.length + 1;
+    }
+    practiceCode[practiceEditorTab] = ta.value;
+    autoRun();
+  }
+}
 
 // ─── 모바일 핵심 포인트 토글 ───
 function togglePoints() {
