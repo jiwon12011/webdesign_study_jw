@@ -596,7 +596,10 @@ body {
   height: calc(100vh - 61px);
   overflow: hidden;
 }
-#practiceMode.show { display: flex; }
+#practiceMode.show {
+  display: flex;
+  flex-direction: row;
+}
 
 .practice-body {
   display: flex;
@@ -781,8 +784,8 @@ body {
 
 /* 모바일 연습모드 */
 @media (max-width: 768px) {
-  #practiceMode { height: calc(100vh - 61px); overflow: hidden; display: flex; flex-direction: column; }
-  .practice-body { flex-direction: column; flex: 1; overflow: hidden; }
+  #practiceMode.show { flex-direction: column; height: auto; min-height: calc(100vh - 61px); overflow: visible; }
+  #practiceMode.show .practice-body { flex-direction: column; flex: 1; overflow: visible; }
 
   /* 참고코드 */
   .practice-ref {
