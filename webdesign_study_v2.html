@@ -1,0 +1,2490 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>웹디자인기능사 실기 코드북 v2 - A~F 유형</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #0f1117;
+  --bg2: #1a1d27;
+  --bg3: #22263a;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.15);
+  --text: #e8eaf0;
+  --muted: #8b90a0;
+  --accent: #7c6bff;
+  --accent2: #a78bfa;
+  --green: #4ade80;
+  --yellow: #fbbf24;
+  --red: #f87171;
+  --blue: #60a5fa;
+  --pink: #f472b6;
+  --teal: #2dd4bf;
+  --orange: #fb923c;
+
+  /* syntax colors */
+  --syn-comment: #5c6370;
+  --syn-keyword: #c792ea;
+  --syn-string: #98c379;
+  --syn-number: #f78c6c;
+  --syn-selector: #61afef;
+  --syn-property: #e06c75;
+  --syn-value: #98c379;
+  --syn-tag: #e06c75;
+  --syn-attr: #d19a66;
+  --syn-punct: #abb2bf;
+  --syn-function: #61afef;
+  --syn-var: #e5c07b;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── 헤더 ─── */
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 28px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.app-logo {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent2);
+  letter-spacing: -0.3px;
+}
+.app-logo span { color: var(--muted); font-weight: 400; font-size: 13px; margin-left: 8px; }
+.mode-btns {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+}
+.mode-btn {
+  padding: 6px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+  font-family: 'Noto Sans KR', sans-serif;
+  transition: all 0.2s;
+}
+.mode-btn.active, .mode-btn:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* ─── 레이아웃 ─── */
+.app-body { display: flex; height: calc(100vh - 61px); }
+
+/* 사이드바 */
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 16px 0;
+}
+.sidebar-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 0 18px 8px;
+}
+.type-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: all 0.15s;
+}
+.type-item:hover { background: rgba(255,255,255,0.04); }
+.type-item.active {
+  background: rgba(124,107,255,0.12);
+  border-left-color: var(--accent);
+}
+.type-dot {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; flex-shrink: 0;
+}
+.type-item-info { flex: 1; min-width: 0; }
+.type-item-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.type-item-sub { font-size: 11px; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.diff-pill {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 99px;
+  font-weight: 600;
+}
+
+/* ─── 메인 ─── */
+.main { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
+
+/* 유형 정보 배너 */
+.type-banner {
+  padding: 16px 24px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.banner-badge {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 800;
+  flex-shrink: 0;
+}
+.banner-title { font-size: 17px; font-weight: 700; }
+.banner-desc { font-size: 13px; color: var(--muted); margin-top: 3px; line-height: 1.5; }
+.banner-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.banner-tag {
+  font-size: 11px;
+  padding: 2px 9px;
+  border-radius: 99px;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+}
+
+/* 코드 탭 */
+.code-tabs {
+  display: flex;
+  gap: 0;
+  padding: 0 24px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+}
+.c-tab {
+  padding: 11px 20px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Noto Sans KR', sans-serif;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.c-tab:hover { color: var(--text); }
+.c-tab.active { color: var(--accent2); border-bottom-color: var(--accent); }
+.c-tab .tab-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+/* 코드 영역 */
+.code-section { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+.code-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 24px;
+  background: #1e2130;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--muted);
+}
+.copy-btn {
+  padding: 4px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.15s;
+}
+.copy-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.code-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: auto;
+  background: #1e2130;
+}
+.code-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+.code-scroll::-webkit-scrollbar-track { background: transparent; }
+.code-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+.code-inner {
+  display: flex;
+  min-width: max-content;
+}
+.line-nums {
+  padding: 20px 0;
+  text-align: right;
+  user-select: none;
+  background: #1a1d2e;
+  border-right: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.line-num {
+  display: block;
+  padding: 0 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.8;
+  color: #3d4260;
+}
+.code-content {
+  padding: 20px 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.8;
+  white-space: pre;
+  flex: 1;
+}
+/* syntax highlighting classes */
+.cm { color: var(--syn-comment); font-style: italic; }
+.kw { color: var(--syn-keyword); font-weight: 500; }
+.st { color: var(--syn-string); }
+.nm { color: var(--syn-number); }
+.tg { color: var(--syn-tag); }
+.at { color: var(--syn-attr); }
+.sl { color: var(--syn-selector); }
+.pr { color: var(--syn-property); }
+.vl { color: var(--syn-value); }
+.fn { color: var(--syn-function); }
+.vr { color: var(--syn-var); }
+.pt { color: var(--syn-punct); }
+
+/* ─── 포인트 패널 ─── */
+.points-panel {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--bg2);
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.points-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.point-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.point-card-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent2);
+  margin-bottom: 4px;
+}
+.point-card-body { font-size: 12px; color: var(--muted); line-height: 1.6; }
+.point-card-code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--syn-string);
+  background: rgba(255,255,255,0.04);
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-top: 6px;
+  display: block;
+  white-space: pre;
+}
+
+/* ─── 암기 모드 ─── */
+#memoryMode { display: none; flex-direction: column; align-items: center; justify-content: flex-start; padding: 32px 24px; overflow-y: auto; }
+#memoryMode.show { display: flex; }
+.memory-header { text-align: center; margin-bottom: 28px; }
+.memory-header h2 { font-size: 22px; font-weight: 700; color: var(--text); }
+.memory-header p { font-size: 14px; color: var(--muted); margin-top: 6px; }
+
+.memory-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; width: 100%; max-width: 860px; }
+
+.mem-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.mem-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 14px 14px 0 0;
+}
+.mem-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+.mem-card.flipped .mem-front { display: none; }
+.mem-card.flipped .mem-back { display: block; }
+.mem-front, .mem-back { }
+.mem-back { display: none; }
+.mem-card-type { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 8px; }
+.mem-card-q { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.5; margin-bottom: 8px; }
+.mem-card-hint { font-size: 11px; color: var(--muted); }
+.mem-card-a { font-size: 13px; color: var(--text); line-height: 1.6; margin-bottom: 8px; }
+.mem-card-code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  background: rgba(255,255,255,0.05);
+  padding: 8px 10px;
+  border-radius: 6px;
+  color: var(--syn-string);
+  white-space: pre;
+}
+.mem-flip-hint {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: right;
+  margin-top: 8px;
+  opacity: 0.6;
+}
+.mem-reset {
+  margin-top: 20px;
+  padding: 10px 28px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.15s;
+}
+.mem-reset:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* ─── 퀴즈 모드 ─── */
+#quizMode { display: none; flex-direction: column; align-items: center; padding: 32px 24px; overflow-y: auto; }
+#quizMode.show { display: flex; }
+.quiz-wrap { width: 100%; max-width: 640px; }
+.quiz-progress-bar { height: 4px; background: var(--bg3); border-radius: 2px; margin-bottom: 6px; overflow: hidden; }
+.quiz-progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s; }
+.quiz-progress-label { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+.quiz-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 14px;
+}
+.quiz-badge {
+  display: inline-block;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.quiz-q { font-size: 16px; font-weight: 600; line-height: 1.6; margin-bottom: 8px; }
+.quiz-code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  background: #1e2130;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  line-height: 1.7;
+  white-space: pre;
+}
+.quiz-opts { display: grid; gap: 8px; }
+.quiz-opt {
+  padding: 11px 16px;
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text);
+  background: transparent;
+  text-align: left;
+  font-family: 'Noto Sans KR', sans-serif;
+  transition: all 0.15s;
+}
+.quiz-opt:hover:not(.correct):not(.wrong) { background: rgba(255,255,255,0.05); border-color: var(--accent); }
+.quiz-opt.correct { background: rgba(74,222,128,0.12); border-color: var(--green); color: var(--green); }
+.quiz-opt.wrong { background: rgba(248,113,113,0.12); border-color: var(--red); color: var(--red); }
+.quiz-opt.disabled { cursor: default; }
+.quiz-fb {
+  margin-top: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.6;
+  display: none;
+}
+.quiz-fb.show { display: block; }
+.quiz-fb.ok { background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.3); color: #86efac; }
+.quiz-fb.fail { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.3); color: #fca5a5; }
+.quiz-nav { display: flex; gap: 8px; margin-top: 6px; }
+.quiz-next {
+  padding: 10px 24px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: 'Noto Sans KR', sans-serif;
+  display: none;
+}
+.quiz-next:hover { opacity: 0.85; }
+.score-screen {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px 32px;
+  text-align: center;
+  width: 100%;
+}
+.score-big { font-size: 52px; font-weight: 800; color: var(--accent2); }
+.score-pct { font-size: 18px; color: var(--muted); margin: 4px 0 16px; }
+.score-msg { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
+.retry-btn {
+  padding: 12px 32px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  font-size: 15px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+.retry-btn:hover { opacity: 0.85; }
+
+/* 스크롤바 */
+.sidebar::-webkit-scrollbar, .points-panel::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb, .points-panel::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="app-logo">웹디기능사 코드북 v2 <span>A ~ F 유형 · study.js 반영</span></div>
+  <div class="mode-btns">
+    <button class="mode-btn active" onclick="setMode('code',this)">📄 코드 보기</button>
+    <button class="mode-btn" onclick="setMode('memory',this)">🧠 암기 카드</button>
+    <button class="mode-btn" onclick="setMode('quiz',this)">✏️ 퀴즈</button>
+  </div>
+</header>
+
+<div class="app-body">
+
+  <!-- 사이드바 -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-label">유형 선택</div>
+  </nav>
+
+  <!-- 코드 모드 -->
+  <div class="main" id="codeMode">
+    <div class="type-banner" id="typeBanner"></div>
+    <div class="code-tabs" id="codeTabs"></div>
+    <div style="display:flex;flex:1;overflow:hidden;">
+      <div class="code-section">
+        <div class="code-toolbar">
+          <span id="toolbarLabel"></span>
+          <button class="copy-btn" onclick="doCopy()">복사하기</button>
+        </div>
+        <div class="code-scroll">
+          <div class="code-inner">
+            <div class="line-nums" id="lineNums"></div>
+            <div class="code-content" id="codeContent"></div>
+          </div>
+        </div>
+      </div>
+      <div class="points-panel" id="pointsPanel"></div>
+    </div>
+  </div>
+
+  <!-- 암기 모드 -->
+  <div class="main" id="memoryMode">
+    <div class="memory-header">
+      <h2>🧠 암기 카드</h2>
+      <p>카드를 클릭하면 정답이 나와요. 전부 외울 때까지 반복!</p>
+    </div>
+    <div class="memory-grid" id="memoryGrid"></div>
+    <button class="mem-reset" onclick="resetCards()">카드 다시 뒤집기</button>
+  </div>
+
+  <!-- 퀴즈 모드 -->
+  <div class="main" id="quizMode">
+    <div class="quiz-wrap">
+      <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="qProgress"></div></div>
+      <div class="quiz-progress-label" id="qLabel"></div>
+      <div id="quizArea"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// 데이터
+// ═══════════════════════════════════════
+const TYPES = {
+  A: {
+    label:'A유형', sub:'가로 고정형', diff:'입문', diffColor:'#4ade80', dotBg:'#1a3a2a', dotColor:'#4ade80',
+    tags:['width:1200px','수평 메뉴','가장 기본'],
+    desc:'가장 기본이 되는 유형. wrap 1200px 고정 중앙정렬. 헤더+수평메뉴 → 슬라이드 → 공지/갤러리 → 푸터 순서.',
+    points:[
+      {t:'$(function(){}) 필수!', b:'head에 script 태그 → body보다 JS 먼저 실행됨 → HTML을 못 찾음. 무조건 안에 코드 작성!', c:'$(function(){\n  // 여기 안에 모든 JS 코드 작성\n})'},
+      {t:'wrap 핵심', b:'width:1200px + margin:0 auto 로 중앙정렬', c:'.wrap {\n  width: 1200px;\n  margin: 0 auto;\n}'},
+      {t:'수평 메뉴 핵심', b:'ul에 display:flex 주면 가로로 배치됨', c:'.gnb .menu { display: flex; }'},
+      {t:'서브메뉴 숨기기', b:'기본 display:none, hover 시 display:block', c:'.sub { display: none; }\nli:hover .sub { display: block; }'},
+      {t:'슬라이드 3가지', b:'가로(translateX) / 세로(translateY) / fadeIn — 택1', c:'// 가로: translateX(${-33.333 * count}%)\n// 세로: translateY(${-33.333 * count}%)\n// 페이드: .imgSlide a:first-child.fadeOut()...'},
+      {t:'탭메뉴 핵심', b:'eq(0), eq(1)로 번호 맞춰 on 클래스 교체', c:'$(".tab-btn li").eq(0).click(function(){\n  $(".tab-cont li").removeClass("on")\n  $(".tab-cont li").eq(0).addClass("on")\n})'},
+      {t:'팝업 핵심', b:'.btn-open 클릭→addClass, .btn-close 클릭→removeClass', c:'$(".btn-open").click(function(){\n  $(".popup").addClass("on")\n})\n$(".btn-close").click(function(){\n  $(".popup").removeClass("on")\n})'},
+    ],
+  },
+  B: {
+    label:'B유형', sub:'가로 100% 유동형', diff:'입문', diffColor:'#4ade80', dotBg:'#1a2e3a', dotColor:'#60a5fa',
+    tags:['width:100%','풀스크린 슬라이드','inner로 제한'],
+    desc:'A유형과 구조 동일. wrap만 100%로 변경. 헤더·슬라이드가 브라우저 화면 전체를 채움.',
+    points:[
+      {t:'A유형과 차이점', b:'wrap의 width:100% 단 한 줄만 다름!', c:'.wrap { width: 100%; }'},
+      {t:'inner 클래스', b:'콘텐츠는 inner div로 최대 너비 제한', c:'.inner {\n  width: 1200px;\n  margin: 0 auto;\n}'},
+      {t:'슬라이드 100%', b:'height+object-fit:cover로 꽉 채우기', c:'.slides li img {\n  height: 450px;\n  object-fit: cover;\n}'},
+      {t:'JS', b:'A유형 JS와 완전히 동일하게 사용', c:'// A유형 js 그대로 복붙!'},
+    ],
+  },
+  C: {
+    label:'C유형', sub:'세로 2컬럼형', diff:'중급', diffColor:'#fbbf24', dotBg:'#2a2a1a', dotColor:'#fbbf24',
+    tags:['display:flex','aside + main','세로 메뉴'],
+    desc:'왼쪽 aside(세로메뉴) + 오른쪽 main 2컬럼 구조. display:flex로 나란히 배치. 메뉴가 세로로 나열됨.',
+    points:[
+      {t:'2컬럼 핵심 CSS', b:'container에 display:flex 적용', c:'.container { display: flex; }'},
+      {t:'aside 너비', b:'고정 너비, flex-shrink:0 줄어들지 않게', c:'.aside {\n  width: 200px;\n  flex-shrink: 0;\n}'},
+      {t:'main 너비', b:'flex:1 로 나머지 공간 모두 차지', c:'.main { flex: 1; }'},
+      {t:'세로메뉴 JS', b:'클릭 시 slideToggle, 나머지는 slideUp으로 닫기', c:'let sub = $(this).next(".sub")\n$(".gnb .sub").not(sub).slideUp(200)\nsub.slideToggle(200)'},
+    ],
+  },
+  D: {
+    label:'D유형', sub:'세로2컬럼 + 슬라이드100vw', diff:'고급', diffColor:'#f87171', dotBg:'#2a1a1a', dotColor:'#f87171',
+    tags:['position:fixed','100vw 슬라이드','calc()','2023 신규'],
+    desc:'aside가 position:fixed로 고정. main은 margin-left:200px. 슬라이드는 100vw 풀스크린으로 브라우저 꽉 채움.',
+    points:[
+      {t:'aside fixed 핵심', b:'화면에 고정, 높이는 100vh 전체', c:'.aside {\n  position: fixed;\n  width: 200px;\n  height: 100vh;\n}'},
+      {t:'main 여백', b:'aside 너비만큼 왼쪽 여백 필수!', c:'.main { margin-left: 200px; }'},
+      {t:'슬라이드 100vw', b:'100vw 설정 후 aside 너비만큼 당기기', c:'.slider {\n  width: 100vw;\n  margin-left: -200px;\n}'},
+      {t:'object-fit', b:'이미지 비율 유지하며 영역 꽉 채우기', c:'.slides li img {\n  height: 500px;\n  object-fit: cover;\n}'},
+    ],
+  },
+  E: {
+    label:'E유형', sub:'세로 3컬럼형', diff:'고급', diffColor:'#f87171', dotBg:'#1e1a2a', dotColor:'#c792ea',
+    tags:['3컬럼 flex','양쪽 aside','최고 난이도','2023 신규'],
+    desc:'왼쪽 aside + main + 오른쪽 aside 3컬럼 구조. 가장 복잡한 유형. display:flex 하나로 3개 영역을 나란히.',
+    points:[
+      {t:'3컬럼 핵심 CSS', b:'container에 flex, 3개 자식이 나란히', c:'.container { display: flex; }'},
+      {t:'왼쪽 aside', b:'200px 고정, 세로 메뉴', c:'.aside-left {\n  width: 200px;\n  flex-shrink: 0;\n}'},
+      {t:'main 중앙', b:'flex:1 + min-width:0 overflow 방지', c:'.main {\n  flex: 1;\n  min-width: 0;\n}'},
+      {t:'오른쪽 aside', b:'200px 고정, 배너/이미지 배치', c:'.aside-right {\n  width: 200px;\n  flex-shrink: 0;\n}'},
+    ],
+  },
+  F: {
+    label:'F유형', sub:'고정 + 슬라이드만 100vw', diff:'중급', diffColor:'#fbbf24', dotBg:'#2a1e2a', dotColor:'#f472b6',
+    tags:['width:1340px','슬라이드만 100vw','calc() 이탈','2024 신규'],
+    desc:'전체는 1340px 고정이지만 슬라이드 섹션만 100vw로 브라우저 전체를 채움. 2024년 신규 추가 유형.',
+    points:[
+      {t:'wrap 너비', b:'1340px! A유형(1200px)과 다름 주의', c:'.wrap { width: 1340px; margin: 0 auto; }'},
+      {t:'슬라이드 100% 방법', b:'body에 overflow-x:hidden + margin/transform 조합', c:'body { overflow-x: hidden; }\n.slider {\n  width: 100vw;\n  margin-left: 50%;\n  transform: translateX(-50%);\n}'},
+      {t:'calc 안 써도 됨!', b:'위 방법이 훨씬 단순하고 외우기 쉬움', c:'/* 핵심: body overflow-x:hidden 이 있어야\n   슬라이드가 가로 스크롤바 없이 작동함 */'},
+      {t:'나머지 JS', b:'A유형 JS와 완전히 동일하게 사용', c:'// 슬라이드 이탈은 CSS만으로 처리\n// JS는 A유형 그대로!'},
+    ],
+  },
+};
+
+// ─── HTML 코드 ───
+const HTML_CODE = {
+  A: `<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>A유형 - 가로고정형</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"><\/script>
+  <script src="js/script.js"><\/script>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="header">
+    <h1 class="logo"><a href="#">로고</a></h1>
+    <nav class="gnb">
+      <ul class="menu">
+        <li><a href="#">메뉴1</a>
+          <ul class="sub">
+            <li><a href="#">서브1-1</a></li>
+            <li><a href="#">서브1-2</a></li>
+          </ul>
+        </li>
+        <li><a href="#">메뉴2</a>
+          <ul class="sub">
+            <li><a href="#">서브2-1</a></li>
+          </ul>
+        </li>
+        <li><a href="#">메뉴3</a>
+          <ul class="sub">
+            <li><a href="#">서브3-1</a></li>
+          </ul>
+        </li>
+        <li><a href="#">메뉴4</a>
+          <ul class="sub">
+            <li><a href="#">서브4-1</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="slider">
+    <div class="slider-wrap">
+      <ul class="slides">
+        <li><img src="images/slide1.jpg" alt="슬라이드1"></li>
+        <li><img src="images/slide2.jpg" alt="슬라이드2"></li>
+        <li><img src="images/slide3.jpg" alt="슬라이드3"></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="contents">
+    <div class="notice">
+      <ul class="tab-btn">
+        <li class="on"><a href="#">공지사항</a></li>
+        <li><a href="#">갤러리</a></li>
+      </ul>
+      <ul class="tab-cont">
+        <li class="on">
+          <ul>
+            <li><a href="#">공지사항 내용 1</a></li>
+            <li><a href="#">공지사항 내용 2</a></li>
+          </ul>
+        </li>
+        <li>
+          <ul>
+            <li><a href="#">갤러리 내용 1</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div class="banner">
+      <a href="#"><img src="images/banner1.jpg" alt="배너"></a>
+    </div>
+  </section>
+
+  <div class="popup">
+    <div class="popup-inner">
+      <p>팝업 내용</p>
+      <button class="btn-close">닫기</button>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <button class="btn-open">공지사항 팝업 열기</button>
+    <p>Copyright &copy; 2025. All rights reserved.</p>
+  </footer>
+
+</div>
+</body>
+</html>`,
+  B: `<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>B유형 - 가로100% 유동형</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"><\/script>
+  <script src="js/script.js"><\/script>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 헤더: inner로 내부 콘텐츠 너비 제한 -->
+  <header class="header">
+    <div class="inner">
+      <h1 class="logo"><a href="#">로고</a></h1>
+      <nav class="gnb">
+        <ul class="menu">
+          <li><a href="#">메뉴1</a>
+            <ul class="sub">
+              <li><a href="#">서브1-1</a></li>
+            </ul>
+          </li>
+          <li><a href="#">메뉴2</a>
+            <ul class="sub">
+              <li><a href="#">서브2-1</a></li>
+            </ul>
+          </li>
+          <li><a href="#">메뉴3</a>
+            <ul class="sub">
+              <li><a href="#">서브3-1</a></li>
+            </ul>
+          </li>
+          <li><a href="#">메뉴4</a>
+            <ul class="sub">
+              <li><a href="#">서브4-1</a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 슬라이드: 100% 풀스크린 -->
+  <section class="slider">
+    <div class="slider-wrap">
+      <ul class="slides">
+        <li><img src="images/slide1.jpg" alt="슬라이드1"></li>
+        <li><img src="images/slide2.jpg" alt="슬라이드2"></li>
+        <li><img src="images/slide3.jpg" alt="슬라이드3"></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="contents">
+    <div class="inner">
+      <div class="notice">
+        <ul class="tab-btn">
+          <li class="on"><a href="#">공지사항</a></li>
+          <li><a href="#">갤러리</a></li>
+        </ul>
+        <ul class="tab-cont">
+          <li class="on"><ul><li><a href="#">공지사항 1</a></li></ul></li>
+          <li><ul><li><a href="#">갤러리 1</a></li></ul></li>
+        </ul>
+      </div>
+      <div class="banner">
+        <a href="#"><img src="images/banner.jpg" alt="배너"></a>
+      </div>
+    </div>
+  </section>
+
+  <div class="popup">
+    <div class="popup-inner">
+      <p>팝업 내용</p>
+      <button class="btn-close">닫기</button>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="inner">
+      <button class="btn-open">공지사항 팝업 열기</button>
+      <p>Copyright &copy; 2025. All rights reserved.</p>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>`,
+  C: `<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>C유형 - 세로2컬럼형</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"><\/script>
+  <script src="js/script.js"><\/script>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="header">
+    <h1 class="logo"><a href="#">로고</a></h1>
+  </header>
+
+  <!-- C유형 핵심: aside + main 2컬럼 컨테이너 -->
+  <div class="container">
+
+    <!-- 왼쪽: 세로 메뉴 -->
+    <aside class="aside">
+      <nav class="gnb">
+        <ul class="menu">
+          <li><a href="#">메뉴1</a>
+            <ul class="sub">
+              <li><a href="#">서브1-1</a></li>
+              <li><a href="#">서브1-2</a></li>
+            </ul>
+          </li>
+          <li><a href="#">메뉴2</a>
+            <ul class="sub">
+              <li><a href="#">서브2-1</a></li>
+            </ul>
+          </li>
+          <li><a href="#">메뉴3</a>
+            <ul class="sub">
+              <li><a href="#">서브3-1</a></li>
+            </ul>
+          </li>
+          <li><a href="#">메뉴4</a>
+            <ul class="sub">
+              <li><a href="#">서브4-1</a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- 오른쪽: 슬라이드 + 콘텐츠 + 푸터 -->
+    <main class="main">
+
+      <section class="slider">
+        <div class="slider-wrap">
+          <ul class="slides">
+            <li><img src="images/slide1.jpg" alt="슬라이드1"></li>
+            <li><img src="images/slide2.jpg" alt="슬라이드2"></li>
+            <li><img src="images/slide3.jpg" alt="슬라이드3"></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="contents">
+        <div class="notice">
+          <ul class="tab-btn">
+            <li class="on"><a href="#">공지사항</a></li>
+            <li><a href="#">갤러리</a></li>
+          </ul>
+          <ul class="tab-cont">
+            <li class="on"><ul><li><a href="#">공지사항 1</a></li></ul></li>
+            <li><ul><li><a href="#">갤러리 1</a></li></ul></li>
+          </ul>
+        </div>
+        <div class="banner">
+          <a href="#"><img src="images/banner.jpg" alt="배너"></a>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <button class="btn-open">공지사항 팝업 열기</button>
+        <p>Copyright &copy; 2025. All rights reserved.</p>
+      </footer>
+
+    </main>
+  </div><!-- /container -->
+
+  <div class="popup">
+    <div class="popup-inner">
+      <p>팝업 내용</p>
+      <button class="btn-close">닫기</button>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>`,
+  D: `<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>D유형 - 세로2컬럼 + 슬라이드100vw</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"><\/script>
+  <script src="js/script.js"><\/script>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- D유형 핵심: aside가 position:fixed로 화면에 고정 -->
+  <aside class="aside">
+    <h1 class="logo"><a href="#">로고</a></h1>
+    <nav class="gnb">
+      <ul class="menu">
+        <li><a href="#">메뉴1</a>
+          <ul class="sub">
+            <li><a href="#">서브1-1</a></li>
+            <li><a href="#">서브1-2</a></li>
+          </ul>
+        </li>
+        <li><a href="#">메뉴2</a>
+          <ul class="sub">
+            <li><a href="#">서브2-1</a></li>
+          </ul>
+        </li>
+        <li><a href="#">메뉴3</a>
+          <ul class="sub">
+            <li><a href="#">서브3-1</a></li>
+          </ul>
+        </li>
+        <li><a href="#">메뉴4</a>
+          <ul class="sub">
+            <li><a href="#">서브4-1</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- main: aside 옆에 위치 -->
+  <main class="main">
+
+    <!-- D유형 핵심: 슬라이드 100vw 풀스크린 -->
+    <section class="slider">
+      <div class="slider-wrap">
+        <ul class="slides">
+          <li><img src="images/slide1.jpg" alt="슬라이드1"></li>
+          <li><img src="images/slide2.jpg" alt="슬라이드2"></li>
+          <li><img src="images/slide3.jpg" alt="슬라이드3"></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="contents">
+      <div class="notice">
+        <ul class="tab-btn">
+          <li class="on"><a href="#">공지사항</a></li>
+          <li><a href="#">갤러리</a></li>
+        </ul>
+        <ul class="tab-cont">
+          <li class="on"><ul><li><a href="#">공지사항 1</a></li></ul></li>
+          <li><ul><li><a href="#">갤러리 1</a></li></ul></li>
+        </ul>
+      </div>
+      <div class="banner">
+        <a href="#"><img src="images/banner.jpg" alt="배너"></a>
+      </div>
+    </section>
+
+    <div class="popup">
+      <div class="popup-inner">
+        <p>팝업 내용</p>
+        <button class="btn-close">닫기</button>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <button class="btn-open">공지사항 팝업 열기</button>
+      <p>Copyright &copy; 2025. All rights reserved.</p>
+    </footer>
+
+  </main>
+</div>
+</body>
+</html>`,
+  E: `<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>E유형 - 세로3컬럼형</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"><\/script>
+  <script src="js/script.js"><\/script>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="header">
+    <h1 class="logo"><a href="#">로고</a></h1>
+  </header>
+
+  <!-- E유형 핵심: 3컬럼 flex 컨테이너 -->
+  <div class="container">
+
+    <!-- 왼쪽 aside: 세로 메뉴 -->
+    <aside class="aside-left">
+      <nav class="gnb">
+        <ul class="menu">
+          <li><a href="#">메뉴1</a>
+            <ul class="sub">
+              <li><a href="#">서브1-1</a></li>
+              <li><a href="#">서브1-2</a></li>
+            </ul>
+          </li>
+          <li><a href="#">메뉴2</a>
+            <ul class="sub">
+              <li><a href="#">서브2-1</a></li>
+            </ul>
+          </li>
+          <li><a href="#">메뉴3</a>
+            <ul class="sub">
+              <li><a href="#">서브3-1</a></li>
+            </ul>
+          </li>
+          <li><a href="#">메뉴4</a>
+            <ul class="sub">
+              <li><a href="#">서브4-1</a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- 가운데 main -->
+    <main class="main">
+      <section class="slider">
+        <div class="slider-wrap">
+          <ul class="slides">
+            <li><img src="images/slide1.jpg" alt="슬라이드1"></li>
+            <li><img src="images/slide2.jpg" alt="슬라이드2"></li>
+            <li><img src="images/slide3.jpg" alt="슬라이드3"></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="contents">
+        <div class="notice">
+          <ul class="tab-btn">
+            <li class="on"><a href="#">공지사항</a></li>
+            <li><a href="#">갤러리</a></li>
+          </ul>
+          <ul class="tab-cont">
+            <li class="on"><ul><li><a href="#">공지사항 1</a></li></ul></li>
+            <li><ul><li><a href="#">갤러리 1</a></li></ul></li>
+          </ul>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <button class="btn-open">공지사항 팝업 열기</button>
+        <p>Copyright &copy; 2025. All rights reserved.</p>
+      </footer>
+    </main>
+
+    <!-- 오른쪽 aside: 배너 -->
+    <aside class="aside-right">
+      <div class="side-banner">
+        <a href="#"><img src="images/banner1.jpg" alt="배너1"></a>
+      </div>
+      <div class="side-banner">
+        <a href="#"><img src="images/banner2.jpg" alt="배너2"></a>
+      </div>
+    </aside>
+
+  </div><!-- /container -->
+
+  <div class="popup">
+    <div class="popup-inner">
+      <p>팝업 내용</p>
+      <button class="btn-close">닫기</button>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>`,
+  F: `<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>F유형 - 가로고정 + 슬라이드100vw</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"><\/script>
+  <script src="js/script.js"><\/script>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="header">
+    <h1 class="logo"><a href="#">로고</a></h1>
+    <nav class="gnb">
+      <ul class="menu">
+        <li><a href="#">메뉴1</a>
+          <ul class="sub">
+            <li><a href="#">서브1-1</a></li>
+          </ul>
+        </li>
+        <li><a href="#">메뉴2</a>
+          <ul class="sub">
+            <li><a href="#">서브2-1</a></li>
+          </ul>
+        </li>
+        <li><a href="#">메뉴3</a>
+          <ul class="sub">
+            <li><a href="#">서브3-1</a></li>
+          </ul>
+        </li>
+        <li><a href="#">메뉴4</a>
+          <ul class="sub">
+            <li><a href="#">서브4-1</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- F유형 핵심: 슬라이드만 100vw 이탈 -->
+  <section class="slider">
+    <div class="slider-wrap">
+      <ul class="slides">
+        <li><img src="images/slide1.jpg" alt="슬라이드1"></li>
+        <li><img src="images/slide2.jpg" alt="슬라이드2"></li>
+        <li><img src="images/slide3.jpg" alt="슬라이드3"></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="contents">
+    <div class="notice">
+      <ul class="tab-btn">
+        <li class="on"><a href="#">공지사항</a></li>
+        <li><a href="#">갤러리</a></li>
+      </ul>
+      <ul class="tab-cont">
+        <li class="on"><ul><li><a href="#">공지사항 1</a></li></ul></li>
+        <li><ul><li><a href="#">갤러리 1</a></li></ul></li>
+      </ul>
+    </div>
+    <div class="banner">
+      <a href="#"><img src="images/banner.jpg" alt="배너"></a>
+    </div>
+  </section>
+
+  <div class="popup">
+    <div class="popup-inner">
+      <p>팝업 내용</p>
+      <button class="btn-close">닫기</button>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <button class="btn-open">공지사항 팝업 열기</button>
+    <p>Copyright &copy; 2025. All rights reserved.</p>
+  </footer>
+
+</div>
+</body>
+</html>`,
+};
+
+const CSS_CODE = {
+  A:`/* ══ 리셋 ══ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+ul, ol { list-style: none; }
+a { text-decoration: none; color: inherit; }
+img { display: block; width: 100%; }
+
+/* ══ A유형 핵심: wrap 1200px 고정 ══ */
+.wrap {
+  width: 1200px;
+  margin: 0 auto;
+}
+
+/* ══ 헤더 ══ */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 80px;
+  padding: 0 20px;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+}
+.logo a { font-size: 24px; font-weight: bold; }
+
+/* ══ 수평 메뉴 ══ */
+.gnb .menu { display: flex; }
+.gnb .menu > li { position: relative; }
+.gnb .menu > li > a {
+  display: block;
+  padding: 0 20px;
+  line-height: 80px;
+}
+.gnb .menu > li:hover > a { color: #e74c3c; }
+
+/* ══ 서브 메뉴 ══ */
+.gnb .sub {
+  display: none;
+  position: absolute;
+  top: 80px;
+  left: 0;
+  min-width: 120px;
+  background: #fff;
+  border: 1px solid #ddd;
+  z-index: 100;
+}
+.gnb .menu > li:hover .sub { display: block; }
+.gnb .sub li a {
+  display: block;
+  padding: 10px 16px;
+  font-size: 14px;
+}
+.gnb .sub li a:hover { background: #f5f5f5; }
+
+/* ══ 슬라이드: position:absolute + animate left 방식 ══ */
+.slider { height: 400px; overflow: hidden; position: relative; }
+.slider-wrap { position: relative; height: 100%; }
+.slider-wrap ul {
+  display: flex;
+  width: 300%;
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+}
+.slider-wrap ul li { width: calc(100% / 3); height: 100%; }
+.slider-wrap ul li img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ══ 콘텐츠 ══ */
+.contents {
+  display: flex;
+  gap: 20px;
+  padding: 40px 20px;
+}
+.notice { flex: 1; }
+
+/* ══ 탭 메뉴 ══ */
+.tab-btn { display: flex; border-bottom: 2px solid #ddd; }
+.tab-btn li a {
+  display: block;
+  padding: 10px 20px;
+  color: #888;
+}
+.tab-btn li.on a {
+  color: #e74c3c;
+  border-bottom: 2px solid #e74c3c;
+}
+.tab-cont li { display: none; padding-top: 16px; }
+.tab-cont li.on { display: block; }
+.banner { width: 300px; }
+
+/* ══ 팝업 ══ */
+.popup {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 999;
+  justify-content: center;
+  align-items: center;
+}
+.popup.on { display: flex; }
+.popup-inner {
+  background: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  text-align: center;
+}
+.btn-close {
+  margin-top: 16px;
+  padding: 8px 20px;
+  cursor: pointer;
+}
+
+/* ══ 푸터 ══ */
+.footer {
+  background: #333;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+  font-size: 14px;
+}
+.btn-open {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 8px 20px;
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}`,
+  B:`/* ══ 리셋 (A유형과 동일) ══ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+ul, ol { list-style: none; }
+a { text-decoration: none; color: inherit; }
+img { display: block; width: 100%; }
+
+/* ══ B유형 핵심: wrap을 100%로! ══ */
+.wrap { width: 100%; }
+
+/* ══ inner: 내부 콘텐츠 너비 제한 ══ */
+.inner {
+  width: 1200px;
+  margin: 0 auto;
+}
+
+/* ══ 헤더 ══ */
+.header { background: #fff; border-bottom: 1px solid #ddd; }
+.header .inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 80px;
+}
+.logo a { font-size: 24px; font-weight: bold; }
+
+/* ══ 수평 메뉴 (A유형과 동일) ══ */
+.gnb .menu { display: flex; }
+.gnb .menu > li { position: relative; }
+.gnb .menu > li > a { display: block; padding: 0 20px; line-height: 80px; }
+.gnb .sub {
+  display: none;
+  position: absolute;
+  top: 80px; left: 0;
+  min-width: 120px;
+  background: #fff;
+  border: 1px solid #ddd;
+  z-index: 100;
+}
+.gnb .menu > li:hover .sub { display: block; }
+.gnb .sub li a { display: block; padding: 10px 16px; font-size: 14px; }
+
+/* ══ 슬라이드: 100% 풀스크린 (A유형과 동일한 animate left 방식) ══ */
+.slider { height: 400px; overflow: hidden; position: relative; width: 100%; }
+.slider-wrap { position: relative; height: 100%; }
+.slider-wrap ul {
+  display: flex;
+  width: 300%;
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+}
+.slider-wrap ul li { width: calc(100% / 3); height: 100%; }
+.slider-wrap ul li img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ══ 콘텐츠 ══ */
+.contents { padding: 40px 0; }
+.contents .inner { display: flex; gap: 20px; }
+.notice { flex: 1; }
+.tab-btn { display: flex; border-bottom: 2px solid #ddd; }
+.tab-btn li a { display: block; padding: 10px 20px; color: #888; }
+.tab-btn li.on a { color: #e74c3c; border-bottom: 2px solid #e74c3c; }
+.tab-cont li { display: none; padding-top: 16px; }
+.tab-cont li.on { display: block; }
+.banner { width: 300px; }
+
+/* ══ 팝업 & 푸터 (A유형과 동일) ══ */
+.popup { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center; }
+.popup.on { display: flex; }
+.popup-inner { background:#fff; padding:30px; border-radius:8px; text-align:center; }
+.footer { background:#333; color:#fff; padding:20px 0; text-align:center; font-size:14px; }
+.btn-open { display:inline-block; margin-bottom:10px; padding:8px 20px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }`,
+  C:`/* ══ 리셋 ══ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+ul, ol { list-style: none; }
+a { text-decoration: none; color: inherit; }
+img { display: block; width: 100%; }
+
+.wrap { width: 1200px; margin: 0 auto; }
+
+/* ══ 헤더 ══ */
+.header {
+  display: flex;
+  align-items: center;
+  height: 70px;
+  padding: 0 20px;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+}
+.logo a { font-size: 22px; font-weight: bold; }
+
+/* ══ C유형 핵심: 2컬럼 flex ══ */
+.container { display: flex; }
+
+/* ══ aside: 세로 메뉴 ══ */
+.aside {
+  width: 200px;
+  flex-shrink: 0;
+  background: #f5f5f5;
+  border-right: 1px solid #ddd;
+  min-height: 600px;
+}
+.gnb .menu > li > a {
+  display: block;
+  padding: 13px 18px;
+  font-weight: bold;
+  border-bottom: 1px solid #ddd;
+}
+.gnb .menu > li > a:hover { background: #e74c3c; color: #fff; }
+
+/* ══ 서브 메뉴: 아래로 열림 ══ */
+.gnb .sub { display: none; background: #fafafa; }
+.gnb .sub li a {
+  display: block;
+  padding: 9px 18px 9px 30px;
+  font-size: 13px;
+  border-bottom: 1px solid #eee;
+}
+.gnb .sub li a:hover { color: #e74c3c; }
+
+/* ══ main ══ */
+.main { flex: 1; overflow: hidden; }
+
+/* ══ 슬라이드 (animate left 방식) ══ */
+.slider { height: 350px; overflow: hidden; position: relative; }
+.slider-wrap { position: relative; height: 100%; }
+.slider-wrap ul {
+  display: flex;
+  width: 300%;
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+}
+.slider-wrap ul li { width: calc(100% / 3); height: 100%; }
+.slider-wrap ul li img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ══ 콘텐츠 ══ */
+.contents { display: flex; gap: 20px; padding: 24px 16px; }
+.notice { flex: 1; }
+.tab-btn { display: flex; border-bottom: 2px solid #ddd; }
+.tab-btn li a { display: block; padding: 9px 14px; color: #888; font-size: 14px; }
+.tab-btn li.on a { color: #e74c3c; border-bottom: 2px solid #e74c3c; }
+.tab-cont li { display: none; padding-top: 12px; }
+.tab-cont li.on { display: block; }
+.banner { width: 180px; }
+
+.popup { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center; }
+.popup.on { display: flex; }
+.popup-inner { background:#fff; padding:30px; border-radius:8px; text-align:center; }
+.footer { background:#333; color:#fff; padding:20px; text-align:center; font-size:14px; }
+.btn-open { display:inline-block; margin-bottom:10px; padding:8px 20px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }`,
+  D:`/* ══ 리셋 ══ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+ul, ol { list-style: none; }
+a { text-decoration: none; color: inherit; }
+img { display: block; width: 100%; }
+
+/* ══ D유형 핵심 ①: aside position:fixed 고정 ══ */
+.aside {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 200px;
+  height: 100vh;
+  background: #2c3e50;
+  color: #fff;
+  overflow-y: auto;
+  z-index: 100;
+}
+.logo { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.logo a { color: #fff; font-size: 20px; font-weight: bold; }
+
+.gnb .menu > li > a {
+  display: block;
+  padding: 14px 20px;
+  color: #ccc;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.gnb .menu > li > a:hover {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+.gnb .sub { display: none; background: rgba(0,0,0,0.2); }
+.gnb .sub li a {
+  display: block;
+  padding: 10px 20px 10px 34px;
+  color: #aaa;
+  font-size: 13px;
+}
+.gnb .sub li a:hover { color: #fff; }
+
+/* ══ D유형 핵심 ②: main margin-left ══ */
+.main { margin-left: 200px; }
+
+/* ══ D유형 핵심 ③: 슬라이드 100vw + position:absolute ══ */
+.slider {
+  width: 100vw;
+  margin-left: -200px;  /* aside 200px 만큼 왼쪽으로 당기기 */
+  height: 500px;
+  overflow: hidden;
+  position: relative;
+}
+.slider-wrap { position: relative; height: 100%; }
+.slider-wrap ul {
+  display: flex;
+  width: 300%;
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+}
+.slider-wrap ul li { width: calc(100% / 3); height: 100%; }
+.slider-wrap ul li img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ══ 콘텐츠 ══ */
+.contents { display: flex; gap: 20px; padding: 28px 20px; }
+.notice { flex: 1; }
+.tab-btn { display: flex; border-bottom: 2px solid #ddd; }
+.tab-btn li a { display: block; padding: 9px 14px; color: #888; }
+.tab-btn li.on a { color: #e74c3c; border-bottom: 2px solid #e74c3c; }
+.tab-cont li { display: none; padding-top: 12px; }
+.tab-cont li.on { display: block; }
+.banner { width: 200px; }
+
+.popup { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center; }
+.popup.on { display: flex; }
+.popup-inner { background:#fff; padding:30px; border-radius:8px; text-align:center; }
+.footer { background:#333; color:#fff; padding:20px; text-align:center; font-size:14px; }
+.btn-open { display:inline-block; margin-bottom:10px; padding:8px 20px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }`,
+  E:`/* ══ 리셋 ══ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+ul, ol { list-style: none; }
+a { text-decoration: none; color: inherit; }
+img { display: block; width: 100%; }
+
+.wrap { width: 1200px; margin: 0 auto; }
+
+/* ══ 헤더 ══ */
+.header {
+  display: flex;
+  align-items: center;
+  height: 70px;
+  padding: 0 20px;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+}
+.logo a { font-size: 22px; font-weight: bold; }
+
+/* ══ E유형 핵심: 3컬럼 flex ══ */
+.container { display: flex; }
+
+/* ══ 왼쪽 aside ══ */
+.aside-left {
+  width: 200px;
+  flex-shrink: 0;
+  background: #f5f5f5;
+  border-right: 1px solid #ddd;
+}
+.gnb .menu > li > a {
+  display: block;
+  padding: 12px 16px;
+  font-weight: bold;
+  font-size: 14px;
+  border-bottom: 1px solid #ddd;
+}
+.gnb .menu > li > a:hover { background: #e74c3c; color: #fff; }
+.gnb .sub { display: none; background: #fafafa; }
+.gnb .sub li a {
+  display: block;
+  padding: 8px 16px 8px 28px;
+  font-size: 13px;
+  border-bottom: 1px solid #eee;
+  color: #555;
+}
+.gnb .sub li a:hover { color: #e74c3c; }
+
+/* ══ main 중앙 ══ */
+.main {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* ══ 슬라이드 (animate left 방식) ══ */
+.slider { height: 350px; overflow: hidden; position: relative; }
+.slider-wrap { position: relative; height: 100%; }
+.slider-wrap ul {
+  display: flex;
+  width: 300%;
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+}
+.slider-wrap ul li { width: calc(100% / 3); height: 100%; }
+.slider-wrap ul li img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ══ 콘텐츠 ══ */
+.contents { padding: 20px 16px; }
+.tab-btn { display: flex; border-bottom: 2px solid #ddd; }
+.tab-btn li a { display: block; padding: 9px 14px; color: #888; font-size: 14px; }
+.tab-btn li.on a { color: #e74c3c; border-bottom: 2px solid #e74c3c; }
+.tab-cont li { display: none; padding-top: 12px; }
+.tab-cont li.on { display: block; }
+
+/* ══ 오른쪽 aside ══ */
+.aside-right {
+  width: 200px;
+  flex-shrink: 0;
+  border-left: 1px solid #ddd;
+  padding: 16px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.popup { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center; }
+.popup.on { display: flex; }
+.popup-inner { background:#fff; padding:30px; border-radius:8px; text-align:center; }
+.footer { background:#333; color:#fff; padding:20px; text-align:center; font-size:14px; }
+.btn-open { display:inline-block; margin-bottom:10px; padding:8px 20px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }`,
+  F:`/* ══ 리셋 ══ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+ul, ol { list-style: none; }
+a { text-decoration: none; color: inherit; }
+img { display: block; width: 100%; }
+
+/* ══ F유형 핵심 ①: wrap 1340px (A유형의 1200px과 다름!) ══ */
+.wrap {
+  width: 1340px;
+  margin: 0 auto;
+}
+
+/* ══ 헤더 ══ */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 80px;
+  padding: 0 20px;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+}
+.logo a { font-size: 24px; font-weight: bold; }
+
+/* ══ 수평 메뉴 (A유형과 동일) ══ */
+.gnb .menu { display: flex; }
+.gnb .menu > li { position: relative; }
+.gnb .menu > li > a { display: block; padding: 0 20px; line-height: 80px; }
+.gnb .menu > li:hover > a { color: #e74c3c; }
+.gnb .sub {
+  display: none;
+  position: absolute;
+  top: 80px; left: 0;
+  min-width: 120px;
+  background: #fff;
+  border: 1px solid #ddd;
+  z-index: 100;
+}
+.gnb .menu > li:hover .sub { display: block; }
+.gnb .sub li a { display: block; padding: 10px 16px; font-size: 14px; }
+
+/* ══ F유형 핵심 ②: 슬라이드만 100% ══ */
+/* body에 overflow:hidden 추가하면 calc 없이 가능! */
+body { overflow-x: hidden; }
+.slider {
+  width: 100vw;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  height: 450px;
+  overflow: hidden;
+  position: relative;
+}
+.slider-wrap { position: relative; height: 100%; }
+.slider-wrap ul {
+  display: flex;
+  width: 300%;
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+}
+.slider-wrap ul li { width: calc(100% / 3); height: 100%; }
+.slider-wrap ul li img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ══ 콘텐츠 (1340px 안에서) ══ */
+.contents { display: flex; gap: 20px; padding: 40px 20px; }
+.notice { flex: 1; }
+.tab-btn { display: flex; border-bottom: 2px solid #ddd; }
+.tab-btn li a { display: block; padding: 10px 20px; color: #888; }
+.tab-btn li.on a { color: #e74c3c; border-bottom: 2px solid #e74c3c; }
+.tab-cont li { display: none; padding-top: 16px; }
+.tab-cont li.on { display: block; }
+.banner { width: 300px; }
+
+.popup { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center; }
+.popup.on { display: flex; }
+.popup-inner { background:#fff; padding:30px; border-radius:8px; text-align:center; }
+.footer { background:#333; color:#fff; padding:20px; text-align:center; font-size:14px; }
+.btn-open { display:inline-block; margin-bottom:10px; padding:8px 20px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }`,
+};
+
+const JS_CODE = {
+  A:`$(function(){
+
+    /* ========================================
+       ※ 무조건 $(function(){ }) 안에 작성!
+       head에 script 태그가 있으면 body보다 js가 먼저 실행됨.
+       $(function(){})은 html 전체 로드 후 실행을 보장해줌.
+    ======================================== */
+
+    /* ========================================
+       1. 팝업 기능
+       css: .popup { display: none; }
+            .popup.on { display: flex; }
+    ======================================== */
+
+    // 열기버튼 클릭 → .popup에 on 클래스 추가
+    $(".btn-open").click(function(){
+        $(".popup").addClass("on")
+    })
+
+    // 닫기버튼 클릭 → .popup에서 on 클래스 제거
+    $(".btn-close").click(function(){
+        $(".popup").removeClass("on")
+    })
+
+
+    /* ========================================
+       2. 탭 메뉴
+       css: .tab-cont li { display: none; }
+            .tab-cont li.on { display: block; }
+    ======================================== */
+
+    // 공지사항(0번 탭) 클릭
+    $(".tab-btn li").eq(0).click(function(){
+        $(".tab-cont li").removeClass("on")    // 콘텐츠 전부 끄기
+        $(".tab-cont li").eq(0).addClass("on") // 0번 콘텐츠만 켜기
+        $(".tab-btn li").removeClass("on")     // 탭버튼 전부 끄기
+        $(this).addClass("on")                 // 클릭한 탭만 켜기
+    })
+
+    // 갤러리(1번 탭) 클릭
+    $(".tab-btn li").eq(1).click(function(){
+        $(".tab-cont li").removeClass("on")
+        $(".tab-cont li").eq(1).addClass("on")
+        $(".tab-btn li").removeClass("on")
+        $(this).addClass("on")
+    })
+
+
+    /* ========================================
+       3-1. 슬라이드 - 가로 이동 (animate left 방식) ← 가장 많이 쓰임!
+       슬라이드 3개 기준 (4개면 > 3, 5개면 > 4로 변경)
+       css: .slider { height:400px; overflow:hidden; position:relative; }
+            .slider-wrap { position:relative; height:100%; }
+            .slider-wrap ul { display:flex; width:300%;
+                              position:absolute; top:0; left:0; height:100%; }
+            .slider-wrap ul li { width:calc(100%/3); height:100%; }
+    ======================================== */
+
+    let count = 0  // 현재 슬라이드 번호 (0, 1, 2)
+
+    setInterval(function(){
+        count++                         // 다음 슬라이드로
+        if(count > 2){ count = 0 }     // 3이 되면 다시 0으로 (순환)
+
+        // count=1 → -33.33%, count=2 → -66.66%, count=0(리셋) → 0%
+        $(".slider-wrap ul").animate({ left: -(100/3) * count + "%" }, 600)
+    }, 2500)  // 2.5초마다 실행
+
+
+    /* ========================================
+       3-2. 슬라이드 - 세로 이동 (animate top 방식)
+       left → top 으로만 바꾸면 됨!
+       css: .slider-wrap ul { flex-direction:column; height:300%;
+                              position:absolute; top:0; left:0; }
+            .slider-wrap ul li { height:calc(100%/3); }
+    ======================================== */
+
+    // let count = 0
+    // setInterval(function(){
+    //     count++
+    //     if(count > 2){ count = 0 }
+    //     $(".slider-wrap ul").animate({ top: -(100/3) * count + "%" }, 600)
+    // }, 2500)
+
+
+    /* ========================================
+       3-3. 슬라이드 - fadeIn/fadeOut 방식 (study.js 원본 방식)
+       css: .imgSlide { position:relative; height:400px; }
+            .imgSlide a { position:absolute; top:0; left:0; width:100%; height:100%; }
+    ======================================== */
+
+    // $(".imgSlide a:gt(0)").hide()  // 첫번째 제외 나머지 숨기기
+    // setInterval(function(){
+    //     $(".imgSlide a:first-child").fadeOut() // 현재 이미지 사라지게
+    //         .next("a").fadeIn()                 // 다음 이미지 나타나게
+    //         .end().appendTo(".imgSlide")        // 사라진 이미지를 맨 뒤로 → 무한 순환!
+    // }, 2500)
+
+})`,
+  B:`/* B유형 JS = A유형과 완전히 동일 */
+/* wrap이 100%로 바뀌어도 JS는 하나도 안 바뀜! */
+
+$(function(){
+
+    // 팝업 열기
+    $(".btn-open").click(function(){
+        $(".popup").addClass("on")
+    })
+
+    // 팝업 닫기
+    $(".btn-close").click(function(){
+        $(".popup").removeClass("on")
+    })
+
+
+    // 탭 메뉴
+    $(".tab-btn li").eq(0).click(function(){
+        $(".tab-cont li").removeClass("on")
+        $(".tab-cont li").eq(0).addClass("on")
+        $(".tab-btn li").removeClass("on")
+        $(this).addClass("on")
+    })
+
+    $(".tab-btn li").eq(1).click(function(){
+        $(".tab-cont li").removeClass("on")
+        $(".tab-cont li").eq(1).addClass("on")
+        $(".tab-btn li").removeClass("on")
+        $(this).addClass("on")
+    })
+
+
+    // 슬라이드 (A유형과 완전 동일 - 3가지 방식 중 택1)
+
+    // 3-1. 가로 이동 (animate left 방식)
+    let count = 0
+
+    setInterval(function(){
+        count++
+        if(count > 2){ count = 0 }
+        $(".slider-wrap ul").animate({ left: -(100/3) * count + "%" }, 600)
+    }, 2500)
+
+    // 3-2. 세로 이동 → left → top 으로만 변경!
+    // $(".slider-wrap ul").animate({ top: -(100/3) * count + "%" }, 600)
+
+    // 3-3. fadeIn 방식 → css 구조 다름! (위 코드 주석처리 후 사용)
+    // $(".imgSlide a:gt(0)").hide()
+    // setInterval(function(){
+    //     $(".imgSlide a:first-child").fadeOut()
+    //         .next("a").fadeIn()
+    //         .end().appendTo(".imgSlide")
+    // }, 2500)
+
+})`,
+  C:`$(function(){
+
+    /* ========================================
+       1. 팝업 (A유형과 동일)
+    ======================================== */
+
+    $(".btn-open").click(function(){
+        $(".popup").addClass("on")
+    })
+
+    $(".btn-close").click(function(){
+        $(".popup").removeClass("on")
+    })
+
+
+    /* ========================================
+       2. 탭 메뉴 (A유형과 동일)
+    ======================================== */
+
+    $(".tab-btn li").eq(0).click(function(){
+        $(".tab-cont li").removeClass("on")
+        $(".tab-cont li").eq(0).addClass("on")
+        $(".tab-btn li").removeClass("on")
+        $(this).addClass("on")
+    })
+
+    $(".tab-btn li").eq(1).click(function(){
+        $(".tab-cont li").removeClass("on")
+        $(".tab-cont li").eq(1).addClass("on")
+        $(".tab-btn li").removeClass("on")
+        $(this).addClass("on")
+    })
+
+
+    /* ========================================
+       3. 슬라이드 (A유형과 동일 - 3가지 방식 중 택1)
+    ======================================== */
+
+    // 3-1. 가로 이동 (animate left 방식)
+    let count = 0
+
+    setInterval(function(){
+        count++
+        if(count > 2){ count = 0 }
+        $(".slider-wrap ul").animate({ left: -(100/3) * count + "%" }, 600)
+    }, 2500)
+
+    // 3-2. 세로 이동 → left → top 으로만 변경!
+    // $(".slider-wrap ul").animate({ top: -(100/3) * count + "%" }, 600)
+
+    // 3-3. fadeIn 방식 → css 구조 다름! (위 코드 주석처리 후 사용)
+    // $(".imgSlide a:gt(0)").hide()
+    // setInterval(function(){
+    //     $(".imgSlide a:first-child").fadeOut()
+    //         .next("a").fadeIn()
+    //         .end().appendTo(".imgSlide")
+    // }, 2500)
+
+
+    /* ========================================
+       4. 세로 메뉴 (C유형만 추가!)
+       클릭하면 서브메뉴 열고 닫기
+    ======================================== */
+
+    $(".gnb .menu > li > a").click(function(e){
+        e.preventDefault()
+        let sub = $(this).next(".sub")
+
+        // 다른 서브메뉴 먼저 닫기
+        $(".gnb .sub").not(sub).slideUp(200)
+
+        // 클릭한 서브메뉴 열고 닫기 토글
+        sub.slideToggle(200)
+    })
+
+})`,
+  D:`$(function(){
+
+    /* ========================================
+       1. 팝업 (A유형과 동일)
+    ======================================== */
+
+    $(".btn-open").click(function(){
+        $(".popup").addClass("on")
+    })
+
+    $(".btn-close").click(function(){
+        $(".popup").removeClass("on")
+    })
+
+
+    /* ========================================
+       2. 탭 메뉴 (A유형과 동일)
+    ======================================== */
+
+    $(".tab-btn li").eq(0).click(function(){
+        $(".tab-cont li").removeClass("on")
+        $(".tab-cont li").eq(0).addClass("on")
+        $(".tab-btn li").removeClass("on")
+        $(this).addClass("on")
+    })
+
+    $(".tab-btn li").eq(1).click(function(){
+        $(".tab-cont li").removeClass("on")
+        $(".tab-cont li").eq(1).addClass("on")
+        $(".tab-btn li").removeClass("on")
+        $(this).addClass("on")
+    })
+
+
+    /* ========================================
+       3. 슬라이드 (A유형과 동일 - 3가지 방식 중 택1)
+       100vw/fixed 처리는 CSS에서! JS는 그대로
+    ======================================== */
+
+    let count = 0
+
+    setInterval(function(){
+        count++
+        if(count > 2){ count = 0 }
+        $(".slider-wrap ul").animate({ left: -(100/3) * count + "%" }, 600)
+    }, 2500)
+
+
+    /* ========================================
+       4. 세로 메뉴 (C유형과 동일)
+    ======================================== */
+
+    $(".gnb .menu > li > a").click(function(e){
+        e.preventDefault()
+        let sub = $(this).next(".sub")
+        $(".gnb .sub").not(sub).slideUp(200)
+        sub.slideToggle(200)
+    })
+
+})`,
+  E:`$(function(){
+
+    /* ========================================
+       1. 팝업 (A유형과 동일)
+    ======================================== */
+
+    $(".btn-open").click(function(){
+        $(".popup").addClass("on")
+    })
+
+    $(".btn-close").click(function(){
+        $(".popup").removeClass("on")
+    })
+
+
+    /* ========================================
+       2. 탭 메뉴 (A유형과 동일)
+    ======================================== */
+
+    $(".tab-btn li").eq(0).click(function(){
+        $(".tab-cont li").removeClass("on")
+        $(".tab-cont li").eq(0).addClass("on")
+        $(".tab-btn li").removeClass("on")
+        $(this).addClass("on")
+    })
+
+    $(".tab-btn li").eq(1).click(function(){
+        $(".tab-cont li").removeClass("on")
+        $(".tab-cont li").eq(1).addClass("on")
+        $(".tab-btn li").removeClass("on")
+        $(this).addClass("on")
+    })
+
+
+    /* ========================================
+       3. 슬라이드 (A유형과 동일 - 3가지 방식 중 택1)
+    ======================================== */
+
+    // 3-1. 가로 이동 (animate left 방식)
+    let count = 0
+
+    setInterval(function(){
+        count++
+        if(count > 2){ count = 0 }
+        $(".slider-wrap ul").animate({ left: -(100/3) * count + "%" }, 600)
+    }, 2500)
+
+    // 3-2. 세로 이동 → left → top 으로만 변경!
+    // $(".slider-wrap ul").animate({ top: -(100/3) * count + "%" }, 600)
+
+    // 3-3. fadeIn 방식 → css 구조 다름! (위 코드 주석처리 후 사용)
+    // $(".imgSlide a:gt(0)").hide()
+    // setInterval(function(){
+    //     $(".imgSlide a:first-child").fadeOut()
+    //         .next("a").fadeIn()
+    //         .end().appendTo(".imgSlide")
+    // }, 2500)
+
+
+    /* ========================================
+       4. 세로 메뉴 (C,D유형과 동일)
+    ======================================== */
+
+    $(".gnb .menu > li > a").click(function(e){
+        e.preventDefault()
+        let sub = $(this).next(".sub")
+        $(".gnb .sub").not(sub).slideUp(200)
+        sub.slideToggle(200)
+    })
+
+})`,
+  F:`/* F유형 JS = A유형과 완전히 동일 */
+/* 슬라이드 100vw 이탈은 CSS calc()로 처리 → JS 변경 없음 */
+
+$(function(){
+
+    // 팝업 열기
+    $(".btn-open").click(function(){
+        $(".popup").addClass("on")
+    })
+
+    // 팝업 닫기
+    $(".btn-close").click(function(){
+        $(".popup").removeClass("on")
+    })
+
+
+    // 탭 메뉴
+    $(".tab-btn li").eq(0).click(function(){
+        $(".tab-cont li").removeClass("on")
+        $(".tab-cont li").eq(0).addClass("on")
+        $(".tab-btn li").removeClass("on")
+        $(this).addClass("on")
+    })
+
+    $(".tab-btn li").eq(1).click(function(){
+        $(".tab-cont li").removeClass("on")
+        $(".tab-cont li").eq(1).addClass("on")
+        $(".tab-btn li").removeClass("on")
+        $(this).addClass("on")
+    })
+
+
+    // 슬라이드 (A유형과 완전 동일 - 3가지 방식 중 택1)
+
+    // 3-1. 가로 이동 (animate left 방식)
+    let count = 0
+
+    setInterval(function(){
+        count++
+        if(count > 2){ count = 0 }
+        $(".slider-wrap ul").animate({ left: -(100/3) * count + "%" }, 600)
+    }, 2500)
+
+    // 3-2. 세로 이동 → left → top 으로만 변경!
+    // $(".slider-wrap ul").animate({ top: -(100/3) * count + "%" }, 600)
+
+    // 3-3. fadeIn 방식 → css 구조 다름! (위 코드 주석처리 후 사용)
+    // $(".imgSlide a:gt(0)").hide()
+    // setInterval(function(){
+    //     $(".imgSlide a:first-child").fadeOut()
+    //         .next("a").fadeIn()
+    //         .end().appendTo(".imgSlide")
+    // }, 2500)
+
+})`
+};
+
+// 암기 카드 데이터
+const MEMORY_CARDS = [
+  // ── 필수 기본 ──
+  {type:'필수 기본', q:'왜 $(function(){}) 안에 코드를 작성해야 하나?', a:'head에 js를 불러오면 body보다 js가 먼저 실행됨. $(function(){})은 HTML이 모두 로드된 후 실행을 보장해줌.', code:'$(function(){\n    // 여기 안에 모든 js 코드 작성!\n})', color:'#2dd4bf'},
+  {type:'필수 기본', q:'팝업 CSS 핵심 구조는?', a:'기본은 display:none, on 클래스 추가 시 display:flex (가운데 정렬용)', code:'.popup { display: none; position: fixed;\n  top:0; left:0; width:100%; height:100%;\n  background: rgba(0,0,0,0.5);\n  z-index: 999;\n  justify-content: center;\n  align-items: center; }\n.popup.on { display: flex; }', color:'#2dd4bf'},
+  {type:'A유형', q:'wrap의 핵심 CSS는?', a:'width:1200px + margin:0 auto 중앙정렬', code:'.wrap {\n  width: 1200px;\n  margin: 0 auto;\n}', color:'#4ade80'},
+  {type:'B유형', q:'A유형과 다른 점은?', a:'wrap의 width만 100%로 변경, 나머지 동일', code:'.wrap { width: 100%; }\n.inner { width:1200px; margin:0 auto; }', color:'#60a5fa'},
+  {type:'C유형', q:'2컬럼 레이아웃 핵심 CSS는?', a:'container에 display:flex', code:'.container { display: flex; }\n.aside { width: 200px; flex-shrink: 0; }\n.main { flex: 1; }', color:'#fbbf24'},
+  {type:'D유형', q:'aside 고정 + main 배치 CSS는?', a:'position:fixed / margin-left:200px', code:'.aside { position: fixed; width: 200px; height: 100vh; }\n.main { margin-left: 200px; }', color:'#f87171'},
+  {type:'D유형', q:'슬라이드 100vw 이탈 CSS는? (D유형)', a:'width:100vw + margin-left:-200px', code:'.slider {\n  width: 100vw;\n  margin-left: -200px;\n}', color:'#f87171'},
+  {type:'E유형', q:'3컬럼 레이아웃 구조는?', a:'aside-left + main(flex:1) + aside-right', code:'.container { display: flex; }\n.aside-left  { width: 200px; flex-shrink: 0; }\n.main        { flex: 1; min-width: 0; }\n.aside-right { width: 200px; flex-shrink: 0; }', color:'#c792ea'},
+  {type:'F유형', q:'wrap 너비 + 슬라이드 100% 방법은?', a:'1340px / body overflow-x:hidden + margin+transform', code:'.wrap { width: 1340px; margin: 0 auto; }\nbody { overflow-x: hidden; }\n.slider {\n  width: 100vw;\n  margin-left: 50%;\n  transform: translateX(-50%);\n}', color:'#f472b6'},
+
+  // ── 팝업 ──
+  {type:'공통 JS', q:'팝업 열기/닫기 JS는? (study.js 방식)', a:'.btn-open 클릭→addClass / .btn-close 클릭→removeClass', code:'$(".btn-open").click(function(){\n    $(".popup").addClass("on")\n})\n$(".btn-close").click(function(){\n    $(".popup").removeClass("on")\n})', color:'#2dd4bf'},
+
+  // ── 탭메뉴 ──
+  {type:'공통 JS', q:'탭메뉴 JS는? (study.js 방식)', a:'eq(0), eq(1)로 번호 맞춰 on 클래스 교체', code:'$(".tab-btn li").eq(0).click(function(){\n    $(".tab-cont li").removeClass("on")\n    $(".tab-cont li").eq(0).addClass("on")\n    $(".tab-btn li").removeClass("on")\n    $(this).addClass("on")\n})', color:'#2dd4bf'},
+
+  // ── 슬라이드 3종 ──
+  {type:'슬라이드 3-1', q:'가로 슬라이드 (animate left) JS는?', a:'count++ → if(count>2) 초기화 → animate left 이동', code:'let count = 0\nsetInterval(function(){\n    count++\n    if(count > 2){ count = 0 }\n    $(".slider-wrap ul").animate(\n        { left: -(100/3) * count + "%" }, 600)\n}, 2500)', color:'#fb923c'},
+  {type:'슬라이드 3-1', q:'가로 슬라이드 CSS 구조는?', a:'position:absolute + overflow:hidden 조합', code:'.slider { height: 400px; overflow: hidden; position: relative; }\n.slider-wrap { position: relative; height: 100%; }\n.slider-wrap ul {\n    display: flex; width: 300%;\n    position: absolute; top: 0; left: 0;\n}\n.slider-wrap ul li { width: calc(100% / 3); }', color:'#fb923c'},
+  {type:'슬라이드 3-2', q:'세로 슬라이드 JS는?', a:'left → top 으로만 변경!', code:'$(".slider-wrap ul").animate(\n    { top: -(100/3) * count + "%" }, 600)', color:'#a78bfa'},
+  {type:'슬라이드 3-2', q:'세로 슬라이드 CSS 구조는?', a:'flex-direction:column + height:300%', code:'.slider-wrap ul {\n    flex-direction: column;\n    height: 300%;\n    position: absolute;\n    top: 0; left: 0;\n}\n.slider-wrap ul li { height: calc(100% / 3); }', color:'#a78bfa'},
+  {type:'슬라이드 3-3', q:'fadeIn 슬라이드 JS는? (study.js 방식)', a:'첫번째 gt(0) 숨기고 → fadeOut → next fadeIn → appendTo', code:'$(".imgSlide a:gt(0)").hide()\nsetInterval(function(){\n    $(".imgSlide a:first-child").fadeOut()\n        .next("a").fadeIn()\n        .end().appendTo(".imgSlide")\n}, 2500)', color:'#f472b6'},
+  {type:'슬라이드 3-3', q:'fadeIn 슬라이드 CSS 구조는?', a:'position:relative + absolute로 겹쳐 쌓기', code:'.slider-wrap { position: relative; }\n.imgSlide { position: relative; }\n.imgSlide a {\n    position: absolute;\n    top: 0; left: 0;\n    width: 100%;\n}', color:'#f472b6'},
+
+  // ── 세로메뉴 ──
+  {type:'공통 JS', q:'세로 메뉴 서브메뉴 JS는? (C,D,E유형)', a:'클릭한 것만 slideToggle, 나머지는 slideUp', code:'$(".gnb .menu > li > a").click(function(e){\n    e.preventDefault()\n    let sub = $(this).next(".sub")\n    $(".gnb .sub").not(sub).slideUp(200)\n    sub.slideToggle(200)\n})', color:'#2dd4bf'},
+];
+
+// 퀴즈 데이터
+const QUIZ = [
+  // ── 필수 기본 ──
+  {type:'필수 기본', q:'왜 JS 코드를 $(function(){}) 안에 작성해야 하나?', code:'', opts:['코드가 더 짧아져서','head에 script가 있으면 body보다 먼저 실행되어 HTML을 못 찾기 때문','CSS보다 JS가 먼저 적용되기 때문','jQuery 문법이라 반드시 필요해서'], ans:1, fb:'head에 script 태그가 있으면 body(HTML)보다 JS가 먼저 실행돼요. $(function(){})은 HTML이 모두 로드된 후 실행을 보장해줘요!'},
+  {type:'필수 기본', q:'팝업이 열렸을 때 CSS 상태는?', code:'.popup { display: none; }\n.popup.??? { display: flex; }', opts:['active','open','show','on'], ans:3, fb:'js에서 addClass("on")으로 on 클래스를 추가하면 .popup.on{ display:flex } 가 적용돼서 팝업이 보여요!'},
+
+  // ── 레이아웃 ──
+  {type:'A유형', q:'A유형 wrap을 1200px 고정 중앙정렬하는 CSS는?', code:'', opts:['.wrap { width:100%; margin:0 auto }','.wrap { width:1200px; margin:0 auto }','.wrap { width:1200px; padding:0 auto }','max-width:1200px; text-align:center'], ans:1, fb:'width:1200px 고정 + margin:0 auto 중앙 정렬! A유형의 핵심이에요.'},
+  {type:'B유형', q:'B유형이 A유형과 다른 핵심 한 줄은?', code:'', opts:['.wrap { width: 100% }','.wrap { max-width: 100% }','.wrap { display: flex }','.inner { width: 100% }'], ans:0, fb:'.wrap { width: 100% } 단 한 줄만 달라요! 나머지는 A유형 그대로예요.'},
+  {type:'C유형', q:'C유형에서 aside와 main을 나란히 배치하는 CSS는?', code:'.container { ??? }', opts:['display: block','display: grid','display: flex','float: left'], ans:2, fb:'.container { display: flex } 로 aside와 main이 가로로 나란히 배치돼요.'},
+  {type:'D유형', q:'D유형에서 aside를 화면에 고정하는 CSS 속성은?', code:'.aside {\n  ???: fixed;\n  width: 200px;\n  height: 100vh;\n}', opts:['display','float','position','z-index'], ans:2, fb:'position: fixed! 스크롤해도 aside가 항상 고정돼요. main은 margin-left:200px 필수!'},
+  {type:'D유형', q:'D유형 슬라이드 100vw 이탈 CSS는? (aside:200px)', code:'.slider {\n  width: 100vw;\n  margin-left: ???;\n}', opts:['-100px','-200px','calc(-50vw)','200px'], ans:1, fb:'aside가 200px이므로 margin-left: -200px 으로 왼쪽으로 당겨서 화면 전체를 채워요.'},
+  {type:'E유형', q:'E유형의 레이아웃 구조로 맞는 것은?', code:'', opts:['header + main + footer','aside + main 2컬럼','aside-left + main + aside-right 3컬럼','header + aside + main'], ans:2, fb:'E유형은 왼쪽aside + main + 오른쪽aside 3컬럼이에요. 가장 복잡한 유형!'},
+  {type:'F유형', q:'F유형의 wrap 너비는? (A유형과 다름 주의!)', code:'', opts:['1000px','1200px','1340px','100%'], ans:2, fb:'F유형은 1340px! A유형(1200px)이랑 헷갈리지 마세요.'},
+  {type:'F유형', q:'F유형 슬라이드를 100vw로 만들 때 body에 추가해야 하는 CSS는?', code:'.slider {\n  width: 100vw;\n  margin-left: 50%;\n  transform: translateX(-50%);\n}', opts:['overflow: hidden','overflow-x: hidden','overflow-y: hidden','display: flex'], ans:1, fb:'body { overflow-x: hidden } 이 없으면 슬라이드가 가로 스크롤바를 만들어요! 반드시 세트로 써야 해요.'},
+
+  // ── 팝업 ──
+  {type:'공통 JS', q:'팝업 열기 버튼 클래스명은? (study.js 방식)', code:'$("???").click(function(){\n    $(".popup").addClass("on")\n})', opts:['".btn-popup"','".btn-open"','".open-btn"','".popup-btn"'], ans:1, fb:'study.js 방식은 .btn-open 으로 열고 .btn-close 로 닫아요!'},
+  {type:'공통 JS', q:'팝업을 닫을 때 사용하는 jQuery 메서드는?', code:'$(".btn-close").click(function(){\n    $(".popup").???\n})', opts:['addClass("off")','removeClass("on")','hide()','toggleClass("on")'], ans:1, fb:'removeClass("on") 으로 on 클래스를 제거하면 .popup{display:none} 이 적용돼 팝업이 닫혀요.'},
+
+  // ── 탭메뉴 ──
+  {type:'공통 JS', q:'study.js 방식 탭메뉴에서 0번 탭 클릭 시 처리 순서는?', code:'$(".tab-btn li").eq(0).click(function(){\n    $(".tab-cont li").???\n    $(".tab-cont li").eq(0).???\n    ...\n})', opts:['addClass → removeClass','removeClass → addClass','hide → show','fadeOut → fadeIn'], ans:1, fb:'먼저 전체 removeClass("on")으로 다 끄고, 해당 번호만 addClass("on")으로 켜요!'},
+
+  // ── 슬라이드 ──
+  {type:'슬라이드', q:'슬라이드 3개일 때 count 초기화 조건은?', code:'count++\nif(count > ???){ count = 0 }', opts:['0','1','2','3'], ans:2, fb:'슬라이드 3개는 인덱스 0, 1, 2를 사용해요. count가 2를 넘으면(3이 되면) 다시 0으로!'},
+  {type:'슬라이드', q:'가로 슬라이드(animate left)와 세로 슬라이드(animate top)의 차이는?', code:'', opts:['JS 코드가 완전히 다름','left를 top으로만 바꾸면 됨','setInterval 시간이 다름','count 숫자가 다름'], ans:1, fb:'animate({left:}) → animate({top:}) 으로 딱 하나만 바꾸면 돼요! CSS도 flex-direction:column으로만 변경.'},
+  {type:'슬라이드', q:'fadeIn 슬라이드에서 첫 번째 이미지 제외 나머지를 숨기는 코드는?', code:'', opts:['$(".imgSlide a").hide()','$(".imgSlide a:gt(0)").hide()','$(".imgSlide a:first").hide()','$(".imgSlide a:last").hide()'], ans:1, fb:':gt(0) 은 "0번보다 큰 것(1번 이후 전부)"를 선택해요. 첫번째(0번)는 놔두고 나머지만 숨겨요.'},
+  {type:'슬라이드', q:'fadeIn 슬라이드에서 .appendTo(".imgSlide")의 역할은?', code:'$(".imgSlide a:first-child").fadeOut()\n    .next("a").fadeIn()\n    .end().appendTo(".imgSlide")', opts:['이미지 새로 추가','fadeOut된 첫번째를 맨 뒤로 이동 (순환)','이미지 삭제','이미지 복사'], ans:1, fb:'사라진 첫번째 이미지를 맨 뒤로 보내서 무한 순환이 돼요! 이게 핵심이에요.'},
+
+  // ── 세로메뉴 ──
+  {type:'공통 JS', q:'세로 메뉴에서 다른 서브메뉴를 닫는 코드는?', code:'let sub = $(this).next(".sub")\n$(".gnb .sub").???.slideUp(200)\nsub.slideToggle(200)', opts:['eq(0)','not(sub)','first()','last()'], ans:1, fb:'.not(sub) 으로 "현재 클릭한 것 빼고 나머지"를 선택해서 slideUp으로 닫아요.'},
+];
+
+// ═══════════════════════════════════════
+// 앱 상태
+// ═══════════════════════════════════════
+var curType = 'A';
+var curTab = 'html';
+var curMode = 'code';
+var qIdx = 0, qScore = 0, qAnswered = false;
+
+// ═══════════════════════════════════════
+// 초기화
+// ═══════════════════════════════════════
+function init() {
+  renderSidebar();
+  renderMemoryCards();
+  renderType('A');
+}
+
+function renderSidebar() {
+  var sb = document.getElementById('sidebar');
+  var html = '<div class="sidebar-label">유형 선택</div>';
+  Object.keys(TYPES).forEach(function(k) {
+    var t = TYPES[k];
+    html += '<div class="type-item' + (k === 'A' ? ' active' : '') + '" onclick="renderType(\'' + k + '\')" id="si-' + k + '">' +
+      '<div class="type-dot" style="background:' + t.dotBg + ';color:' + t.dotColor + '">' + k + '</div>' +
+      '<div class="type-item-info">' +
+        '<div class="type-item-name">' + t.label + '</div>' +
+        '<div class="type-item-sub">' + t.sub + '</div>' +
+      '</div>' +
+      '<span class="diff-pill" style="background:' + t.dotBg + ';color:' + t.diffColor + ';border:1px solid ' + t.diffColor + '22">' + t.diff + '</span>' +
+    '</div>';
+  });
+  sb.innerHTML = html;
+}
+
+function renderType(k) {
+  curType = k;
+  var t = TYPES[k];
+
+  document.querySelectorAll('.type-item').forEach(function(el){ el.classList.remove('active'); });
+  var si = document.getElementById('si-' + k);
+  if(si) si.classList.add('active');
+
+  // 배너
+  var tagsHtml = t.tags.map(function(tag){ return '<span class="banner-tag">' + tag + '</span>'; }).join('');
+  document.getElementById('typeBanner').innerHTML =
+    '<div class="banner-badge" style="background:' + t.dotBg + ';color:' + t.dotColor + '">' + k + '</div>' +
+    '<div><div class="banner-title">' + t.label + ' — ' + t.sub +
+      ' <span class="diff-pill" style="font-size:11px;padding:2px 10px;background:' + t.dotBg + ';color:' + t.diffColor + '">' + t.diff + '</span></div>' +
+      '<div class="banner-desc">' + t.desc + '</div>' +
+      '<div class="banner-tags">' + tagsHtml + '</div>' +
+    '</div>';
+
+  // 탭
+  var tabColors = {html:'#e06c75', css:'#61afef', js:'#e5c07b'};
+  var tabLabels = {html:'HTML', css:'CSS', js:'JS (jQuery)'};
+  var tabsHtml = ['html','css','js'].map(function(tab){
+    return '<button class="c-tab' + (tab === curTab ? ' active' : '') + '" onclick="renderTab(\'' + tab + '\')">' +
+      '<span class="tab-dot" style="background:' + tabColors[tab] + '"></span>' + tabLabels[tab] + '</button>';
+  }).join('');
+  document.getElementById('codeTabs').innerHTML = tabsHtml;
+
+  renderTab(curTab);
+  renderPoints(k);
+}
+
+function renderTab(tab) {
+  curTab = tab;
+  var tabColors = {html:'#e06c75', css:'#61afef', js:'#e5c07b'};
+  var tabLabels = {html:'HTML', css:'CSS', js:'JS (jQuery)'};
+
+  // 탭 버튼 재렌더 (active 상태 포함)
+  var tabsHtml = ['html','css','js'].map(function(t){
+    return '<button class="c-tab' + (t === tab ? ' active' : '') + '" onclick="renderTab(\'' + t + '\')">' +
+      '<span class="tab-dot" style="background:' + tabColors[t] + '"></span>' + tabLabels[t] + '</button>';
+  }).join('');
+  document.getElementById('codeTabs').innerHTML = tabsHtml;
+
+  var codes = {html: HTML_CODE, css: CSS_CODE, js: JS_CODE};
+  var raw = codes[tab][curType] || '';
+  var fileLabels = {html:'index.html', css:'css/style.css', js:'js/script.js'};
+  document.getElementById('toolbarLabel').textContent = fileLabels[tab] + '  —  ' + TYPES[curType].label;
+
+  var highlighted = highlight(raw, tab);
+  var lines = raw.split('\n');
+  var numHtml = lines.map(function(_, i){ return '<span class="line-num">' + (i+1) + '</span>'; }).join('');
+  document.getElementById('lineNums').innerHTML = numHtml;
+  document.getElementById('codeContent').innerHTML = highlighted;
+}
+
+function renderPoints(k) {
+  var pts = TYPES[k].points;
+  var html = '<div class="points-title">핵심 포인트</div>';
+  pts.forEach(function(p){
+    html += '<div class="point-card">' +
+      '<div class="point-card-title">' + p.t + '</div>' +
+      '<div class="point-card-body">' + p.b + '</div>' +
+      (p.c ? '<code class="point-card-code">' + escHtml(p.c) + '</code>' : '') +
+    '</div>';
+  });
+  document.getElementById('pointsPanel').innerHTML = html;
+}
+
+// ─── 신택스 하이라이팅 ───
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function highlight(code, type) {
+  var esc = escHtml(code);
+  if(type === 'html') return highlightHTML(esc);
+  if(type === 'css') return highlightCSS(esc);
+  if(type === 'js') return highlightJS(esc);
+  return esc;
+}
+
+function highlightHTML(s) {
+  // 주석
+  s = s.replace(/(&lt;!--[\s\S]*?--&gt;)/g, '<span class="cm">$1</span>');
+  // 태그
+  s = s.replace(/(&lt;\/?)([\w!-]+)([\s\S]*?)(&gt;)/g, function(m, open, tag, rest, close){
+    var attrs = rest.replace(/([\w-]+)(=)(&quot;[^&]*&quot;|'[^']*'|\S+)/g,
+      '<span class="at">$1</span><span class="pt">$2</span><span class="st">$3</span>');
+    return '<span class="pt">' + open + '</span><span class="tg">' + tag + '</span>' + attrs + '<span class="pt">' + close + '</span>';
+  });
+  return s;
+}
+
+function highlightCSS(s) {
+  // 주석
+  s = s.replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="cm">$1</span>');
+  // 선택자 + { ... }
+  s = s.replace(/([#.a-zA-Z][^{}\n]*?)(\{)/g, '<span class="sl">$1</span><span class="pt">$2</span>');
+  s = s.replace(/(\})/g, '<span class="pt">$1</span>');
+  // 속성: 값
+  s = s.replace(/([a-zA-Z-]+)(\s*:\s*)([^;{}\n<]+)(;)/g,
+    '<span class="pr">$1</span><span class="pt">$2</span><span class="vl">$3</span><span class="pt">$4</span>');
+  return s;
+}
+
+function highlightJS(s) {
+  // 주석 (한줄)
+  s = s.replace(/(\/\/[^\n]*)/g, '<span class="cm">$1</span>');
+  // 키워드
+  var kws = ['function','var','let','const','if','else','return','for','while','new','true','false','null','undefined'];
+  kws.forEach(function(k){
+    s = s.replace(new RegExp('\\b(' + k + ')\\b', 'g'), '<span class="kw">$1</span>');
+  });
+  // 문자열
+  s = s.replace(/(&quot;[^&]*&quot;)/g, '<span class="st">$1</span>');
+  s = s.replace(/(&#39;[^&#]*&#39;)/g, '<span class="st">$1</span>');
+  // 숫자
+  s = s.replace(/\b(\d+)\b/g, '<span class="nm">$1</span>');
+  // jQuery $
+  s = s.replace(/(\$)/g, '<span class="fn">$1</span>');
+  return s;
+}
+
+function doCopy() {
+  var codes = {html: HTML_CODE, css: CSS_CODE, js: JS_CODE};
+  var text = codes[curTab][curType] || '';
+  navigator.clipboard.writeText(text).then(function(){
+    var btn = document.querySelector('.copy-btn');
+    btn.textContent = '✓ 복사됨';
+    setTimeout(function(){ btn.textContent = '복사하기'; }, 1800);
+  });
+}
+
+// ─── 모드 전환 ───
+function setMode(mode, el) {
+  curMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(function(b){ b.classList.remove('active'); });
+  el.classList.add('active');
+
+  document.getElementById('codeMode').style.display = 'none';
+  document.getElementById('memoryMode').style.display = 'none';
+  document.getElementById('memoryMode').classList.remove('show');
+  document.getElementById('quizMode').style.display = 'none';
+  document.getElementById('quizMode').classList.remove('show');
+  document.querySelector('.sidebar').style.display = 'none';
+
+  if(mode === 'code') {
+    document.getElementById('codeMode').style.display = 'flex';
+    document.querySelector('.sidebar').style.display = 'block';
+  } else if(mode === 'memory') {
+    document.getElementById('memoryMode').style.display = 'flex';
+    document.getElementById('memoryMode').classList.add('show');
+  } else if(mode === 'quiz') {
+    document.getElementById('quizMode').style.display = 'flex';
+    document.getElementById('quizMode').classList.add('show');
+    initQuiz();
+  }
+}
+
+// ─── 암기 카드 ───
+function renderMemoryCards() {
+  var html = '';
+  MEMORY_CARDS.forEach(function(c, i){
+    html += '<div class="mem-card" id="mc' + i + '" onclick="flipMemCard(' + i + ')">' +
+      '<div style="position:absolute;top:0;left:0;right:0;height:3px;background:' + c.color + ';border-radius:14px 14px 0 0"></div>' +
+      '<div class="mem-front">' +
+        '<div class="mem-card-type" style="color:' + c.color + '">' + c.type + '</div>' +
+        '<div class="mem-card-q">' + c.q + '</div>' +
+        '<div class="mem-flip-hint">👆 클릭해서 정답 확인</div>' +
+      '</div>' +
+      '<div class="mem-back">' +
+        '<div class="mem-card-type" style="color:' + c.color + '">' + c.type + '</div>' +
+        '<div class="mem-card-a">' + c.a + '</div>' +
+        '<code class="mem-card-code">' + escHtml(c.code) + '</code>' +
+        '<div class="mem-flip-hint" style="margin-top:8px">👆 다시 클릭하면 문제로</div>' +
+      '</div>' +
+    '</div>';
+  });
+  document.getElementById('memoryGrid').innerHTML = html;
+}
+
+function flipMemCard(i) {
+  var card = document.getElementById('mc' + i);
+  card.classList.toggle('flipped');
+}
+
+function resetCards() {
+  document.querySelectorAll('.mem-card').forEach(function(c){ c.classList.remove('flipped'); });
+}
+
+// ─── 퀴즈 ───
+function initQuiz() {
+  qIdx = 0; qScore = 0; qAnswered = false;
+  renderQuiz();
+}
+
+function renderQuiz() {
+  var area = document.getElementById('quizArea');
+  var fill = document.getElementById('qProgress');
+  var label = document.getElementById('qLabel');
+
+  if(qIdx >= QUIZ.length) {
+    var pct = Math.round(qScore / QUIZ.length * 100);
+    var msgs = ['암기 카드부터 다시 봐요! 포기하지 마요 💪','절반 왔어요! 조금만 더 하면 돼요 😊','거의 다 왔어요! 한번 더 하면 만점 🔥','완벽해요! 시험 합격 확실 🎉'];
+    var mi = Math.min(Math.floor(pct/25), 3);
+    fill.style.width = '100%';
+    label.textContent = '완료!';
+    area.innerHTML = '<div class="score-screen">' +
+      '<div class="score-big">' + qScore + ' / ' + QUIZ.length + '</div>' +
+      '<div class="score-pct">' + pct + '점</div>' +
+      '<div class="score-msg">' + msgs[mi] + '</div>' +
+      '<button class="retry-btn" onclick="initQuiz()">다시 풀기</button>' +
+    '</div>';
+    return;
+  }
+
+  fill.style.width = (qIdx / QUIZ.length * 100) + '%';
+  label.textContent = '문제 ' + (qIdx+1) + ' / ' + QUIZ.length;
+
+  var q = QUIZ[qIdx];
+  qAnswered = false;
+
+  var optsHtml = q.opts.map(function(o, i){
+    return '<button class="quiz-opt" onclick="answerQuiz(' + i + ')" id="qo' + i + '">' + escHtml(o) + '</button>';
+  }).join('');
+
+  area.innerHTML = '<div class="quiz-card">' +
+    '<span class="quiz-badge" style="background:' + getTypeColor(q.type) + '22;color:' + getTypeColor(q.type) + '">' + q.type + '</span>' +
+    '<div class="quiz-q">' + escHtml(q.q) + '</div>' +
+    (q.code ? '<div class="quiz-code">' + highlightJS(escHtml(q.code)) + '</div>' : '') +
+    '<div class="quiz-opts">' + optsHtml + '</div>' +
+    '<div class="quiz-fb" id="qfb"></div>' +
+  '</div>' +
+  '<div class="quiz-nav"><button class="quiz-next" id="qnext" onclick="nextQuestion()">다음 문제 →</button></div>';
+}
+
+function getTypeColor(type) {
+  var map = {'A유형':'#4ade80','B유형':'#60a5fa','C유형':'#fbbf24','D유형':'#f87171','E유형':'#c792ea','F유형':'#f472b6','공통 JS':'#2dd4bf','슬라이드':'#fb923c','슬라이드 3-1':'#fb923c','슬라이드 3-2':'#a78bfa','슬라이드 3-3':'#f472b6','공통':'#2dd4bf'};
+  return map[type] || '#8b90a0';
+}
+
+function answerQuiz(i) {
+  if(qAnswered) return;
+  qAnswered = true;
+  var q = QUIZ[qIdx];
+  document.querySelectorAll('.quiz-opt').forEach(function(o){ o.classList.add('disabled'); });
+  var selected = document.getElementById('qo' + i);
+  var correct = document.getElementById('qo' + q.ans);
+  selected.classList.add(i === q.ans ? 'correct' : 'wrong');
+  if(i !== q.ans) correct.classList.add('correct');
+  var fb = document.getElementById('qfb');
+  fb.className = 'quiz-fb show ' + (i === q.ans ? 'ok' : 'fail');
+  fb.innerHTML = (i === q.ans ? '✓ 정답! ' : '✗ 오답. ') + q.fb;
+  if(i === q.ans) qScore++;
+  document.getElementById('qnext').style.display = 'block';
+}
+
+function nextQuestion() { qIdx++; renderQuiz(); }
+
+// 시작
+init();
+</script>
+</body>
+</html>
