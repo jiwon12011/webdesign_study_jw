@@ -485,6 +485,65 @@ body {
 /* 스크롤바 */
 .sidebar::-webkit-scrollbar, .points-panel::-webkit-scrollbar { width: 4px; }
 .sidebar::-webkit-scrollbar-thumb, .points-panel::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* ─── 모바일 유형 선택 드롭다운 ─── */
+.mobile-type-select {
+  display: none;
+  padding: 10px 16px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+}
+.mobile-type-select select {
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: 'Noto Sans KR', sans-serif;
+  outline: none;
+}
+
+/* ─── 모바일 반응형 ─── */
+@media (max-width: 768px) {
+  .app-header { padding: 12px 16px; flex-wrap: wrap; gap: 10px; }
+  .app-logo { font-size: 14px; }
+  .app-logo span { display: none; }
+  .mode-btns { gap: 4px; }
+  .mode-btn { padding: 5px 10px; font-size: 11px; }
+
+  .app-body { height: auto; flex-direction: column; }
+  .sidebar { display: none !important; }
+  .mobile-type-select { display: block; }
+
+  #codeMode { display: flex; flex-direction: column; }
+  .type-banner { padding: 12px 16px; flex-wrap: wrap; gap: 10px; }
+  .banner-badge { width: 36px; height: 36px; font-size: 18px; }
+  .banner-title { font-size: 14px; }
+  .banner-desc { font-size: 12px; }
+  .banner-tags { display: none; }
+
+  .code-tabs { padding: 0 12px; overflow-x: auto; white-space: nowrap; }
+  .c-tab { padding: 10px 14px; font-size: 12px; }
+
+  .code-wrap-inner { flex-direction: column !important; overflow: visible !important; height: auto !important; }
+
+  .code-section { min-height: 400px; }
+  .code-scroll { height: 400px; overflow-x: auto !important; overflow-y: auto !important; }
+  .code-content { font-size: 11px; }
+  .line-num { font-size: 11px; }
+  .code-toolbar { padding: 6px 12px; font-size: 11px; }
+
+  .points-panel { width: 100% !important; border-left: none !important; border-top: 1px solid var(--border); max-height: none; padding: 12px; }
+
+  .memory-grid { grid-template-columns: 1fr !important; }
+  #memoryMode { padding: 20px 16px; }
+  #quizMode { padding: 20px 16px; }
+  .quiz-wrap { width: 100%; }
+  .quiz-q { font-size: 14px; }
+  .quiz-opt { font-size: 13px; }
+}
 </style>
 </head>
 <body>
@@ -500,6 +559,18 @@ body {
 
 <div class="app-body">
 
+  <!-- 모바일 유형 선택 드롭다운 -->
+  <div class="mobile-type-select" id="mobileTypeSelect">
+    <select onchange="renderType(this.value)">
+      <option value="A">A유형 — 가로 고정형</option>
+      <option value="B">B유형 — 가로 100% 유동형</option>
+      <option value="C">C유형 — 세로 2컬럼형</option>
+      <option value="D">D유형 — 세로2컬럼 + 슬라이드100vw</option>
+      <option value="E">E유형 — 세로 3컬럼형</option>
+      <option value="F">F유형 — 고정 + 슬라이드만 100vw</option>
+    </select>
+  </div>
+
   <!-- 사이드바 -->
   <nav class="sidebar" id="sidebar">
     <div class="sidebar-label">유형 선택</div>
@@ -509,7 +580,7 @@ body {
   <div class="main" id="codeMode">
     <div class="type-banner" id="typeBanner"></div>
     <div class="code-tabs" id="codeTabs"></div>
-    <div style="display:flex;flex:1;overflow:hidden;">
+    <div class="code-wrap-inner" style="display:flex;flex:1;overflow:hidden;">
       <div class="code-section">
         <div class="code-toolbar">
           <span id="toolbarLabel"></span>
@@ -2228,6 +2299,10 @@ function renderSidebar() {
 function renderType(k) {
   curType = k;
   var t = TYPES[k];
+
+  // 모바일 드롭다운 동기화
+  var sel = document.querySelector('.mobile-type-select select');
+  if(sel) sel.value = k;
 
   document.querySelectorAll('.type-item').forEach(function(el){ el.classList.remove('active'); });
   var si = document.getElementById('si-' + k);
