@@ -589,6 +589,85 @@ body {
   .mobile-points-toggle { display: flex; }
 }
 
+/* ─── 문제지 모드 ─── */
+#examMode {
+  display: none;
+  flex-direction: column;
+  overflow-y: auto;
+  height: calc(100vh - 61px);
+}
+#examMode.show { display: flex; }
+
+.exam-header {
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  gap: 10px;
+}
+.exam-header-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+.exam-header p {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.exam-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 24px;
+}
+.exam-type-section {
+  margin-bottom: 8px;
+}
+.exam-type-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  padding: 0 24px;
+  margin-top: 20px;
+}
+.exam-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+}
+.exam-card:hover {
+  border-color: var(--accent);
+  background: rgba(124,107,255,0.08);
+  transform: translateY(-2px);
+}
+.exam-card-type {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+.exam-card-num {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+@media (max-width: 768px) {
+  .exam-grid { grid-template-columns: repeat(2, 1fr); padding: 16px; gap: 10px; }
+  .exam-card { padding: 16px; }
+  .exam-card-type { font-size: 22px; }
+}
+
 /* ─── 연습 모드 ─── */
 #practiceMode {
   display: none;
@@ -855,6 +934,7 @@ body {
     <button class="mode-btn" onclick="setMode('memory',this)">🧠 암기 카드</button>
     <button class="mode-btn" onclick="setMode('quiz',this)">✏️ 퀴즈</button>
     <button class="mode-btn" onclick="setMode('practice',this)">💻 연습</button>
+    <button class="mode-btn" onclick="setMode('exam',this)">📋 문제지</button>
   </div>
 </header>
 
@@ -989,6 +1069,17 @@ body {
 
       </div>
     </div>
+  </div>
+
+  <!-- 문제지 모드 -->
+  <div id="examMode" class="main">
+    <div class="exam-header">
+      <div>
+        <div class="exam-header-title">📋 문제지</div>
+        <p>유형과 번호를 선택해서 문제지를 새 탭으로 열어보세요</p>
+      </div>
+    </div>
+    <div id="examGrid" class="exam-grid"></div>
   </div>
 
 </div>
@@ -2227,7 +2318,13 @@ const JS_CODE = {
 
 
     /* ========================================
-       3-1. 슬라이드 - 가로 이동 (animate left 방식) ← 가장 많이 쓰임!
+       3. 이미지 슬라이드 기능
+       setInterval(function(){실행내용}, 3000)
+       setInterval()  ← JS에서 만들어놓은 함수
+       function(){}   우리가 실행할 함수
+       , 2500         2500ms = 2.5초 (원하는 초 × 1000)
+
+       3-1. 가로 슬라이드 (animate left)
        슬라이드 3개 기준 (4개면 > 3, 5개면 > 4로 변경)
        css: .slider { height:400px; overflow:hidden; position:relative; }
             .slider-wrap { position:relative; height:100%; }
@@ -2236,20 +2333,23 @@ const JS_CODE = {
             .slider-wrap ul li { width:calc(100%/3); height:100%; }
     ======================================== */
 
-    let count = 0  // 현재 슬라이드 번호 (0, 1, 2)
+    let count = 0  // 현재 슬라이드 인덱스 (0, 1, 2)
 
     setInterval(function(){
-        count++                         // 다음 슬라이드로
-        if(count > 2){ count = 0 }     // 3이 되면 다시 0으로 (순환)
+        count++  // 다음 슬라이드로 이동
 
-        // count=1 → -33.33%, count=2 → -66.66%, count=0(리셋) → 0%
+        // 슬라이드가 3개라 0,1,2 → 2까지만. 4개면 3, 5개면 4까지
+        if(count > 2){ count = 0 }
+
+        // CSS transform으로 슬라이드 이동
+        // translateX(가로방향), translateY(세로방향)
+        // -33.333% × count = 0%, -33.333%, -66.666%
         $(".slider-wrap ul").animate({ left: -(100/3) * count + "%" }, 600)
-    }, 2500)  // 2.5초마다 실행
+    }, 2500)
 
 
     /* ========================================
-       3-2. 슬라이드 - 세로 이동 (animate top 방식)
-       left → top 으로만 바꾸면 됨!
+       3-2. 세로 슬라이드 → left → top 으로만 변경!
        css: .slider-wrap ul { flex-direction:column; height:300%;
                               position:absolute; top:0; left:0; }
             .slider-wrap ul li { height:calc(100%/3); }
@@ -2321,7 +2421,7 @@ $(function(){
     }, 2500)
 
     // 3-2. 세로 이동 → left → top 으로만 변경!
-    // $(".slider-wrap ul").animate({ top: -(100/3) * count + "%" }, 600)
+    //     $(".slider-wrap ul").animate({ top: -(100/3) * count + "%" }, 600)
 
     // 3-3. fadeIn 방식 → css 구조 다름! (위 코드 주석처리 후 사용)
     // $(".imgSlide a:gt(0)").hide()
@@ -2380,7 +2480,7 @@ $(function(){
     }, 2500)
 
     // 3-2. 세로 이동 → left → top 으로만 변경!
-    // $(".slider-wrap ul").animate({ top: -(100/3) * count + "%" }, 600)
+    //     $(".slider-wrap ul").animate({ top: -(100/3) * count + "%" }, 600)
 
     // 3-3. fadeIn 방식 → css 구조 다름! (위 코드 주석처리 후 사용)
     // $(".imgSlide a:gt(0)").hide()
@@ -2516,7 +2616,7 @@ $(function(){
     }, 2500)
 
     // 3-2. 세로 이동 → left → top 으로만 변경!
-    // $(".slider-wrap ul").animate({ top: -(100/3) * count + "%" }, 600)
+    //     $(".slider-wrap ul").animate({ top: -(100/3) * count + "%" }, 600)
 
     // 3-3. fadeIn 방식 → css 구조 다름! (위 코드 주석처리 후 사용)
     // $(".imgSlide a:gt(0)").hide()
@@ -2583,7 +2683,7 @@ $(function(){
     }, 2500)
 
     // 3-2. 세로 이동 → left → top 으로만 변경!
-    // $(".slider-wrap ul").animate({ top: -(100/3) * count + "%" }, 600)
+    //     $(".slider-wrap ul").animate({ top: -(100/3) * count + "%" }, 600)
 
     // 3-3. fadeIn 방식 → css 구조 다름! (위 코드 주석처리 후 사용)
     // $(".imgSlide a:gt(0)").hide()
@@ -2616,15 +2716,39 @@ const MEMORY_CARDS = [
   {type:'공통 JS', q:'탭메뉴 JS는? (study.js 방식)', a:'eq(0), eq(1)로 번호 맞춰 on 클래스 교체', code:'$(".tab-btn li").eq(0).click(function(){\n    $(".tab-cont li").removeClass("on")\n    $(".tab-cont li").eq(0).addClass("on")\n    $(".tab-btn li").removeClass("on")\n    $(this).addClass("on")\n})', color:'#2dd4bf'},
 
   // ── 슬라이드 3종 ──
-  {type:'슬라이드 3-1', q:'가로 슬라이드 (animate left) JS는?', a:'count++ → if(count>2) 초기화 → animate left 이동', code:'let count = 0\nsetInterval(function(){\n    count++\n    if(count > 2){ count = 0 }\n    $(".slider-wrap ul").animate(\n        { left: -(100/3) * count + "%" }, 600)\n}, 2500)', color:'#fb923c'},
+  {type:'슬라이드 3-1', q:'가로 슬라이드 (animate left) JS는?', a:'count++ → if(count>2) 초기화 → animate left 이동', code:'let count = 0\nsetInterval(function(){\n    count++\n    if(count > 2){ count = 0 }\n    $(".slider-wrap ul").css("transform",\n        `translateX(${-33.333 * count}%)`)\n}, 2500)', color:'#fb923c'},
   {type:'슬라이드 3-1', q:'가로 슬라이드 CSS 구조는?', a:'position:absolute + overflow:hidden 조합', code:'.slider { height: 400px; overflow: hidden; position: relative; }\n.slider-wrap { position: relative; height: 100%; }\n.slider-wrap ul {\n    display: flex; width: 300%;\n    position: absolute; top: 0; left: 0;\n}\n.slider-wrap ul li { width: calc(100% / 3); }', color:'#fb923c'},
-  {type:'슬라이드 3-2', q:'세로 슬라이드 JS는?', a:'left → top 으로만 변경!', code:'$(".slider-wrap ul").animate(\n    { top: -(100/3) * count + "%" }, 600)', color:'#a78bfa'},
+  {type:'슬라이드 3-2', q:'세로 슬라이드 JS는?', a:'left → top 으로만 변경!', code:'$(".slider-wrap ul").css("transform",\n    `translateY(${-33.333 * count}%)`)', color:'#a78bfa'},
   {type:'슬라이드 3-2', q:'세로 슬라이드 CSS 구조는?', a:'flex-direction:column + height:300%', code:'.slider-wrap ul {\n    flex-direction: column;\n    height: 300%;\n    position: absolute;\n    top: 0; left: 0;\n}\n.slider-wrap ul li { height: calc(100% / 3); }', color:'#a78bfa'},
   {type:'슬라이드 3-3', q:'fadeIn 슬라이드 JS는? (study.js 방식)', a:'첫번째 gt(0) 숨기고 → fadeOut → next fadeIn → appendTo', code:'$(".imgSlide a:gt(0)").hide()\nsetInterval(function(){\n    $(".imgSlide a:first-child").fadeOut()\n        .next("a").fadeIn()\n        .end().appendTo(".imgSlide")\n}, 2500)', color:'#f472b6'},
   {type:'슬라이드 3-3', q:'fadeIn 슬라이드 CSS 구조는?', a:'position:relative + absolute로 겹쳐 쌓기', code:'.slider-wrap { position: relative; }\n.imgSlide { position: relative; }\n.imgSlide a {\n    position: absolute;\n    top: 0; left: 0;\n    width: 100%;\n}', color:'#f472b6'},
 
   // ── 세로메뉴 ──
   {type:'공통 JS', q:'세로 메뉴 서브메뉴 JS는? (C,D,E유형)', a:'클릭한 것만 slideToggle, 나머지는 slideUp', code:'$(".gnb .menu > li > a").click(function(e){\n    e.preventDefault()\n    let sub = $(this).next(".sub")\n    $(".gnb .sub").not(sub).slideUp(200)\n    sub.slideToggle(200)\n})', color:'#2dd4bf'},
+
+  // ── 유형별 핵심 CSS 추가 ──
+  {type:'A유형', q:'헤더 로고+메뉴 양쪽 배치 CSS는?', a:'display:flex + justify-content:space-between', code:'.header {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  height: 80px;\n}', color:'#4ade80'},
+  {type:'A유형', q:'수평 메뉴 서브메뉴 hover 시 보이게 하는 CSS는?', a:'li:hover .sub { display: block }', code:'.gnb .sub { display: none; position: absolute; }\n.gnb .menu > li:hover .sub { display: block; }', color:'#4ade80'},
+  {type:'B유형', q:'B유형 inner 클래스 역할과 CSS는?', a:'100% wrap 안에서 콘텐츠 너비를 1200px로 제한', code:'.inner {\n  width: 1200px;\n  margin: 0 auto;\n}', color:'#60a5fa'},
+  {type:'C유형', q:'aside가 줄어들지 않게 하는 CSS는?', a:'flex-shrink: 0 — flex 컨테이너에서 크기 고정', code:'.aside {\n  width: 200px;\n  flex-shrink: 0;\n}', color:'#fbbf24'},
+  {type:'D유형', q:'fixed aside 때문에 main이 가려지지 않게 하는 CSS는?', a:'margin-left: aside 너비(200px) 만큼 밀기', code:'.main { margin-left: 200px; }', color:'#f87171'},
+  {type:'E유형', q:'3컬럼에서 main이 찌그러지지 않게 하는 CSS는?', a:'min-width: 0 — flex 아이템 기본 min-width 제거', code:'.main {\n  flex: 1;\n  min-width: 0;\n}', color:'#c792ea'},
+  {type:'F유형', q:'슬라이드만 100vw로 이탈시키는 CSS 전체는?', a:'body overflow-x:hidden + margin-left:50% + translateX(-50%)', code:'body { overflow-x: hidden; }\n.slider {\n  width: 100vw;\n  margin-left: 50%;\n  transform: translateX(-50%);\n}', color:'#f472b6'},
+
+  // ── CSS 속성 암기 ──
+  {type:'CSS 기본', q:'display 속성 종류 4가지는?', a:'block / inline-block / flex / none', code:'display: block;         /* 블록 요소 */\ndisplay: inline-block;  /* 인라인+크기지정 */\ndisplay: flex;          /* 플렉스 컨테이너 */\ndisplay: none;          /* 숨기기 */', color:'#38bdf8'},
+  {type:'CSS 기본', q:'position 속성 종류 3가지와 차이는?', a:'relative(자기위치기준) / absolute(부모기준) / fixed(화면기준)', code:'position: relative;  /* 자기 원래 위치 기준 */\nposition: absolute;  /* relative 부모 기준 */\nposition: fixed;     /* 브라우저 화면 기준 */\n/* absolute/fixed는 top,left,right,bottom 사용 */', color:'#38bdf8'},
+  {type:'CSS 기본', q:'flex 가로 정렬 속성은?', a:'justify-content — flex-start/center/space-between/space-around', code:'.wrap {\n  display: flex;\n  justify-content: space-between; /* 양쪽 끝 */\n  justify-content: center;        /* 가운데 */\n  justify-content: flex-start;    /* 왼쪽 */\n}', color:'#38bdf8'},
+  {type:'CSS 기본', q:'flex 세로 정렬 속성은?', a:'align-items — center/flex-start/flex-end/stretch', code:'.wrap {\n  display: flex;\n  align-items: center;     /* 세로 가운데 */\n  align-items: flex-start; /* 세로 위 */\n  align-items: stretch;    /* 늘이기(기본값) */\n}', color:'#38bdf8'},
+  {type:'CSS 기본', q:'flex-direction 이란?', a:'flex 아이템 배치 방향 설정 — row(가로)/column(세로)', code:'flex-direction: row;     /* 가로 배치 (기본값) */\nflex-direction: column;  /* 세로 배치 */\n/* 슬라이드 세로 방식에서 column 사용! */', color:'#38bdf8'},
+  {type:'CSS 기본', q:'z-index 란?', a:'요소 쌓임 순서 — 숫자 클수록 위에 표시. position 있어야 적용됨', code:'.popup {\n  position: fixed;\n  z-index: 999; /* 팝업은 항상 위에 */\n}\n.gnb .sub {\n  position: absolute;\n  z-index: 100;\n}', color:'#38bdf8'},
+  {type:'CSS 기본', q:'overflow 속성 종류는?', a:'hidden(숨김) / auto(자동스크롤) / scroll(항상스크롤) / visible(기본)', code:'.slider { overflow: hidden; }  /* 슬라이드 넘치는 부분 숨김 */\n.box { overflow: auto; }      /* 넘치면 스크롤 생성 */\n.wrap { overflow: visible; }  /* 넘쳐도 보임(기본) */', color:'#38bdf8'},
+  {type:'CSS 기본', q:'object-fit 이란?', a:'이미지/비디오가 컨테이너에 맞게 채워지는 방식', code:'img {\n  width: 100%;\n  height: 400px;\n  object-fit: cover;   /* 비율유지+꽉채움(잘림) */\n  object-fit: contain; /* 비율유지+전체보임 */\n}', color:'#38bdf8'},
+
+  // ── 슬라이드 CSS 구조 ──
+  {type:'슬라이드 CSS', q:'가로 슬라이드 전체 CSS 구조는?', a:'slider overflow:hidden → slider-wrap position:relative → ul display:flex width:300% position:absolute', code:'.slider {\n  height: 400px;\n  overflow: hidden;\n  position: relative;\n}\n.slider-wrap { position: relative; height: 100%; }\n.slider-wrap ul {\n  display: flex;\n  width: 300%;         /* 슬라이드 3개 × 100% */\n  position: absolute;\n  top: 0; left: 0;\n  height: 100%;\n}\n.slider-wrap ul li {\n  width: calc(100% / 3); /* 전체의 1/3 */\n  height: 100%;\n}\n.slider-wrap ul li img {\n  width: 100%; height: 100%;\n  object-fit: cover;\n}', color:'#fb923c'},
+  {type:'슬라이드 CSS', q:'세로 슬라이드 CSS에서 가로와 다른 부분은?', a:'flex-direction:column + height:300% + li는 height:calc(100%/3)', code:'/* 가로와 다른 부분만! */\n.slider-wrap ul {\n  flex-direction: column; /* 세로로 쌓기 */\n  height: 300%;           /* width 대신 height */\n  width: 100%;            /* width는 100%로 */\n}\n.slider-wrap ul li {\n  height: calc(100% / 3); /* width 대신 height */\n  width: 100%;\n}', color:'#a78bfa'},
+  {type:'슬라이드 CSS', q:'fadeIn 슬라이드 CSS 구조는?', a:'imgSlide position:relative → a position:absolute로 겹쳐 쌓기', code:'.slider { height: 400px; position: relative; }\n.imgSlide {\n  position: relative;\n  height: 100%;\n}\n.imgSlide a {\n  position: absolute; /* 모두 같은 위치에 겹침 */\n  top: 0; left: 0;\n  width: 100%; height: 100%;\n}\n.imgSlide a img {\n  width: 100%; height: 100%;\n  object-fit: cover;\n}', color:'#f472b6'},
 ];
 
 // 퀴즈 데이터
@@ -2851,6 +2975,8 @@ function setMode(mode, el) {
   document.getElementById('quizMode').classList.remove('show');
   document.getElementById('practiceMode').style.display = 'none';
   document.getElementById('practiceMode').classList.remove('show');
+  document.getElementById('examMode').style.display = 'none';
+  document.getElementById('examMode').classList.remove('show');
   document.querySelector('.sidebar').style.display = 'none';
   document.querySelector('.mobile-type-select').style.display = '';
 
@@ -2869,6 +2995,10 @@ function setMode(mode, el) {
     document.getElementById('practiceMode').style.display = 'flex';
     document.getElementById('practiceMode').classList.add('show');
     initPractice();
+  } else if(mode === 'exam') {
+    document.getElementById('examMode').style.display = 'flex';
+    document.getElementById('examMode').classList.add('show');
+    initExam();
   }
 }
 
@@ -3198,7 +3328,37 @@ function handleEditorKey(e) {
   }
 }
 
-// ─── 모바일 핵심 포인트 토글 ───
+// ─── 문제지 모드 ───
+var BASE_URL = 'https://jiwon12011.github.io/webdesign_study_jw/';
+
+var examTypeColors = {
+  A: {color:'#4ade80', bg:'#1a3a2a'},
+  B: {color:'#60a5fa', bg:'#1a2a3a'},
+  C: {color:'#fbbf24', bg:'#2a2a1a'},
+  D: {color:'#f87171', bg:'#2a1a1a'},
+  E: {color:'#c792ea', bg:'#1e1a2a'},
+  F: {color:'#f472b6', bg:'#2a1e2a'},
+};
+
+function initExam() {
+  var types = ['A','B','C','D','E','F'];
+  var typeNames = {A:'가로 고정형', B:'가로 100% 유동형', C:'세로 2컬럼형', D:'세로2컬럼+슬라이드', E:'세로 3컬럼형', F:'고정+슬라이드100vw'};
+  var html = '';
+  types.forEach(function(t) {
+    var c = examTypeColors[t];
+    html += '<div class="exam-type-label">' + t + '유형 — ' + typeNames[t] + '</div>';
+    html += '<div class="exam-grid" style="padding:0 24px 0;margin-bottom:8px;">';
+    for(var i = 1; i <= 4; i++) {
+      var url = BASE_URL + t + '_' + i + '.pdf';
+      html += '<a class="exam-card" href="' + url + '" target="_blank">' +
+        '<div class="exam-card-type" style="color:' + c.color + '">' + t + '</div>' +
+        '<div class="exam-card-num">문제 ' + i + '</div>' +
+      '</a>';
+    }
+    html += '</div>';
+  });
+  document.getElementById('examGrid').innerHTML = html;
+}
 function togglePoints() {
   var panel = document.getElementById('pointsPanel');
   var btn = document.getElementById('pointsToggle');
