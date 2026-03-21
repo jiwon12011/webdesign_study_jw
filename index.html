@@ -1091,71 +1091,81 @@ body {
 const TYPES = {
   A: {
     label:'A유형', sub:'가로 고정형', diff:'입문', diffColor:'#4ade80', dotBg:'#1a3a2a', dotColor:'#4ade80',
-    tags:['width:1200px','수평 메뉴','가장 기본'],
-    desc:'가장 기본이 되는 유형. wrap 1200px 고정 중앙정렬. 헤더+수평메뉴 → 슬라이드 → 공지/갤러리 → 푸터 순서.',
+    tags:['inner 1200px','수평 메뉴','marginLeft 슬라이드'],
+    desc:'wrap + inner로 1200px 고정 중앙정렬. header(h1+nav) → slide → contents(notice+gall+go) → footer 순서. 팝업은 inner 밖 wrap 안.',
     points:[
-      {t:'$(function(){}) 필수!', b:'head에 script 태그 → body보다 JS 먼저 실행됨 → HTML을 못 찾음. 무조건 안에 코드 작성!', c:'$(function(){\n  // 여기 안에 모든 JS 코드 작성\n})'},
-      {t:'wrap 핵심', b:'width:1200px + margin:0 auto 로 중앙정렬', c:'.wrap {\n  width: 1200px;\n  margin: 0 auto;\n}'},
-      {t:'수평 메뉴 핵심', b:'ul에 display:flex 주면 가로로 배치됨', c:'.gnb .menu { display: flex; }'},
-      {t:'서브메뉴 숨기기', b:'기본 display:none, hover 시 display:block', c:'.sub { display: none; }\nli:hover .sub { display: block; }'},
-      {t:'슬라이드 3가지', b:'가로(translateX) / 세로(translateY) / fadeIn — 택1', c:'// 가로: translateX(${-33.333 * count}%)\n// 세로: translateY(${-33.333 * count}%)\n// 페이드: .imgSlide a:first-child.fadeOut()...'},
-      {t:'탭메뉴 핵심', b:'eq(0), eq(1)로 번호 맞춰 on 클래스 교체', c:'$(".tab-btn li").eq(0).click(function(){\n  $(".tab-cont li").removeClass("on")\n  $(".tab-cont li").eq(0).addClass("on")\n})'},
-      {t:'팝업 핵심', b:'.btn-open 클릭→addClass, .btn-close 클릭→removeClass', c:'$(".btn-open").click(function(){\n  $(".popup").addClass("on")\n})\n$(".btn-close").click(function(){\n  $(".popup").removeClass("on")\n})'},
+      {t:'기본 구조', b:'wrap > inner > header + slide + contents + footer / 팝업은 inner 밖 wrap 안', c:'<div class="wrap">\n  <div class="inner">\n    <header>...</header>\n    <section class="slide">...</section>\n    <div class="contents">...</div>\n    <footer>...</footer>\n  </div>\n  <div class="popup">...</div>\n</div>'},
+      {t:'inner 핵심', b:'width:1200px + margin:auto 로 중앙정렬', c:'.inner { width: 1200px; margin: auto; }'},
+      {t:'수평 메뉴', b:'nav > ul { display:flex } 로 가로 배치. hover 시 sub 보이기', c:'nav>ul { display: flex; }\nnav>ul>li>a { display: block; width: 120px; }\n.sub { display: none; }\nnav>ul>li:hover>a { background: #e74c3c; }'},
+      {t:'슬라이드 구조', b:'ul 전체 너비=슬라이드수×1200px, marginLeft로 이동', c:'.slide { height: 300px; overflow: hidden; }\n.slide ul { width: 3600px; display: flex; }\n.slide ul li { width: 1200px; height: 300px; }\n.slide ul li.s1 { background: url(../images/s1.jpg) no-repeat center/cover; }'},
+      {t:'슬라이드 JS', b:'marginLeft에 -1200 × i 를 animate로 이동', c:'let i = 0;\nfunction slide(){\n  if(i < 2){ i++; }else{ i = 0; }\n  $(".slide ul").animate({ marginLeft: -1200 * i }, 1000);\n}\nsetInterval(slide, 3000);'},
+      {t:'메뉴 JS', b:'mouseenter → slideDown / mouseleave → slideUp', c:'$("nav>ul>li").mouseenter(function(){\n  $(this).children(".sub").stop().slideDown();\n})\n$("nav>ul>li").mouseleave(function(){\n  $(".sub").stop().slideUp();\n})'},
+      {t:'팝업 JS', b:'.pop 클릭 → show() / .close button 클릭 → hide()', c:'$(".pop").click(function(){\n  $(".popup").show();\n})\n$(".close button").click(function(){\n  $(".popup").hide();\n})'},
     ],
   },
   B: {
-    label:'B유형', sub:'가로 100% 유동형', diff:'입문', diffColor:'#4ade80', dotBg:'#1a2e3a', dotColor:'#60a5fa',
-    tags:['width:100%','풀스크린 슬라이드','inner로 제한'],
-    desc:'A유형과 구조 동일. wrap만 100%로 변경. 헤더·슬라이드가 브라우저 화면 전체를 채움.',
+    label:'B유형', sub:'가로 100% 유동형', diff:'입문+', diffColor:'#4ade80', dotBg:'#1a3a2a', dotColor:'#60a5fa',
+    tags:['wrap 100%','inner 1200px','fadeIn 슬라이드','탭메뉴','menuBg'],
+    desc:'wrap이 100%로 풀스크린. header/footer 안에 inner로 1200px 제한. 슬라이드는 fadeIn 방식. 탭메뉴 있음.',
     points:[
-      {t:'A유형과 차이점', b:'wrap의 width:100% 단 한 줄만 다름!', c:'.wrap { width: 100%; }'},
-      {t:'inner 클래스', b:'콘텐츠는 inner div로 최대 너비 제한', c:'.inner {\n  width: 1200px;\n  margin: 0 auto;\n}'},
-      {t:'슬라이드 100%', b:'height+object-fit:cover로 꽉 채우기', c:'.slides li img {\n  height: 450px;\n  object-fit: cover;\n}'},
-      {t:'JS', b:'A유형 JS와 완전히 동일하게 사용', c:'// A유형 js 그대로 복붙!'},
+      {t:'기본 구조', b:'wrap > header(inner포함) + slide + contents + footer(inner포함) / 팝업은 wrap 안', c:'<div class="wrap">\n  <header>\n    <div class="inner">...</div>\n  </header>\n  <section class="slide">...</section>\n  <div class="contents">...</div>\n  <footer>\n    <div class="inner">...</div>\n  </footer>\n  <div class="popup">...</div>\n</div>'},
+      {t:'A유형과 차이', b:'wrap은 100% / header,footer 안에 inner로 너비 제한', c:'.inner { width: 1200px; height: 100%; margin: auto; }\nheader .inner { position: relative; padding-top: 30px; }'},
+      {t:'슬라이드 구조 (fadeIn)', b:'li를 position:absolute로 겹쳐 쌓고 fadeIn/fadeOut', c:'.slide { width: 1200px; height: 300px; margin: auto; position: relative; }\n.slide ul li { position: absolute; top: 0; left: 0; display: none; }\n.slide ul li.s1 { display: block; } /* 첫번째만 보이게 */'},
+      {t:'슬라이드 JS (fadeIn)', b:'li 전체 fadeOut 후 해당 번호만 fadeIn', c:'let i = 0;\nfunction slide(){\n  if(i < 2){ i++; }else{ i = 0; }\n  $(".slide ul li").fadeOut();\n  $(".slide ul li").eq(i).fadeIn();\n}\nsetInterval(slide, 3000);'},
+      {t:'탭메뉴 JS', b:'index()로 클릭번호 파악 → tabcon show/hide', c:'$(".tabmenu>li").click(function(){\n  $(".tabmenu>li").removeClass("on");\n  $(this).addClass("on");\n  let t = $(this).index();\n  $(".tabcon").hide();\n  $(".tabcon").eq(t).show();\n  return false;\n})'},
+      {t:'menuBg (드롭다운 배경)', b:'메뉴 hover 시 sub와 menuBg 같이 slideDown', c:'$("nav>ul>li").mouseover(function(){\n  $(".sub, .menuBg").stop().slideDown();\n})\n$("nav>ul>li").mouseout(function(){\n  $(".sub, .menuBg").stop().slideUp();\n})'},
     ],
   },
   C: {
-    label:'C유형', sub:'세로 2컬럼형', diff:'중급', diffColor:'#fbbf24', dotBg:'#2a2a1a', dotColor:'#fbbf24',
-    tags:['display:flex','aside + main','세로 메뉴'],
-    desc:'왼쪽 aside(세로메뉴) + 오른쪽 main 2컬럼 구조. display:flex로 나란히 배치. 메뉴가 세로로 나열됨.',
+    label:'C유형', sub:'세로2컬럼형', diff:'중급', diffColor:'#fbbf24', dotBg:'#2a2a1a', dotColor:'#fbbf24',
+    tags:['wrap flex','header 왼쪽','세로 슬라이드','marginTop'],
+    desc:'wrap이 flex → header(왼쪽 200px) + contents(오른쪽 800px) 2컬럼. 슬라이드는 세로 marginTop animate 방식.',
     points:[
-      {t:'2컬럼 핵심 CSS', b:'container에 display:flex 적용', c:'.container { display: flex; }'},
-      {t:'aside 너비', b:'고정 너비, flex-shrink:0 줄어들지 않게', c:'.aside {\n  width: 200px;\n  flex-shrink: 0;\n}'},
-      {t:'main 너비', b:'flex:1 로 나머지 공간 모두 차지', c:'.main { flex: 1; }'},
-      {t:'세로메뉴 JS', b:'클릭 시 slideToggle, 나머지는 slideUp으로 닫기', c:'let sub = $(this).next(".sub")\n$(".gnb .sub").not(sub).slideUp(200)\nsub.slideToggle(200)'},
+      {t:'기본 구조', b:'wrap { display:flex } → header(왼쪽) + contents(오른쪽)', c:'<div class="wrap">\n  <header>...</header>\n  <div class="contents">\n    <section class="slide">...</section>\n    <div class="con">...</div>\n    <footer>...</footer>\n  </div>\n  <div class="popup">...</div>\n</div>'},
+      {t:'wrap + header 핵심', b:'wrap은 flex, header 왼쪽 200px 고정', c:'.wrap { width: 1000px; height: 670px; display: flex; position: relative; }\nheader { width: 200px; background: #1a237e; padding: 80px 10px; }\n.contents { width: 800px; }'},
+      {t:'세로 메뉴 sub 위치', b:'sub가 header 오른쪽으로 absolute 이탈', c:'nav { position: relative; }\n.sub {\n  position: absolute;\n  left: 180px; top: -10px;\n  z-index: 9;\n  display: none;\n}'},
+      {t:'슬라이드 구조 (세로)', b:'세로 슬라이드 → height에 슬라이드수×높이', c:'.slide { height: 350px; overflow: hidden; }\n.slide ul li { width: 800px; height: 350px; position: relative; }'},
+      {t:'슬라이드 JS (세로 marginTop)', b:'marginLeft 대신 marginTop으로 세로 이동', c:'let i = 0;\nfunction slide(){\n  if(i < 2){ i++; }else{ i = 0; }\n  $(".slide ul").animate({ marginTop: -350 * i }, 1000);\n}\nsetInterval(slide, 3000);'},
+      {t:'메뉴 JS (fadeIn)', b:'mouseenter → fadeIn / mouseleave → fadeOut', c:'$("nav>ul>li").mouseenter(function(){\n  $(this).children(".sub").stop().fadeIn();\n})\n$("nav>ul>li").mouseleave(function(){\n  $(".sub").stop().fadeOut();\n})'},
     ],
   },
   D: {
-    label:'D유형', sub:'세로2컬럼 + 슬라이드100vw', diff:'고급', diffColor:'#f87171', dotBg:'#2a1a1a', dotColor:'#f87171',
-    tags:['position:fixed','100vw 슬라이드','calc()','2023 신규'],
-    desc:'aside가 position:fixed로 고정. main은 margin-left:200px. 슬라이드는 100vw 풀스크린으로 브라우저 꽉 채움.',
+    label:'D유형', sub:'세로2컬럼 + 슬라이드가로', diff:'중급', diffColor:'#fbbf24', dotBg:'#2a1a1a', dotColor:'#f87171',
+    tags:['top flex','header 왼쪽 250px','marginLeft %','탭메뉴','go fixed'],
+    desc:'wrap > top(flex) → header(왼쪽 250px) + contents(오른쪽). 슬라이드는 가로 marginLeft % 방식. 탭메뉴 있음. go가 fixed 고정.',
     points:[
-      {t:'aside fixed 핵심', b:'화면에 고정, 높이는 100vh 전체', c:'.aside {\n  position: fixed;\n  width: 200px;\n  height: 100vh;\n}'},
-      {t:'main 여백', b:'aside 너비만큼 왼쪽 여백 필수!', c:'.main { margin-left: 200px; }'},
-      {t:'슬라이드 100vw', b:'100vw 설정 후 aside 너비만큼 당기기', c:'.slider {\n  width: 100vw;\n  margin-left: -200px;\n}'},
-      {t:'object-fit', b:'이미지 비율 유지하며 영역 꽉 채우기', c:'.slides li img {\n  height: 500px;\n  object-fit: cover;\n}'},
+      {t:'기본 구조', b:'wrap > top(flex) → header + contents / footer는 top 밖', c:'<div class="wrap">\n  <div class="top">\n    <header>...</header>\n    <div class="contents">\n      <section class="slide">...</section>\n      <div class="go">...</div>\n      <article class="banner">...</article>\n      <article class="con">...</article>\n    </div>\n  </div>\n  <footer>...</footer>\n  <div class="popup">...</div>\n</div>'},
+      {t:'top + header 핵심', b:'top이 flex → header 왼쪽 250px 고정', c:'.wrap { height: 950px; position: relative; }\n.top { height: 850px; display: flex; }\nheader { width: 250px; background: #4b88c7; }\n.contents { width: calc(100% - 250px); }'},
+      {t:'슬라이드 구조 (가로 %)', b:'ul width:300% display:flex → marginLeft % 방식', c:'.slide { height: 400px; overflow: hidden; }\n.slide ul { width: 300%; display: flex; }\n.slide ul li { width: calc(100% / 3); height: 400px; }'},
+      {t:'슬라이드 JS (marginLeft %)', b:'-100% × i 로 이동 (px 아닌 %!)', c:'let i = 0;\nfunction slide(){\n  if(i < 2){ i++; }else{ i = 0; }\n  $(".slide ul").animate({ marginLeft: -100 * i + "%" }, 1000);\n}\nsetInterval(slide, 3000);'},
+      {t:'탭메뉴 JS', b:'B유형과 동일한 index() 방식', c:'$(".tabmenu>li").click(function(){\n  $(".tabmenu>li").removeClass("on");\n  $(this).addClass("on");\n  let t = $(this).index();\n  $(".tabcon").hide();\n  $(".tabcon").eq(t).show();\n  return false;\n})'},
+      {t:'go fixed', b:'바로가기가 화면 오른쪽에 fixed 고정', c:'.go {\n  position: fixed;\n  top: 20px; right: 20px;\n  z-index: 10;\n}'},
     ],
   },
   E: {
-    label:'E유형', sub:'세로 3컬럼형', diff:'고급', diffColor:'#f87171', dotBg:'#1e1a2a', dotColor:'#c792ea',
-    tags:['3컬럼 flex','양쪽 aside','최고 난이도','2023 신규'],
-    desc:'왼쪽 aside + main + 오른쪽 aside 3컬럼 구조. 가장 복잡한 유형. display:flex 하나로 3개 영역을 나란히.',
+    label:'E유형', sub:'세로 3컬럼형', diff:'중급+', diffColor:'#fbbf24', dotBg:'#1e1a2a', dotColor:'#c792ea',
+    tags:['top flex','header+contents+slide 3컬럼','세로 슬라이드 오른쪽'],
+    desc:'top이 flex → header(왼쪽 200px) + contents(가운데 400px) + slide(오른쪽). 슬라이드가 오른쪽에! 세로 marginTop 방식.',
     points:[
-      {t:'3컬럼 핵심 CSS', b:'container에 flex, 3개 자식이 나란히', c:'.container { display: flex; }'},
-      {t:'왼쪽 aside', b:'200px 고정, 세로 메뉴', c:'.aside-left {\n  width: 200px;\n  flex-shrink: 0;\n}'},
-      {t:'main 중앙', b:'flex:1 + min-width:0 overflow 방지', c:'.main {\n  flex: 1;\n  min-width: 0;\n}'},
-      {t:'오른쪽 aside', b:'200px 고정, 배너/이미지 배치', c:'.aside-right {\n  width: 200px;\n  flex-shrink: 0;\n}'},
+      {t:'기본 구조', b:'wrap > top(flex 3컬럼) → header + contents + slide / footer는 top 밖', c:'<div class="wrap">\n  <div class="top">\n    <header>...</header>\n    <div class="contents">...</div>\n    <div class="slide">...</div>\n  </div>\n  <footer>...</footer>\n  <div class="popup">...</div>\n</div>'},
+      {t:'3컬럼 핵심', b:'top flex → header 200px + contents 400px + slide 나머지', c:'.top { height: 700px; display: flex; }\nheader { width: 200px; }\n.contents { width: 400px; }\n.slide { width: calc(100% - 600px); overflow: hidden; }'},
+      {t:'슬라이드가 오른쪽!', b:'C유형과 달리 slide가 contents 오른쪽에 위치', c:'/* top flex 순서: header > contents > slide */\n/* slide는 마지막에 배치 → 자동으로 오른쪽 */'},
+      {t:'슬라이드 JS (세로 marginTop)', b:'슬라이드 높이(700px) × i 로 이동', c:'let i = 0;\nfunction slide(){\n  if(i < 2){ i++; }else{ i = 0; }\n  $(".slide ul").animate({ marginTop: -700 * i }, 1000);\n}\nsetInterval(slide, 3000);'},
+      {t:'세로 메뉴 sub 위치', b:'sub가 header 오른쪽으로 absolute 이탈', c:'nav { position: relative; }\n.sub {\n  position: absolute;\n  left: 190px; top: -10px;\n  z-index: 10;\n  display: none;\n}'},
+      {t:'메뉴 JS (fadeIn)', b:'mouseenter → fadeIn / mouseleave → fadeOut', c:'$("nav>ul>li").mouseenter(function(){\n  $(this).children(".sub").stop().fadeIn();\n})\n$("nav>ul>li").mouseleave(function(){\n  $(".sub").stop().fadeOut();\n})'},
     ],
   },
   F: {
-    label:'F유형', sub:'고정 + 슬라이드만 100vw', diff:'중급', diffColor:'#fbbf24', dotBg:'#2a1e2a', dotColor:'#f472b6',
-    tags:['width:1340px','슬라이드만 100vw','calc() 이탈','2024 신규'],
-    desc:'전체는 1340px 고정이지만 슬라이드 섹션만 100vw로 브라우저 전체를 채움. 2024년 신규 추가 유형.',
+    label:'F유형', sub:'고정+슬라이드100vw', diff:'중급', diffColor:'#fbbf24', dotBg:'#2a1e2a', dotColor:'#f472b6',
+    tags:['header 1340px','footer 1340px','fadeIn 슬라이드','go absolute 이탈'],
+    desc:'header/footer/contents 모두 1340px. 슬라이드는 fadeIn 방식. 바로가기(go)가 슬라이드 위에 absolute로 올라감.',
     points:[
-      {t:'wrap 너비', b:'1340px! A유형(1200px)과 다름 주의', c:'.wrap { width: 1340px; margin: 0 auto; }'},
-      {t:'슬라이드 100% 방법', b:'body에 overflow-x:hidden + margin/transform 조합', c:'body { overflow-x: hidden; }\n.slider {\n  width: 100vw;\n  margin-left: 50%;\n  transform: translateX(-50%);\n}'},
-      {t:'calc 안 써도 됨!', b:'위 방법이 훨씬 단순하고 외우기 쉬움', c:'/* 핵심: body overflow-x:hidden 이 있어야\n   슬라이드가 가로 스크롤바 없이 작동함 */'},
-      {t:'나머지 JS', b:'A유형 JS와 완전히 동일하게 사용', c:'// 슬라이드 이탈은 CSS만으로 처리\n// JS는 A유형 그대로!'},
+      {t:'기본 구조', b:'wrap > header + slide + contents(go+banner+board) + footer / 팝업 wrap 안', c:'<div class="wrap">\n  <header>...</header>\n  <section class="slide">...</section>\n  <div class="contents">\n    <article class="go">...</article>\n    <article class="banner">...</article>\n    <article class="board">...</article>\n  </div>\n  <footer>...</footer>\n  <div class="popup">...</div>\n</div>'},
+      {t:'1340px 핵심!', b:'A유형(1200px)과 다르게 header/footer/contents 모두 1340px', c:'header { width: 1340px; margin: auto; }\n.contents { width: 1340px; margin: auto; }\nfooter { width: 1340px; margin: auto; }'},
+      {t:'슬라이드 구조 (fadeIn)', b:'li position:absolute로 겹쳐 쌓기. 첫번째만 display:block', c:'.slide { height: 300px; position: relative; }\n.slide ul li { position: absolute; top: 0; left: 0; display: none; }\n.slide ul li.s1 { display: block; }'},
+      {t:'go가 슬라이드 위에!', b:'contents position:relative + go position:absolute top:-100px 으로 위로 이탈', c:'.contents { position: relative; }\n.go {\n  position: absolute;\n  top: -100px; left: 0;\n  width: 100%; height: 100px;\n}'},
+      {t:'슬라이드 JS (fadeIn)', b:'B유형과 동일한 fadeIn 방식', c:'let i = 0;\nfunction slide(){\n  if(i < 2){ i++; }else{ i = 0; }\n  $(".slide ul li").fadeOut();\n  $(".slide ul li").eq(i).fadeIn();\n}\nsetInterval(slide, 3000);'},
+      {t:'메뉴 JS', b:'mouseenter → slideDown / mouseleave → slideUp (this 없이 전체)', c:'$("nav>ul>li").mouseenter(function(){\n  $(".sub").stop().slideDown();\n})\n$("nav>ul>li").mouseleave(function(){\n  $(".sub").stop().slideUp();\n})'},
     ],
   },
 };
@@ -1166,1622 +1176,1534 @@ const HTML_CODE = {
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>A유형 - 가로고정형</title>
   <link rel="stylesheet" href="css/style.css">
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"><\/script>
+  <script src="js/jquery-1.12.3.js"><\/script>
   <script src="js/script.js"><\/script>
 </head>
 <body>
 <div class="wrap">
+  <div class="inner">
 
-  <header class="header">
-    <h1 class="logo"><a href="#">로고</a></h1>
-    <nav class="gnb">
-      <ul class="menu">
-        <li><a href="#">메뉴1</a>
-          <ul class="sub">
-            <li><a href="#">서브1-1</a></li>
-            <li><a href="#">서브1-2</a></li>
-          </ul>
-        </li>
-        <li><a href="#">메뉴2</a>
-          <ul class="sub">
-            <li><a href="#">서브2-1</a></li>
-          </ul>
-        </li>
-        <li><a href="#">메뉴3</a>
-          <ul class="sub">
-            <li><a href="#">서브3-1</a></li>
-          </ul>
-        </li>
-        <li><a href="#">메뉴4</a>
-          <ul class="sub">
-            <li><a href="#">서브4-1</a></li>
-          </ul>
-        </li>
-      </ul>
-    </nav>
-  </header>
+    <header>
+      <h1>
+        <a href="#"><img src="images/logo.png" alt="로고"></a>
+      </h1>
+      <nav>
+        <ul>
+          <li><a href="#">메뉴1</a>
+            <ul class="sub">
+              <li><a href="#">서브1-1</a></li>
+              <li><a href="#">서브1-2</a></li>
+              <li><a href="#">서브1-3</a></li>
+              <li><a href="#">서브1-4</a></li>
+            </ul>
+          </li>
+          <li><a href="#">메뉴2</a>
+            <ul class="sub">
+              <li><a href="#">서브2-1</a></li>
+              <li><a href="#">서브2-2</a></li>
+              <li><a href="#">서브2-3</a></li>
+              <li><a href="#">서브2-4</a></li>
+            </ul>
+          </li>
+          <li><a href="#">메뉴3</a>
+            <ul class="sub">
+              <li><a href="#">서브3-1</a></li>
+              <li><a href="#">서브3-2</a></li>
+              <li><a href="#">서브3-3</a></li>
+              <li><a href="#">서브3-4</a></li>
+            </ul>
+          </li>
+          <li><a href="#">메뉴4</a>
+            <ul class="sub">
+              <li><a href="#">서브4-1</a></li>
+              <li><a href="#">서브4-2</a></li>
+              <li><a href="#">서브4-3</a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </header>
 
-  <section class="slider">
-    <div class="slider-wrap">
-      <ul class="slides">
-        <li><img src="images/slide1.jpg" alt="슬라이드1"></li>
-        <li><img src="images/slide2.jpg" alt="슬라이드2"></li>
-        <li><img src="images/slide3.jpg" alt="슬라이드3"></li>
+    <section class="slide">
+      <ul>
+        <li class="s1"><a href="#"><h2>슬라이드1</h2></a></li>
+        <li class="s2"><a href="#"><h2>슬라이드2</h2></a></li>
+        <li class="s3"><a href="#"><h2>슬라이드3</h2></a></li>
       </ul>
-    </div>
-  </section>
+    </section>
 
-  <section class="contents">
-    <div class="notice">
-      <ul class="tab-btn">
-        <li class="on"><a href="#">공지사항</a></li>
-        <li><a href="#">갤러리</a></li>
-      </ul>
-      <ul class="tab-cont">
-        <li class="on">
-          <ul>
-            <li><a href="#">공지사항 내용 1</a></li>
-            <li><a href="#">공지사항 내용 2</a></li>
-          </ul>
-        </li>
-        <li>
-          <ul>
-            <li><a href="#">갤러리 내용 1</a></li>
-          </ul>
-        </li>
-      </ul>
+    <div class="contents">
+      <article class="notice">
+        <h2>공지사항</h2>
+        <ul>
+          <li><a href="#" class="pop"><p>공지사항 내용 1</p><span class="date">2025.01.01</span></a></li>
+          <li><a href="#"><p>공지사항 내용 2</p><span class="date">2025.01.01</span></a></li>
+          <li><a href="#"><p>공지사항 내용 3</p><span class="date">2025.01.01</span></a></li>
+          <li><a href="#"><p>공지사항 내용 4</p><span class="date">2025.01.01</span></a></li>
+        </ul>
+      </article>
+      <article class="gall">
+        <h2>갤러리</h2>
+        <ul>
+          <li><a href="#"><img src="images/g1.jpg" alt="갤러리1"></a></li>
+          <li><a href="#"><img src="images/g2.jpg" alt="갤러리2"></a></li>
+          <li><a href="#"><img src="images/g3.jpg" alt="갤러리3"></a></li>
+        </ul>
+      </article>
+      <article class="go">
+        <h2>바로가기</h2>
+        <ul>
+          <li><a href="#"><p><img src="images/icon01.png" alt="바로가기1"></p><span>바로가기1</span></a></li>
+          <li><a href="#"><p><img src="images/icon02.png" alt="바로가기2"></p><span>바로가기2</span></a></li>
+          <li><a href="#"><p><img src="images/icon03.png" alt="바로가기3"></p><span>바로가기3</span></a></li>
+        </ul>
+      </article>
     </div>
-    <div class="banner">
-      <a href="#"><img src="images/banner1.jpg" alt="배너"></a>
-    </div>
-  </section>
+
+    <footer>
+      <p class="flogo"><img src="images/flogo.png" alt="로고"></p>
+      <ul class="fsns">
+        <li><a href="#"><img src="images/sns1.png" alt="sns1"></a></li>
+        <li><a href="#"><img src="images/sns2.png" alt="sns2"></a></li>
+        <li><a href="#"><img src="images/sns3.png" alt="sns3"></a></li>
+      </ul>
+      <p class="fcopy">COPYRIGHT &copy; by WEB DESIGN DEVELOPMENT. ALL RIGHTS RESERVED.</p>
+    </footer>
+
+  </div><!-- //inner -->
 
   <div class="popup">
-    <div class="popup-inner">
-      <p>팝업 내용</p>
-      <button class="btn-close">닫기</button>
-    </div>
+    <h2>공지사항 팝업</h2>
+    <p class="img"><img src="images/pop.jpg" alt="팝업이미지"></p>
+    <p class="text">팝업 내용입니다.</p>
+    <p class="close"><button>CLOSE X</button></p>
   </div>
 
-  <footer class="footer">
-    <button class="btn-open">공지사항 팝업 열기</button>
-    <p>Copyright &copy; 2025. All rights reserved.</p>
-  </footer>
-
-</div>
+</div><!-- //wrap -->
 </body>
 </html>`,
   B: `<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>B유형 - 가로100% 유동형</title>
   <link rel="stylesheet" href="css/style.css">
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"><\/script>
+  <script src="js/jquery-1.12.3.js"><\/script>
   <script src="js/script.js"><\/script>
 </head>
 <body>
 <div class="wrap">
 
-  <!-- 헤더: inner로 내부 콘텐츠 너비 제한 -->
-  <header class="header">
+  <header>
     <div class="inner">
-      <h1 class="logo"><a href="#">로고</a></h1>
-      <nav class="gnb">
-        <ul class="menu">
+      <h1>
+        <a href="#"><img src="images/logo.png" alt="로고"></a>
+      </h1>
+      <nav>
+        <ul>
           <li><a href="#">메뉴1</a>
             <ul class="sub">
               <li><a href="#">서브1-1</a></li>
+              <li><a href="#">서브1-2</a></li>
+              <li><a href="#">서브1-3</a></li>
+              <li><a href="#">서브1-4</a></li>
             </ul>
           </li>
           <li><a href="#">메뉴2</a>
             <ul class="sub">
               <li><a href="#">서브2-1</a></li>
+              <li><a href="#">서브2-2</a></li>
+              <li><a href="#">서브2-3</a></li>
+              <li><a href="#">서브2-4</a></li>
             </ul>
           </li>
           <li><a href="#">메뉴3</a>
             <ul class="sub">
               <li><a href="#">서브3-1</a></li>
+              <li><a href="#">서브3-2</a></li>
+              <li><a href="#">서브3-3</a></li>
             </ul>
           </li>
           <li><a href="#">메뉴4</a>
             <ul class="sub">
               <li><a href="#">서브4-1</a></li>
+              <li><a href="#">서브4-2</a></li>
+              <li><a href="#">서브4-3</a></li>
             </ul>
           </li>
         </ul>
       </nav>
-    </div>
+      <div class="menuBg"></div>
+    </div><!-- //inner -->
   </header>
 
-  <!-- 슬라이드: 100% 풀스크린 -->
-  <section class="slider">
-    <div class="slider-wrap">
-      <ul class="slides">
-        <li><img src="images/slide1.jpg" alt="슬라이드1"></li>
-        <li><img src="images/slide2.jpg" alt="슬라이드2"></li>
-        <li><img src="images/slide3.jpg" alt="슬라이드3"></li>
+  <section class="slide">
+    <ul>
+      <li class="s1"><a href="#"><h2>슬라이드1</h2></a></li>
+      <li class="s2"><a href="#"><h2>슬라이드2</h2></a></li>
+      <li class="s3"><a href="#"><h2>슬라이드3</h2></a></li>
+    </ul>
+  </section>
+
+  <div class="contents">
+    <article class="con">
+      <ul class="tabmenu">
+        <li class="on">
+          <h2><a href="#">공지사항</a></h2>
+          <div class="notice tabcon">
+            <ul>
+              <li><a href="#" class="pop"><p>공지사항 내용 1</p><span class="date">2025.01.01</span></a></li>
+              <li><a href="#"><p>공지사항 내용 2</p><span class="date">2025.01.01</span></a></li>
+              <li><a href="#"><p>공지사항 내용 3</p><span class="date">2025.01.01</span></a></li>
+              <li><a href="#"><p>공지사항 내용 4</p><span class="date">2025.01.01</span></a></li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <h2><a href="#">갤러리</a></h2>
+          <div class="gall tabcon">
+            <ul>
+              <li><a href="#"><img src="images/g1.jpg" alt="갤러리1"></a></li>
+              <li><a href="#"><img src="images/g2.jpg" alt="갤러리2"></a></li>
+              <li><a href="#"><img src="images/g3.jpg" alt="갤러리3"></a></li>
+            </ul>
+          </div>
+        </li>
       </ul>
-    </div>
-  </section>
-
-  <section class="contents">
-    <div class="inner">
-      <div class="notice">
-        <ul class="tab-btn">
-          <li class="on"><a href="#">공지사항</a></li>
-          <li><a href="#">갤러리</a></li>
-        </ul>
-        <ul class="tab-cont">
-          <li class="on"><ul><li><a href="#">공지사항 1</a></li></ul></li>
-          <li><ul><li><a href="#">갤러리 1</a></li></ul></li>
-        </ul>
-      </div>
-      <div class="banner">
-        <a href="#"><img src="images/banner.jpg" alt="배너"></a>
-      </div>
-    </div>
-  </section>
-
-  <div class="popup">
-    <div class="popup-inner">
-      <p>팝업 내용</p>
-      <button class="btn-close">닫기</button>
-    </div>
+    </article>
+    <article class="banner">
+      <h2>배너</h2>
+      <a href="#"><img src="images/banner.jpg" alt="배너"></a>
+    </article>
+    <article class="go">
+      <h2>바로가기</h2>
+      <ul>
+        <li><a href="#"><p><img src="images/icon01.png" alt="바로가기1"></p><span>바로가기1</span></a></li>
+        <li><a href="#"><p><img src="images/icon02.png" alt="바로가기2"></p><span>바로가기2</span></a></li>
+        <li><a href="#"><p><img src="images/icon03.png" alt="바로가기3"></p><span>바로가기3</span></a></li>
+      </ul>
+    </article>
   </div>
 
-  <footer class="footer">
+  <footer>
     <div class="inner">
-      <button class="btn-open">공지사항 팝업 열기</button>
-      <p>Copyright &copy; 2025. All rights reserved.</p>
+      <p class="flogo"><img src="images/flogo.png" alt="로고"></p>
+      <div>
+        <ul class="fmenu">
+          <li><a href="#">하단메뉴1</a></li>
+          <li><a href="#">하단메뉴2</a></li>
+          <li><a href="#">하단메뉴3</a></li>
+          <li><a href="#">하단메뉴4</a></li>
+          <li><a href="#">하단메뉴5</a></li>
+        </ul>
+        <p class="fcopy">COPYRIGHT &copy; by WEB DESIGN DEVELOPMENT. ALL RIGHTS RESERVED.</p>
+      </div>
     </div>
   </footer>
 
-</div>
+  <div class="popup">
+    <div class="popcon">
+      <h2>공지사항 팝업</h2>
+      <p class="img"><img src="images/pop.jpg" alt="팝업이미지"></p>
+      <p class="text">팝업 내용입니다.</p>
+      <p class="close"><button>CLOSE X</button></p>
+    </div>
+  </div>
+
+</div><!-- //wrap -->
 </body>
 </html>`,
   C: `<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>C유형 - 세로2컬럼형</title>
   <link rel="stylesheet" href="css/style.css">
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"><\/script>
+  <script src="js/jquery-1.12.3.js"><\/script>
   <script src="js/script.js"><\/script>
 </head>
 <body>
 <div class="wrap">
 
-  <header class="header">
-    <h1 class="logo"><a href="#">로고</a></h1>
+  <header>
+    <h1>
+      <a href="#"><img src="images/logo.png" alt="로고"></a>
+    </h1>
+    <nav>
+      <ul>
+        <li><a href="#">메뉴1</a>
+          <ul class="sub">
+            <li><a href="#">서브1-1</a></li>
+            <li><a href="#">서브1-2</a></li>
+            <li><a href="#">서브1-3</a></li>
+            <li><a href="#">서브1-4</a></li>
+          </ul>
+        </li>
+        <li><a href="#">메뉴2</a>
+          <ul class="sub">
+            <li><a href="#">서브2-1</a></li>
+            <li><a href="#">서브2-2</a></li>
+            <li><a href="#">서브2-3</a></li>
+          </ul>
+        </li>
+        <li><a href="#">메뉴3</a>
+          <ul class="sub">
+            <li><a href="#">서브3-1</a></li>
+            <li><a href="#">서브3-2</a></li>
+            <li><a href="#">서브3-3</a></li>
+          </ul>
+        </li>
+        <li><a href="#">메뉴4</a>
+          <ul class="sub">
+            <li><a href="#">서브4-1</a></li>
+            <li><a href="#">서브4-2</a></li>
+            <li><a href="#">서브4-3</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
   </header>
 
-  <!-- C유형 핵심: aside + main 2컬럼 컨테이너 -->
-  <div class="container">
+  <!-- C유형 핵심: contents가 세로(왼쪽) + slide 배치 -->
+  <div class="contents">
 
-    <!-- 왼쪽: 세로 메뉴 -->
-    <aside class="aside">
-      <nav class="gnb">
-        <ul class="menu">
-          <li><a href="#">메뉴1</a>
-            <ul class="sub">
-              <li><a href="#">서브1-1</a></li>
-              <li><a href="#">서브1-2</a></li>
-            </ul>
-          </li>
-          <li><a href="#">메뉴2</a>
-            <ul class="sub">
-              <li><a href="#">서브2-1</a></li>
-            </ul>
-          </li>
-          <li><a href="#">메뉴3</a>
-            <ul class="sub">
-              <li><a href="#">서브3-1</a></li>
-            </ul>
-          </li>
-          <li><a href="#">메뉴4</a>
-            <ul class="sub">
-              <li><a href="#">서브4-1</a></li>
-            </ul>
-          </li>
+    <section class="slide">
+      <!-- 세로 animate: marginTop 방식 -->
+      <ul>
+        <li class="s1"><a href="#"><h2>슬라이드1</h2></a></li>
+        <li class="s2"><a href="#"><h2>슬라이드2</h2></a></li>
+        <li class="s3"><a href="#"><h2>슬라이드3</h2></a></li>
+      </ul>
+    </section>
+
+    <div class="con">
+      <article class="notice">
+        <h2>공지사항</h2>
+        <ul>
+          <li><a href="#" class="pop"><p>공지사항 내용 1</p><span class="date">2025.01.01</span></a></li>
+          <li><a href="#"><p>공지사항 내용 2</p><span class="date">2025.01.01</span></a></li>
+          <li><a href="#"><p>공지사항 내용 3</p><span class="date">2025.01.01</span></a></li>
+          <li><a href="#"><p>공지사항 내용 4</p><span class="date">2025.01.01</span></a></li>
         </ul>
-      </nav>
-    </aside>
+      </article>
+      <article class="gall">
+        <h2>갤러리</h2>
+        <ul>
+          <li><a href="#"><img src="images/g1.jpg" alt="갤러리1"></a></li>
+          <li><a href="#"><img src="images/g2.jpg" alt="갤러리2"></a></li>
+          <li><a href="#"><img src="images/g3.jpg" alt="갤러리3"></a></li>
+        </ul>
+      </article>
+      <article class="go">
+        <h2>바로가기</h2>
+        <ul>
+          <li><a href="#"><img src="images/icon01.png" alt="바로가기1"> 바로가기1</a></li>
+          <li><a href="#"><img src="images/icon02.png" alt="바로가기2"> 바로가기2</a></li>
+          <li><a href="#"><img src="images/icon03.png" alt="바로가기3"> 바로가기3</a></li>
+        </ul>
+      </article>
+    </div>
 
-    <!-- 오른쪽: 슬라이드 + 콘텐츠 + 푸터 -->
-    <main class="main">
+    <footer>
+      <div>
+        <ul class="fsns">
+          <li><a href="#"><img src="images/sns1.png" alt="sns1"></a></li>
+          <li><a href="#"><img src="images/sns2.png" alt="sns2"></a></li>
+          <li><a href="#"><img src="images/sns3.png" alt="sns3"></a></li>
+        </ul>
+        <select name="familysite">
+          <option>Family Site1</option>
+          <option>Family Site2</option>
+          <option>Family Site3</option>
+        </select>
+      </div>
+      <p class="fcopy">COPYRIGHT &copy; by WEB DESIGN DEVELOPMENT. ALL RIGHTS RESERVED.</p>
+    </footer>
 
-      <section class="slider">
-        <div class="slider-wrap">
-          <ul class="slides">
-            <li><img src="images/slide1.jpg" alt="슬라이드1"></li>
-            <li><img src="images/slide2.jpg" alt="슬라이드2"></li>
-            <li><img src="images/slide3.jpg" alt="슬라이드3"></li>
-          </ul>
-        </div>
-      </section>
-
-      <section class="contents">
-        <div class="notice">
-          <ul class="tab-btn">
-            <li class="on"><a href="#">공지사항</a></li>
-            <li><a href="#">갤러리</a></li>
-          </ul>
-          <ul class="tab-cont">
-            <li class="on"><ul><li><a href="#">공지사항 1</a></li></ul></li>
-            <li><ul><li><a href="#">갤러리 1</a></li></ul></li>
-          </ul>
-        </div>
-        <div class="banner">
-          <a href="#"><img src="images/banner.jpg" alt="배너"></a>
-        </div>
-      </section>
-
-      <footer class="footer">
-        <button class="btn-open">공지사항 팝업 열기</button>
-        <p>Copyright &copy; 2025. All rights reserved.</p>
-      </footer>
-
-    </main>
-  </div><!-- /container -->
+  </div><!-- //contents -->
 
   <div class="popup">
-    <div class="popup-inner">
-      <p>팝업 내용</p>
-      <button class="btn-close">닫기</button>
+    <div class="popcon">
+      <h2>공지사항 팝업</h2>
+      <p class="img"><img src="images/pop.jpg" alt="팝업이미지"></p>
+      <p class="text">팝업 내용입니다.</p>
+      <p class="close"><button>CLOSE X</button></p>
     </div>
   </div>
 
-</div>
+</div><!-- //wrap -->
 </body>
 </html>`,
   D: `<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>D유형 - 세로2컬럼 + 슬라이드100vw</title>
   <link rel="stylesheet" href="css/style.css">
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"><\/script>
+  <script src="js/jquery-1.12.3.js"><\/script>
   <script src="js/script.js"><\/script>
 </head>
 <body>
 <div class="wrap">
+  <div class="top">
 
-  <!-- D유형 핵심: aside가 position:fixed로 화면에 고정 -->
-  <aside class="aside">
-    <h1 class="logo"><a href="#">로고</a></h1>
-    <nav class="gnb">
-      <ul class="menu">
-        <li><a href="#">메뉴1</a>
-          <ul class="sub">
-            <li><a href="#">서브1-1</a></li>
-            <li><a href="#">서브1-2</a></li>
-          </ul>
-        </li>
-        <li><a href="#">메뉴2</a>
-          <ul class="sub">
-            <li><a href="#">서브2-1</a></li>
-          </ul>
-        </li>
-        <li><a href="#">메뉴3</a>
-          <ul class="sub">
-            <li><a href="#">서브3-1</a></li>
-          </ul>
-        </li>
-        <li><a href="#">메뉴4</a>
-          <ul class="sub">
-            <li><a href="#">서브4-1</a></li>
-          </ul>
-        </li>
-      </ul>
-    </nav>
-  </aside>
+    <header>
+      <h1>
+        <a href="#"><img src="images/logo.png" alt="로고"></a>
+      </h1>
+      <nav>
+        <ul>
+          <li><a href="#">메뉴1</a>
+            <ul class="sub">
+              <li><a href="#">서브1-1</a></li>
+              <li><a href="#">서브1-2</a></li>
+              <li><a href="#">서브1-3</a></li>
+              <li><a href="#">서브1-4</a></li>
+            </ul>
+          </li>
+          <li><a href="#">메뉴2</a>
+            <ul class="sub">
+              <li><a href="#">서브2-1</a></li>
+              <li><a href="#">서브2-2</a></li>
+              <li><a href="#">서브2-3</a></li>
+              <li><a href="#">서브2-4</a></li>
+            </ul>
+          </li>
+          <li><a href="#">메뉴3</a>
+            <ul class="sub">
+              <li><a href="#">서브3-1</a></li>
+              <li><a href="#">서브3-2</a></li>
+              <li><a href="#">서브3-3</a></li>
+              <li><a href="#">서브3-4</a></li>
+            </ul>
+          </li>
+          <li><a href="#">메뉴4</a>
+            <ul class="sub">
+              <li><a href="#">서브4-1</a></li>
+              <li><a href="#">서브4-2</a></li>
+              <li><a href="#">서브4-3</a></li>
+              <li><a href="#">서브4-4</a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </header>
 
-  <!-- main: aside 옆에 위치 -->
-  <main class="main">
+    <!-- D유형 핵심: contents가 슬라이드+바로가기+배너+탭 -->
+    <div class="contents">
 
-    <!-- D유형 핵심: 슬라이드 100vw 풀스크린 -->
-    <section class="slider">
-      <div class="slider-wrap">
-        <ul class="slides">
-          <li><img src="images/slide1.jpg" alt="슬라이드1"></li>
-          <li><img src="images/slide2.jpg" alt="슬라이드2"></li>
-          <li><img src="images/slide3.jpg" alt="슬라이드3"></li>
+      <!-- D유형 슬라이드: 가로 marginLeft animate (width:300%) -->
+      <section class="slide">
+        <ul>
+          <li class="s1"><a href="#"><h2>슬라이드1</h2></a></li>
+          <li class="s2"><a href="#"><h2>슬라이드2</h2></a></li>
+          <li class="s3"><a href="#"><h2>슬라이드3</h2></a></li>
+        </ul>
+      </section>
+
+      <div class="go">
+        <ul>
+          <li><a href="#"><img src="images/icon01.png" alt="바로가기1"><span>바로가기1</span></a></li>
+          <li><a href="#"><img src="images/icon02.png" alt="바로가기2"><span>바로가기2</span></a></li>
+          <li><a href="#"><img src="images/icon03.png" alt="바로가기3"><span>바로가기3</span></a></li>
         </ul>
       </div>
-    </section>
 
-    <section class="contents">
-      <div class="notice">
-        <ul class="tab-btn">
-          <li class="on"><a href="#">공지사항</a></li>
-          <li><a href="#">갤러리</a></li>
+      <article class="banner">
+        <a href="#">
+          <div class="photo"><img src="images/banner.jpg" alt="배너"></div>
+          <div class="text"><h2>배너 제목</h2><ul><li>배너 내용1</li><li>배너 내용2</li></ul></div>
+          <div class="arrow"><img src="images/arrow.png" alt="바로가기"></div>
+        </a>
+      </article>
+
+      <article class="con">
+        <ul class="tabmenu">
+          <li class="on">
+            <h2><a href="#">공지사항</a></h2>
+            <div class="notice tabcon">
+              <ul>
+                <li><a href="#" class="pop"><p>공지사항 내용 1</p><span class="date">2025.01.01</span></a></li>
+                <li><a href="#"><p>공지사항 내용 2</p><span class="date">2025.01.01</span></a></li>
+                <li><a href="#"><p>공지사항 내용 3</p><span class="date">2025.01.01</span></a></li>
+                <li><a href="#"><p>공지사항 내용 4</p><span class="date">2025.01.01</span></a></li>
+              </ul>
+            </div>
+          </li>
+          <li>
+            <h2><a href="#">갤러리</a></h2>
+            <div class="gall tabcon">
+              <ul>
+                <li><a href="#"><p><img src="images/g1.jpg" alt="갤러리1"></p><span>갤러리1</span></a></li>
+                <li><a href="#"><p><img src="images/g2.jpg" alt="갤러리2"></p><span>갤러리2</span></a></li>
+                <li><a href="#"><p><img src="images/g3.jpg" alt="갤러리3"></p><span>갤러리3</span></a></li>
+              </ul>
+            </div>
+          </li>
         </ul>
-        <ul class="tab-cont">
-          <li class="on"><ul><li><a href="#">공지사항 1</a></li></ul></li>
-          <li><ul><li><a href="#">갤러리 1</a></li></ul></li>
-        </ul>
-      </div>
-      <div class="banner">
-        <a href="#"><img src="images/banner.jpg" alt="배너"></a>
-      </div>
-    </section>
+      </article>
 
-    <div class="popup">
-      <div class="popup-inner">
-        <p>팝업 내용</p>
-        <button class="btn-close">닫기</button>
-      </div>
-    </div>
+    </div><!-- //contents -->
+  </div><!-- //top -->
 
-    <footer class="footer">
-      <button class="btn-open">공지사항 팝업 열기</button>
-      <p>Copyright &copy; 2025. All rights reserved.</p>
-    </footer>
+  <footer>
+    <p class="flogo"><img src="images/flogo.png" alt="로고"></p>
+    <p class="fcopy">COPYRIGHT &copy; by WEB DESIGN DEVELOPMENT. ALL RIGHTS RESERVED.</p>
+  </footer>
 
-  </main>
-</div>
+  <div class="popup">
+    <h2>공지사항 팝업</h2>
+    <p class="img"><img src="images/pop.jpg" alt="팝업이미지"></p>
+    <p class="text">팝업 내용입니다.</p>
+    <p class="close"><button>CLOSE X</button></p>
+  </div>
+
+</div><!-- //wrap -->
 </body>
 </html>`,
   E: `<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>E유형 - 세로3컬럼형</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E유형 - 세로 3컬럼형</title>
   <link rel="stylesheet" href="css/style.css">
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"><\/script>
+  <script src="js/jquery-1.12.3.js"><\/script>
   <script src="js/script.js"><\/script>
 </head>
 <body>
 <div class="wrap">
+  <div class="top">
 
-  <header class="header">
-    <h1 class="logo"><a href="#">로고</a></h1>
-  </header>
-
-  <!-- E유형 핵심: 3컬럼 flex 컨테이너 -->
-  <div class="container">
-
-    <!-- 왼쪽 aside: 세로 메뉴 -->
-    <aside class="aside-left">
-      <nav class="gnb">
-        <ul class="menu">
+    <header>
+      <h1>
+        <a href="#"><img src="images/logo.png" alt="로고"></a>
+      </h1>
+      <nav>
+        <ul>
           <li><a href="#">메뉴1</a>
             <ul class="sub">
               <li><a href="#">서브1-1</a></li>
               <li><a href="#">서브1-2</a></li>
+              <li><a href="#">서브1-3</a></li>
+              <li><a href="#">서브1-4</a></li>
             </ul>
           </li>
           <li><a href="#">메뉴2</a>
             <ul class="sub">
               <li><a href="#">서브2-1</a></li>
+              <li><a href="#">서브2-2</a></li>
+              <li><a href="#">서브2-3</a></li>
+              <li><a href="#">서브2-4</a></li>
             </ul>
           </li>
           <li><a href="#">메뉴3</a>
             <ul class="sub">
               <li><a href="#">서브3-1</a></li>
+              <li><a href="#">서브3-2</a></li>
+              <li><a href="#">서브3-3</a></li>
+              <li><a href="#">서브3-4</a></li>
             </ul>
           </li>
           <li><a href="#">메뉴4</a>
             <ul class="sub">
               <li><a href="#">서브4-1</a></li>
+              <li><a href="#">서브4-2</a></li>
+              <li><a href="#">서브4-3</a></li>
             </ul>
           </li>
         </ul>
       </nav>
-    </aside>
+    </header>
 
-    <!-- 가운데 main -->
-    <main class="main">
-      <section class="slider">
-        <div class="slider-wrap">
-          <ul class="slides">
-            <li><img src="images/slide1.jpg" alt="슬라이드1"></li>
-            <li><img src="images/slide2.jpg" alt="슬라이드2"></li>
-            <li><img src="images/slide3.jpg" alt="슬라이드3"></li>
-          </ul>
-        </div>
-      </section>
+    <!-- E유형 핵심: contents(왼쪽) + slide(오른쪽) -->
+    <div class="contents">
+      <article class="notice">
+        <h2>공지사항</h2>
+        <ul>
+          <li><a href="#" class="pop"><p>공지사항 내용 1</p><span class="date">2025.01.01</span></a></li>
+          <li><a href="#"><p>공지사항 내용 2</p><span class="date">2025.01.01</span></a></li>
+          <li><a href="#"><p>공지사항 내용 3</p><span class="date">2025.01.01</span></a></li>
+          <li><a href="#"><p>공지사항 내용 4</p><span class="date">2025.01.01</span></a></li>
+        </ul>
+      </article>
+      <article class="gall">
+        <h2>갤러리</h2>
+        <ul>
+          <li><a href="#"><img src="images/g1.jpg" alt="갤러리1"><p class="txt">갤러리1</p></a></li>
+          <li><a href="#"><img src="images/g2.jpg" alt="갤러리2"><p class="txt">갤러리2</p></a></li>
+        </ul>
+      </article>
+      <article class="go">
+        <ul>
+          <li><a href="#"><img src="images/icon01.png" alt="바로가기1"><h2 class="txt">바로가기1</h2></a></li>
+          <li><a href="#"><img src="images/icon02.png" alt="바로가기2"><h2 class="txt">바로가기2</h2></a></li>
+          <li><a href="#"><img src="images/icon03.png" alt="바로가기3"><h2 class="txt">바로가기3</h2></a></li>
+          <li><a href="#"><img src="images/icon04.png" alt="바로가기4"><h2 class="txt">바로가기4</h2></a></li>
+        </ul>
+      </article>
+    </div>
 
-      <section class="contents">
-        <div class="notice">
-          <ul class="tab-btn">
-            <li class="on"><a href="#">공지사항</a></li>
-            <li><a href="#">갤러리</a></li>
-          </ul>
-          <ul class="tab-cont">
-            <li class="on"><ul><li><a href="#">공지사항 1</a></li></ul></li>
-            <li><ul><li><a href="#">갤러리 1</a></li></ul></li>
-          </ul>
-        </div>
-      </section>
+    <!-- E유형 핵심: 슬라이드가 오른쪽에 위치 (세로 marginTop) -->
+    <div class="slide">
+      <ul>
+        <li class="s1"><a href="#"><div class="text"><h2>슬라이드1</h2><p>슬라이드 설명1</p></div></a></li>
+        <li class="s2"><a href="#"><div class="text"><h2>슬라이드2</h2><p>슬라이드 설명2</p></div></a></li>
+        <li class="s3"><a href="#"><div class="text"><h2>슬라이드3</h2><p>슬라이드 설명3</p></div></a></li>
+      </ul>
+    </div>
 
-      <footer class="footer">
-        <button class="btn-open">공지사항 팝업 열기</button>
-        <p>Copyright &copy; 2025. All rights reserved.</p>
-      </footer>
-    </main>
+  </div><!-- //top -->
 
-    <!-- 오른쪽 aside: 배너 -->
-    <aside class="aside-right">
-      <div class="side-banner">
-        <a href="#"><img src="images/banner1.jpg" alt="배너1"></a>
-      </div>
-      <div class="side-banner">
-        <a href="#"><img src="images/banner2.jpg" alt="배너2"></a>
-      </div>
-    </aside>
-
-  </div><!-- /container -->
+  <footer>
+    <p class="flogo"><img src="images/flogo.png" alt="로고"></p>
+    <div>
+      <ul class="fmenu">
+        <li><a href="#">하단메뉴1</a></li>
+        <li><a href="#">하단메뉴2</a></li>
+        <li><a href="#">하단메뉴3</a></li>
+        <li><a href="#">하단메뉴4</a></li>
+      </ul>
+      <p class="fcopy">COPYRIGHT &copy; by WEB DESIGN DEVELOPMENT. ALL RIGHTS RESERVED.</p>
+    </div>
+  </footer>
 
   <div class="popup">
-    <div class="popup-inner">
-      <p>팝업 내용</p>
-      <button class="btn-close">닫기</button>
-    </div>
+    <h2>공지사항 팝업</h2>
+    <p class="img"><img src="images/pop.jpg" alt="팝업이미지"></p>
+    <p class="text">팝업 내용입니다.</p>
+    <p class="close"><button>CLOSE X</button></p>
   </div>
 
-</div>
+</div><!-- //wrap -->
 </body>
 </html>`,
   F: `<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>F유형 - 가로고정 + 슬라이드100vw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>F유형 - 고정 + 슬라이드100vw</title>
   <link rel="stylesheet" href="css/style.css">
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"><\/script>
+  <script src="js/jquery-1.12.3.js"><\/script>
   <script src="js/script.js"><\/script>
 </head>
 <body>
 <div class="wrap">
 
-  <header class="header">
-    <h1 class="logo"><a href="#">로고</a></h1>
-    <nav class="gnb">
-      <ul class="menu">
+  <!-- F유형 핵심: header 1340px -->
+  <header>
+    <h1>
+      <a href="#"><img src="images/logo.png" alt="로고"></a>
+    </h1>
+    <nav>
+      <ul>
         <li><a href="#">메뉴1</a>
           <ul class="sub">
             <li><a href="#">서브1-1</a></li>
+            <li><a href="#">서브1-2</a></li>
+            <li><a href="#">서브1-3</a></li>
+            <li><a href="#">서브1-4</a></li>
           </ul>
         </li>
         <li><a href="#">메뉴2</a>
           <ul class="sub">
             <li><a href="#">서브2-1</a></li>
+            <li><a href="#">서브2-2</a></li>
+            <li><a href="#">서브2-3</a></li>
           </ul>
         </li>
         <li><a href="#">메뉴3</a>
           <ul class="sub">
             <li><a href="#">서브3-1</a></li>
+            <li><a href="#">서브3-2</a></li>
+            <li><a href="#">서브3-3</a></li>
+            <li><a href="#">서브3-4</a></li>
           </ul>
         </li>
         <li><a href="#">메뉴4</a>
           <ul class="sub">
             <li><a href="#">서브4-1</a></li>
+            <li><a href="#">서브4-2</a></li>
+            <li><a href="#">서브4-3</a></li>
+            <li><a href="#">서브4-4</a></li>
           </ul>
         </li>
       </ul>
     </nav>
   </header>
 
-  <!-- F유형 핵심: 슬라이드만 100vw 이탈 -->
-  <section class="slider">
-    <div class="slider-wrap">
-      <ul class="slides">
-        <li><img src="images/slide1.jpg" alt="슬라이드1"></li>
-        <li><img src="images/slide2.jpg" alt="슬라이드2"></li>
-        <li><img src="images/slide3.jpg" alt="슬라이드3"></li>
-      </ul>
-    </div>
+  <!-- F유형 핵심: 슬라이드 fadeIn + go가 슬라이드 위에 absolute -->
+  <section class="slide">
+    <ul>
+      <li class="s1"><a href="#"><h2><span>슬라이드1</span></h2></a></li>
+      <li class="s2"><a href="#"><h2><span>슬라이드2</span></h2></a></li>
+      <li class="s3"><a href="#"><h2><span>슬라이드3</span></h2></a></li>
+    </ul>
   </section>
 
-  <section class="contents">
-    <div class="notice">
-      <ul class="tab-btn">
-        <li class="on"><a href="#">공지사항</a></li>
-        <li><a href="#">갤러리</a></li>
+  <div class="contents">
+    <!-- 바로가기: 슬라이드 위에 absolute로 올라감 -->
+    <article class="go">
+      <ul>
+        <li><a href="#"><h2><img src="images/icon01.png" alt="바로가기1">바로가기1</h2></a></li>
+        <li><a href="#"><h2><img src="images/icon02.png" alt="바로가기2">바로가기2</h2></a></li>
+        <li><a href="#"><h2><img src="images/icon03.png" alt="바로가기3">바로가기3</h2></a></li>
+        <li><a href="#"><h2><img src="images/icon04.png" alt="바로가기4">바로가기4</h2></a></li>
+        <li><a href="#"><h2><img src="images/icon05.png" alt="바로가기5">바로가기5</h2></a></li>
       </ul>
-      <ul class="tab-cont">
-        <li class="on"><ul><li><a href="#">공지사항 1</a></li></ul></li>
-        <li><ul><li><a href="#">갤러리 1</a></li></ul></li>
+    </article>
+    <article class="banner">
+      <a href="#">
+        <p class="imgBox"><img src="images/banner.jpg" alt="배너"></p>
+        <div class="txtBox">
+          <h2>배너 제목</h2>
+          <p class="date">2025-01-01</p>
+          <p class="txt">배너 내용입니다.</p>
+        </div>
+        <p class="arrow"><img src="images/arrow.png" alt="바로가기"></p>
+      </a>
+    </article>
+    <article class="board">
+      <div class="notice">
+        <h2>공지사항</h2>
+        <ul>
+          <li><a href="#" class="pop"><p>공지사항 내용 1</p><span class="date">2025.01.01</span></a></li>
+          <li><a href="#"><p>공지사항 내용 2</p><span class="date">2025.01.01</span></a></li>
+          <li><a href="#"><p>공지사항 내용 3</p><span class="date">2025.01.01</span></a></li>
+          <li><a href="#"><p>공지사항 내용 4</p><span class="date">2025.01.01</span></a></li>
+        </ul>
+      </div>
+      <div class="gall">
+        <h2>갤러리</h2>
+        <ul>
+          <li><a href="#"><p class="box"><img src="images/g1.jpg" alt="갤러리1"></p><span>갤러리1</span></a></li>
+          <li><a href="#"><p class="box"><img src="images/g2.jpg" alt="갤러리2"></p><span>갤러리2</span></a></li>
+          <li><a href="#"><p class="box"><img src="images/g3.jpg" alt="갤러리3"></p><span>갤러리3</span></a></li>
+        </ul>
+      </div>
+    </article>
+  </div>
+
+  <!-- F유형 핵심: footer 1340px -->
+  <footer>
+    <div>
+      <ul class="fsns">
+        <li><a href="#"><img src="images/sns1.png" alt="sns1"></a></li>
+        <li><a href="#"><img src="images/sns2.png" alt="sns2"></a></li>
+        <li><a href="#"><img src="images/sns3.png" alt="sns3"></a></li>
       </ul>
+      <select name="familysite">
+        <option>Family Site1</option>
+        <option>Family Site2</option>
+        <option>Family Site3</option>
+      </select>
     </div>
-    <div class="banner">
-      <a href="#"><img src="images/banner.jpg" alt="배너"></a>
-    </div>
-  </section>
+    <p class="fcopy">COPYRIGHT &copy; by WEB DESIGN DEVELOPMENT. ALL RIGHTS RESERVED.</p>
+  </footer>
 
   <div class="popup">
-    <div class="popup-inner">
-      <p>팝업 내용</p>
-      <button class="btn-close">닫기</button>
+    <div class="popcon">
+      <h2>공지사항 팝업</h2>
+      <p class="img"><img src="images/pop.jpg" alt="팝업이미지"></p>
+      <p class="text">팝업 내용입니다.</p>
+      <p class="close"><button>CLOSE X</button></p>
     </div>
   </div>
 
-  <footer class="footer">
-    <button class="btn-open">공지사항 팝업 열기</button>
-    <p>Copyright &copy; 2025. All rights reserved.</p>
-  </footer>
-
-</div>
+</div><!-- //wrap -->
 </body>
 </html>`,
 };
 
+// ─── CSS 코드 ───
 const CSS_CODE = {
   A:`@charset "UTF-8";
-
-/* ══ 리셋 ══ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-ul, ol { list-style: none; }
+li { list-style: none; }
 a { text-decoration: none; color: inherit; }
-img { display: block; width: 100%; }
+img { vertical-align: top; max-width: 100%; }
+button { cursor: pointer; }
 
-/* ══ A유형 핵심: wrap 1200px 고정 ══ */
-.wrap {
-  width: 1200px;
-  margin: 0 auto;
-}
+/* ══ A유형 핵심: wrap + inner로 1200px 고정 중앙정렬 ══ */
+.wrap { position: relative; }
+.inner { width: 1200px; margin: auto; }
 
 /* ══ 헤더 ══ */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 80px;
-  padding: 0 20px;
+header {
+  position: relative;
+  height: 100px;
   background: #fff;
-  border-bottom: 1px solid #ddd;
+  padding-top: 35px;
+  padding-left: 10px;
 }
-.logo a { font-size: 24px; font-weight: bold; }
-
-/* ══ 수평 메뉴 ══ */
-.gnb .menu { display: flex; }
-.gnb .menu > li { position: relative; }
-.gnb .menu > li > a {
-  display: block;
-  padding: 0 20px;
-  line-height: 80px;
-}
-.gnb .menu > li:hover > a { color: #e74c3c; }
-
-/* ══ 서브 메뉴 ══ */
-.gnb .sub {
-  display: none;
+nav {
   position: absolute;
-  top: 80px;
-  left: 0;
-  min-width: 120px;
-  background: #fff;
-  border: 1px solid #ddd;
-  z-index: 100;
+  top: 40px;
+  right: 10px;
+  z-index: 10;
 }
-.gnb .menu > li:hover .sub { display: block; }
-.gnb .sub li a {
+nav > ul { display: flex; }
+nav > ul > li > a {
   display: block;
-  padding: 10px 16px;
+  width: 120px;
+  text-align: center;
+  font-weight: bold;
+  padding: 10px;
+  background: #333;
+  color: #fff;
+}
+nav > ul > li:hover > a { background: #e74c3c; }
+
+/* ══ 서브메뉴 ══ */
+.sub { display: none; }
+.sub li a {
+  display: block;
+  background: #fff;
+  padding: 5px;
+  text-align: center;
   font-size: 14px;
+  border-bottom: 1px solid #eee;
 }
-.gnb .sub li a:hover { background: #f5f5f5; }
+.sub li a:hover { background: #333; color: #fff; }
 
-/* ══ 슬라이드: position:absolute + animate left 방식 ══ */
-.slider { height: 400px; overflow: hidden; position: relative; }
-.slider-wrap { position: relative; height: 100%; }
-.slider-wrap ul {
-  display: flex;
-  width: 300%;
+/* ══ 슬라이드: marginLeft animate 방식 ══ */
+.slide { height: 300px; overflow: hidden; }
+.slide ul { width: 3600px; height: 300px; display: flex; }
+.slide ul li { position: relative; width: 1200px; height: 300px; }
+.slide ul li a { display: block; height: 100%; }
+.slide ul li.s1 { background: url(../images/s1.jpg) no-repeat center/cover; }
+.slide ul li.s2 { background: url(../images/s2.jpg) no-repeat center/cover; }
+.slide ul li.s3 { background: url(../images/s3.jpg) no-repeat center/cover; }
+.slide ul li h2 {
   position: absolute;
-  top: 0; left: 0;
-  height: 100%;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  padding: 15px 30px;
+  border-radius: 30px;
+  font-size: 24px;
 }
-.slider-wrap ul li { width: calc(100% / 3); height: 100%; }
-.slider-wrap ul li img { width: 100%; height: 100%; object-fit: cover; }
 
 /* ══ 콘텐츠 ══ */
-.contents {
-  display: flex;
-  gap: 20px;
-  padding: 40px 20px;
+.contents { height: 200px; display: flex; }
+.contents article { width: 400px; }
+.notice { padding: 10px; }
+.notice h2 {
+  background: #333; color: #fff;
+  border-radius: 10px 10px 0 0;
+  width: 120px; text-align: center;
+  padding: 5px 0; font-size: 20px;
 }
-.notice { flex: 1; }
+.notice ul { background: #333; padding: 5px 15px; }
+.notice ul li { border-bottom: 1px dashed #fff; }
+.notice ul li:last-child { border-bottom: none; }
+.notice ul li a { display: block; padding: 5px 0; position: relative; color: #fff; }
+.notice ul li p { width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.notice ul li span { position: absolute; right: 0; top: 5px; }
+.gall { padding: 10px; }
+.gall h2 { background: #e74c3c; color: #fff; border-radius: 10px 10px 0 0; width: 120px; text-align: center; padding: 5px 0; font-size: 20px; }
+.gall ul { display: flex; background: #e74c3c; padding: 10px; gap: 10px; }
+.gall ul li img { width: 120px; height: 120px; object-fit: cover; }
+.go { background: #eee; padding: 10px; }
+.go h2 { color: #333; margin-bottom: 20px; }
+.go ul { display: flex; justify-content: center; gap: 20px; }
+.go ul li { text-align: center; }
+.go ul li a { display: block; height: 100%; }
+.go ul li p { width: 80px; height: 80px; background: #333; padding-top: 20px; border-radius: 20px; margin-bottom: 5px; }
+.go ul li span { font-weight: bold; }
 
-/* ══ 탭 메뉴 ══ */
-.tab-btn { display: flex; border-bottom: 2px solid #ddd; }
-.tab-btn li a {
-  display: block;
-  padding: 10px 20px;
-  color: #888;
+/* ══ 푸터 ══ */
+footer {
+  position: relative; height: 100px;
+  background: #666; color: #fff;
+  padding-left: 20px;
+  display: flex; gap: 30px; align-items: center;
 }
-.tab-btn li.on a {
-  color: #e74c3c;
-  border-bottom: 2px solid #e74c3c;
-}
-.tab-cont li { display: none; padding-top: 16px; }
-.tab-cont li.on { display: block; }
-.banner { width: 300px; }
+.flogo img { height: 40px; width: auto; }
+.fsns { position: absolute; display: flex; gap: 10px; top: 30px; right: 30px; }
+.fsns li a { display: block; width: 30px; height: 30px; background: #fff; border-radius: 50%; text-align: center; padding-top: 10px; }
+.fcopy { font-size: 12px; }
 
 /* ══ 팝업 ══ */
 .popup {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5);
-  z-index: 999;
-  justify-content: center;
-  align-items: center;
+  position: absolute;
+  width: 500px; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff; text-align: center;
+  padding: 20px; border: 2px solid #e74c3c;
+  border-radius: 20px; z-index: 9999; display: none;
 }
-.popup.on { display: flex; }
-.popup-inner {
-  background: #fff;
-  padding: 30px;
-  border-radius: 8px;
-  text-align: center;
+.popup h2 { color: #e74c3c; margin-bottom: 20px; }
+.popup .text { margin: 20px 0; }
+.popup .close { text-align: right; }
+.popup .close button { background: #333; border: 0; padding: 10px; color: #fff; }
+.popup .close button:hover { background: #e74c3c; }`,
+
+  B:`@charset "UTF-8";
+* { margin: 0; padding: 0; box-sizing: border-box; }
+li { list-style: none; }
+a { text-decoration: none; color: inherit; }
+img { vertical-align: top; max-width: 100%; }
+button { cursor: pointer; }
+
+/* ══ B유형 핵심: wrap 100% + inner 1200px ══ */
+.wrap { position: relative; }
+.inner { width: 1200px; height: 100%; margin: auto; }
+
+/* ══ 헤더 ══ */
+header { height: 100px; background: #003366; }
+header .inner {
+  padding-top: 30px; position: relative;
+  background: #003366;
 }
-.btn-close {
-  display: block;
-  margin: 16px auto 0;
-  padding: 8px 20px;
-  background: #333;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
+nav { position: absolute; top: 59px; right: 0; z-index: 10; }
+nav > ul { display: flex; }
+nav > ul > li > a { display: block; width: 150px; text-align: center; padding: 10px; color: #fff; }
+nav > ul > li:hover > a { background: #f4d01f; color: #003366; }
+.sub { display: none; }
+.sub a { display: block; text-align: center; padding: 10px 0; font-size: 14px; color: #fff; background: rgba(0,0,0,0.8); }
+.sub a:hover { background: #003366; }
+.menuBg {
+  width: 100%; height: 155px;
+  background: rgba(0,0,0,0.8);
+  top: 100px; left: 0;
+  position: absolute; z-index: 5; display: none;
 }
+
+/* ══ 슬라이드: fadeIn 방식 (li position:absolute) ══ */
+.slide { width: 1200px; height: 300px; margin: auto; position: relative; }
+.slide ul li { width: 1200px; height: 300px; position: absolute; top: 0; left: 0; display: none; }
+.slide ul li a { display: block; height: 100%; }
+.slide ul li.s1 { background: url(../images/s1.jpg) no-repeat center/cover; display: block; }
+.slide ul li.s2 { background: url(../images/s2.jpg) no-repeat center/cover; }
+.slide ul li.s3 { background: url(../images/s3.jpg) no-repeat center/cover; }
+.slide ul li h2 { color: #003366; text-shadow: 0 5px 10px #fff; font-size: 35px; position: absolute; top: 50%; left: 30px; transform: translateY(-50%); }
+
+/* ══ 콘텐츠 ══ */
+.contents { width: 1200px; height: 200px; margin: auto; display: flex; }
+.contents article { width: 400px; }
+.con { position: relative; padding: 10px; }
+.tabmenu { display: flex; }
+.tabmenu > li { width: 150px; background: #D3D3D3; }
+.tabmenu > li > h2 > a { display: block; text-align: center; padding: 5px 0; }
+.tabmenu > li.on { background: #003366; color: #fff; }
+.tabcon { position: absolute; left: 0; width: 100%; background: #003366; padding: 5px; height: 140px; }
+.notice ul { padding: 0 15px; }
+.notice ul li { border-bottom: 1px dashed #fff; }
+.notice ul li:last-child { border-bottom: none; }
+.notice ul li a { display: block; padding: 5px 0; position: relative; color: #fff; }
+.notice ul li p { width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.notice ul li span { position: absolute; right: 0; top: 5px; }
+.gall { display: none; }
+.gall ul { display: flex; gap: 10px; margin-top: 20px; justify-content: center; }
+.gall ul li img { width: 100px; height: 100px; object-fit: cover; }
+.banner { background: #fff; padding: 10px; }
+.banner h2 { color: #003366; margin-bottom: 10px; }
+.banner a { display: block; height: 130px; background: url(../images/banner.jpg) center/cover; border-radius: 30px; overflow: hidden; color: #fff; }
+.go { padding: 10px; }
+.go h2 { color: #003366; margin-bottom: 20px; }
+.go ul { display: flex; gap: 10px; justify-content: center; text-align: center; }
+.go ul li a { display: block; height: 100%; }
+.go ul li p { width: 80px; height: 80px; background: #003366; padding-top: 20px; border-radius: 20px; margin-bottom: 10px; }
+.go ul li span { font-weight: bold; }
 
 /* ══ 푸터 ══ */
-.footer {
-  background: #333;
-  color: #fff;
-  padding: 20px;
-  text-align: center;
-  font-size: 14px;
-}
-.btn-open {
-  display: inline-block;
-  margin-bottom: 10px;
-  padding: 8px 20px;
-  background: #e74c3c;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-}`,
-  B:`@charset "UTF-8";
+footer { height: 120px; background: #666; color: #fff; }
+footer .inner { background: #666; display: flex; gap: 30px; align-items: center; }
+.flogo img { height: 40px; width: auto; }
+.fmenu { display: flex; gap: 10px; }
+.fmenu li { border-right: 1px solid #fff; padding-right: 10px; font-size: 14px; }
+.fmenu li:last-child { border-right: none; }
+.fcopy { font-size: 12px; margin-top: 5px; }
 
-/* ══ 리셋 (A유형과 동일) ══ */
-* { margin: 0; padding: 0; box-sizing: border-box; }
-ul, ol { list-style: none; }
-a { text-decoration: none; color: inherit; }
-img { display: block; width: 100%; }
+/* ══ 팝업 ══ */
+.popup { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: none; }
+.popcon { position: relative; width: 500px; top: 50%; left: 50%; transform: translate(-50%,-50%); background: #003366; text-align: center; padding: 20px; color: #fff; border-radius: 20px; }
+.popcon h2 { margin-bottom: 20px; }
+.popcon .text { margin: 20px 0; }
+.popcon .close { text-align: right; }
+.popcon .close button { background: #333; border: 0; padding: 10px; color: #fff; }
+.popcon .close button:hover { background: #f4d01f; color: #000; }`,
 
-/* ══ B유형 핵심: wrap을 100%로! ══ */
-.wrap { width: 100%; }
-
-/* ══ inner: 내부 콘텐츠 너비 제한 ══ */
-.inner {
-  width: 1200px;
-  margin: 0 auto;
-}
-
-/* ══ 헤더 ══ */
-.header { background: #fff; border-bottom: 1px solid #ddd; }
-.header .inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 80px;
-}
-.logo a { font-size: 24px; font-weight: bold; }
-
-/* ══ 수평 메뉴 (A유형과 동일) ══ */
-.gnb .menu { display: flex; }
-.gnb .menu > li { position: relative; }
-.gnb .menu > li > a { display: block; padding: 0 20px; line-height: 80px; }
-.gnb .sub {
-  display: none;
-  position: absolute;
-  top: 80px; left: 0;
-  min-width: 120px;
-  background: #fff;
-  border: 1px solid #ddd;
-  z-index: 100;
-}
-.gnb .menu > li:hover .sub { display: block; }
-.gnb .sub li a { display: block; padding: 10px 16px; font-size: 14px; }
-
-/* ══ 슬라이드: 100% 풀스크린 (A유형과 동일한 animate left 방식) ══ */
-.slider { height: 400px; overflow: hidden; position: relative; width: 100%; }
-.slider-wrap { position: relative; height: 100%; }
-.slider-wrap ul {
-  display: flex;
-  width: 300%;
-  position: absolute;
-  top: 0; left: 0;
-  height: 100%;
-}
-.slider-wrap ul li { width: calc(100% / 3); height: 100%; }
-.slider-wrap ul li img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* ══ 콘텐츠 ══ */
-.contents { padding: 40px 0; }
-.contents .inner { display: flex; gap: 20px; }
-.notice { flex: 1; }
-.tab-btn { display: flex; border-bottom: 2px solid #ddd; }
-.tab-btn li a { display: block; padding: 10px 20px; color: #888; }
-.tab-btn li.on a { color: #e74c3c; border-bottom: 2px solid #e74c3c; }
-.tab-cont li { display: none; padding-top: 16px; }
-.tab-cont li.on { display: block; }
-.banner { width: 300px; }
-
-/* ══ 팝업 & 푸터 (A유형과 동일) ══ */
-.popup { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center; }
-.popup.on { display: flex; }
-.popup-inner { background:#fff; padding:30px; border-radius:8px; text-align:center; }
-.footer { background:#333; color:#fff; padding:20px 0; text-align:center; font-size:14px; }
-.btn-open { display:inline-block; margin-bottom:10px; padding:8px 20px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }
-.btn-close { display:block; margin:16px auto 0; padding:8px 20px; background:#333; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }`,
   C:`@charset "UTF-8";
-
-/* ══ 리셋 ══ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-ul, ol { list-style: none; }
+li { list-style: none; }
 a { text-decoration: none; color: inherit; }
-img { display: block; width: 100%; }
+img { vertical-align: top; max-width: 100%; }
+button { cursor: pointer; }
 
-.wrap { width: 1200px; margin: 0 auto; }
+/* ══ C유형 핵심: wrap이 세로 배치 (왼쪽 header + 오른쪽 contents) ══ */
+.wrap { width: 1000px; height: 670px; display: flex; position: relative; }
 
-/* ══ 헤더 ══ */
-.header {
-  display: flex;
-  align-items: center;
-  height: 70px;
-  padding: 0 20px;
-  background: #fff;
-  border-bottom: 1px solid #ddd;
-}
-.logo a { font-size: 22px; font-weight: bold; }
+/* ══ 헤더: 왼쪽 세로 고정 ══ */
+header { width: 200px; background: #1a237e; padding: 80px 10px; }
+nav { margin-top: 50px; position: relative; }
+nav > ul > li > a { display: block; border: 1px solid #ffeb3b; padding: 10px 0; text-align: center; color: #ffeb3b; border-bottom: 0; }
+nav > ul > li:last-child > a { border-bottom: 1px solid #ffeb3b; }
+nav > ul > li:hover > a { background: #ffeb3b; color: #1a237e; }
+.sub { position: absolute; left: 180px; top: -10px; z-index: 9; width: 150px; height: 250px; background: #ffeb3b; display: none; }
+.sub li a { display: block; padding: 10px 0; color: #1a237e; text-align: center; }
+.sub li a:hover { background: #757575; color: #fff; }
 
-/* ══ C유형 핵심: 2컬럼 flex ══ */
-.container { display: flex; }
+/* ══ 콘텐츠: 오른쪽 800px ══ */
+.contents { width: 800px; }
 
-/* ══ aside: 세로 메뉴 ══ */
-.aside {
-  width: 200px;
-  flex-shrink: 0;
-  background: #f5f5f5;
-  border-right: 1px solid #ddd;
-  min-height: 600px;
-}
-.gnb .menu > li > a {
-  display: block;
-  padding: 13px 18px;
-  font-weight: bold;
-  border-bottom: 1px solid #ddd;
-}
-.gnb .menu > li > a:hover { background: #e74c3c; color: #fff; }
+/* ══ 슬라이드: 세로 marginTop animate ══ */
+.slide { height: 350px; overflow: hidden; }
+.slide ul li { width: 800px; height: 350px; position: relative; }
+.slide ul li a { display: block; height: 100%; }
+.slide ul li.s1 { background: url(../images/s1.jpg) no-repeat center/cover; }
+.slide ul li.s2 { background: url(../images/s2.jpg) no-repeat center/cover; }
+.slide ul li.s3 { background: url(../images/s3.jpg) no-repeat center/cover; }
+.slide ul li h2 { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); background: #1a237e; border-radius: 20px 0; padding: 10px 40px; color: #ffeb3b; width: 600px; text-align: center; }
 
-/* ══ 서브 메뉴: 아래로 열림 ══ */
-.gnb .sub { display: none; background: #fafafa; }
-.gnb .sub li a {
-  display: block;
-  padding: 9px 18px 9px 30px;
-  font-size: 13px;
-  border-bottom: 1px solid #eee;
-}
-.gnb .sub li a:hover { color: #e74c3c; }
+/* ══ 콘 영역 ══ */
+.con { height: 200px; display: flex; }
+.notice { width: 300px; padding: 5px; }
+.notice h2 { background: #1a237e; padding: 5px; color: #fff; text-align: center; margin-bottom: 10px; }
+.notice ul li { border-bottom: 1px dashed #ccc; }
+.notice ul li a { display: block; padding: 5px 0; position: relative; }
+.notice ul li p { width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.notice ul li span { position: absolute; right: 0; top: 5px; }
+.gall { width: 300px; padding: 5px; }
+.gall h2 { background: #ffeb3b; padding: 5px; color: #1a237e; text-align: center; }
+.gall ul { display: flex; gap: 10px; margin-top: 10px; }
+.gall ul li img { width: 100px; height: 120px; object-fit: cover; }
+.go { width: 200px; padding: 5px; }
+.go h2 { background: #1a237e; padding: 5px; color: #fff; text-align: center; }
+.go ul li { margin-top: 5px; }
+.go ul li img { width: 20px; }
+.go ul li a { display: block; font-size: 13px; height: 40px; border-radius: 5px; background: #757575; text-align: center; color: #fff; padding-top: 10px; }
 
-/* ══ main ══ */
-.main { flex: 1; overflow: hidden; }
+/* ══ 푸터 ══ */
+footer { position: relative; height: 120px; background: #666; color: #fff; padding-left: 20px; padding-top: 50px; }
+footer div { position: absolute; top: 25px; right: 20px; }
+.fsns { display: flex; gap: 10px; justify-content: center; }
+.fsns li a { display: block; width: 30px; height: 30px; background: #fff; border-radius: 50%; text-align: center; padding-top: 9px; }
+footer select { margin-top: 10px; width: 150px; height: 30px; }
+.fcopy { font-size: 12px; }
 
-/* ══ 슬라이드 (animate left 방식) ══ */
-.slider { height: 350px; overflow: hidden; position: relative; }
-.slider-wrap { position: relative; height: 100%; }
-.slider-wrap ul {
-  display: flex;
-  width: 300%;
-  position: absolute;
-  top: 0; left: 0;
-  height: 100%;
-}
-.slider-wrap ul li { width: calc(100% / 3); height: 100%; }
-.slider-wrap ul li img { width: 100%; height: 100%; object-fit: cover; }
+/* ══ 팝업 ══ */
+.popup { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: none; }
+.popcon { position: relative; width: 500px; top: 50%; left: 50%; transform: translate(-50%,-50%); background: #fff; text-align: center; padding: 10px; border-radius: 20px; }
+.popcon h2 { color: #1a237e; margin-bottom: 20px; }
+.popcon .text { margin: 20px 0; }
+.popcon .close { text-align: right; }
+.popcon .close button { background: #1a237e; border: 0; padding: 10px; color: #fff; }
+.popcon .close button:hover { background: #ffeb3b; color: #333; }`,
 
-/* ══ 콘텐츠 ══ */
-.contents { display: flex; gap: 20px; padding: 24px 16px; }
-.notice { flex: 1; }
-.tab-btn { display: flex; border-bottom: 2px solid #ddd; }
-.tab-btn li a { display: block; padding: 9px 14px; color: #888; font-size: 14px; }
-.tab-btn li.on a { color: #e74c3c; border-bottom: 2px solid #e74c3c; }
-.tab-cont li { display: none; padding-top: 12px; }
-.tab-cont li.on { display: block; }
-.banner { width: 180px; }
-
-.popup { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center; }
-.popup.on { display: flex; }
-.popup-inner { background:#fff; padding:30px; border-radius:8px; text-align:center; }
-.footer { background:#333; color:#fff; padding:20px; text-align:center; font-size:14px; }
-.btn-open { display:inline-block; margin-bottom:10px; padding:8px 20px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }
-.btn-close { display:block; margin:16px auto 0; padding:8px 20px; background:#333; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }`,
   D:`@charset "UTF-8";
-
-/* ══ 리셋 ══ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-ul, ol { list-style: none; }
+li { list-style: none; }
 a { text-decoration: none; color: inherit; }
-img { display: block; width: 100%; }
+img { vertical-align: top; max-width: 100%; }
+button { cursor: pointer; }
 
-/* ══ D유형 핵심 ①: aside position:fixed 고정 ══ */
-.aside {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 200px;
-  height: 100vh;
-  background: #2c3e50;
-  color: #fff;
-  overflow-y: auto;
-  z-index: 100;
-}
-.logo { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-.logo a { color: #fff; font-size: 20px; font-weight: bold; }
+/* ══ D유형 핵심: wrap + top이 flex (header 왼쪽 고정 + contents 오른쪽) ══ */
+.wrap { height: 950px; position: relative; min-width: 1200px; }
+.top { height: 850px; display: flex; }
 
-.gnb .menu > li > a {
-  display: block;
-  padding: 14px 20px;
-  color: #ccc;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-.gnb .menu > li > a:hover {
-  background: rgba(255,255,255,0.1);
-  color: #fff;
-}
-.gnb .sub { display: none; background: rgba(0,0,0,0.2); }
-.gnb .sub li a {
-  display: block;
-  padding: 10px 20px 10px 34px;
-  color: #aaa;
-  font-size: 13px;
-}
-.gnb .sub li a:hover { color: #fff; }
+/* ══ 헤더: 왼쪽 250px 세로 고정 ══ */
+header { width: 250px; background: #4b88c7; padding: 30px 10px; }
+header h1 { text-align: center; margin-bottom: 30px; }
+nav > ul > li > a { display: block; background: #ffc1cc; padding: 10px 20px; }
+nav > ul > li:hover > a { background: #a8e6cf; }
+.sub { display: none; }
+.sub li a { display: block; background: #fff; padding: 10px 20px; }
+.sub li a:hover { background: #ccc; }
 
-/* ══ D유형 핵심 ②: main margin-left ══ */
-.main { margin-left: 200px; }
+/* ══ 콘텐츠: 오른쪽 ══ */
+.contents { width: calc(100% - 250px); }
 
-/* ══ D유형 핵심 ③: 슬라이드 100vw + position:absolute ══ */
-.slider {
-  width: 100vw;
-  margin-left: -200px;  /* aside 200px 만큼 왼쪽으로 당기기 */
-  height: 500px;
-  overflow: hidden;
-  position: relative;
-}
-.slider-wrap { position: relative; height: 100%; }
-.slider-wrap ul {
-  display: flex;
-  width: 300%;
-  position: absolute;
-  top: 0; left: 0;
-  height: 100%;
-}
-.slider-wrap ul li { width: calc(100% / 3); height: 100%; }
-.slider-wrap ul li img { width: 100%; height: 100%; object-fit: cover; }
+/* ══ 슬라이드: 가로 marginLeft animate (width:300%) ══ */
+.slide { height: 400px; overflow: hidden; }
+.slide ul { width: 300%; display: flex; }
+.slide ul li { width: calc(100% / 3); height: 400px; position: relative; }
+.slide ul li h2 { position: absolute; bottom: 20px; left: 20px; color: #fff; font-size: 40px; background: rgba(0,0,0,0.5); padding: 20px; border-radius: 30px 0; }
+.slide ul li a { display: block; height: 100%; }
+.slide ul li.s1 { background: url(../images/s1.jpg) no-repeat center/cover; }
+.slide ul li.s2 { background: url(../images/s2.jpg) no-repeat center/cover; }
+.slide ul li.s3 { background: url(../images/s3.jpg) no-repeat center/cover; }
 
-/* ══ 콘텐츠 ══ */
-.contents { display: flex; gap: 20px; padding: 28px 20px; }
-.notice { flex: 1; }
-.tab-btn { display: flex; border-bottom: 2px solid #ddd; }
-.tab-btn li a { display: block; padding: 9px 14px; color: #888; }
-.tab-btn li.on a { color: #e74c3c; border-bottom: 2px solid #e74c3c; }
-.tab-cont li { display: none; padding-top: 12px; }
-.tab-cont li.on { display: block; }
-.banner { width: 200px; }
+/* ══ 바로가기 ══ */
+.go { position: fixed; top: 20px; right: 20px; background: #4b88c7; padding: 20px; text-align: center; border-radius: 20px; color: #fff; z-index: 10; }
+.go li { margin-bottom: 20px; }
+.go li a { display: block; height: 100%; }
+.go li:last-child { margin-bottom: 0; }
+.go span { display: block; margin-top: 10px; }
 
-.popup { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center; }
-.popup.on { display: flex; }
-.popup-inner { background:#fff; padding:30px; border-radius:8px; text-align:center; }
-.footer { background:#333; color:#fff; padding:20px; text-align:center; font-size:14px; }
-.btn-open { display:inline-block; margin-bottom:10px; padding:8px 20px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }
-.btn-close { display:block; margin:16px auto 0; padding:8px 20px; background:#333; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }`,
+/* ══ 배너 ══ */
+.banner { height: 200px; padding: 20px 60px; background: #ffc1cc; }
+.banner a { display: flex; gap: 50px; align-items: center; }
+.banner .photo { flex-basis: 250px; border-radius: 20px; overflow: hidden; }
+.banner .text { flex-grow: 1; }
+.banner .text h2 { font-size: 35px; color: #4b88c7; margin-bottom: 20px; }
+
+/* ══ 탭메뉴 ══ */
+.con { height: 250px; padding: 20px 50px; position: relative; }
+.tabmenu { display: flex; }
+.tabmenu > li { width: 150px; background: #333; color: #fff; text-align: center; }
+.tabmenu > li > h2 > a { display: block; padding: 10px; font-size: 20px; }
+.tabmenu > li.on { background: #4b88c7; }
+.tabcon { position: absolute; width: calc(100% - 100px); left: 50px; background: #4b88c7; padding: 10px 20px; height: 160px; }
+.notice ul { padding: 5px 15px; }
+.notice ul li { border-bottom: 1px dashed #fff; }
+.notice ul li:last-child { border-bottom: none; }
+.notice ul li a { display: block; padding: 5px 0; position: relative; }
+.notice ul li p { width: 80%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+.notice ul li span { position: absolute; right: 0; top: 5px; }
+.gall { display: none; }
+.gall ul { display: flex; gap: 20px; justify-content: center; }
+.gall ul li a { display: block; height: 100%; }
+.gall ul li p { margin-bottom: 10px; }
+.gall ul li img { width: 300px; height: 100px; object-fit: cover; }
+
+/* ══ 푸터 ══ */
+footer { height: 100px; background: #666; color: #fff; display: flex; gap: 50px; align-items: center; padding-left: 20px; }
+.flogo img { height: 40px; width: auto; }
+.fcopy { font-size: 12px; }
+
+/* ══ 팝업 ══ */
+.popup { position: absolute; width: 500px; top: 50%; left: 50%; transform: translate(-50%,-50%); background: #fff; text-align: center; padding: 20px; border-radius: 20px; z-index: 9999; display: none; }
+.popup h2 { color: #4b88c7; margin-bottom: 20px; }
+.popup .text { margin: 20px 0; }
+.popup .close { text-align: right; }
+.popup .close button { background: #4b88c7; border: 0; padding: 10px; color: #fff; }
+.popup .close button:hover { background: #ffc1cc; }`,
+
   E:`@charset "UTF-8";
-
-/* ══ 리셋 ══ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-ul, ol { list-style: none; }
+li { list-style: none; }
 a { text-decoration: none; color: inherit; }
-img { display: block; width: 100%; }
+img { vertical-align: top; max-width: 100%; }
+button { cursor: pointer; }
 
-.wrap { width: 1200px; margin: 0 auto; }
+/* ══ E유형 핵심: top이 flex → header(왼쪽) + contents(가운데) + slide(오른쪽) ══ */
+.wrap { height: 800px; position: relative; min-width: 1200px; }
+.top { height: 700px; display: flex; }
 
-/* ══ 헤더 ══ */
-.header {
-  display: flex;
-  align-items: center;
-  height: 70px;
-  padding: 0 20px;
-  background: #fff;
-  border-bottom: 1px solid #ddd;
-}
-.logo a { font-size: 22px; font-weight: bold; }
+/* ══ 헤더: 왼쪽 200px ══ */
+header { width: 200px; background: #014c29; padding: 50px 5px; }
+header h1 { text-align: center; margin-bottom: 50px; }
+nav { position: relative; }
+nav > ul > li > a { display: block; padding: 10px 20px; color: #9acd84; border: 1px solid #9acd84; border-bottom: 0; }
+nav > ul > li:last-child > a { border-bottom: 1px solid #9acd84; }
+nav > ul > li:hover > a { background: #9acd84; color: #333; }
+.sub { position: absolute; left: 190px; top: -10px; z-index: 10; width: 150px; height: 250px; background: #fff; display: none; }
+.sub li a { display: block; background: #fff; padding: 10px 20px; }
+.sub li a:hover { background: #014c29; color: #fff; }
 
-/* ══ E유형 핵심: 3컬럼 flex ══ */
-.container { display: flex; }
+/* ══ 콘텐츠: 가운데 400px ══ */
+.contents { width: 400px; background: #9acd84; padding: 20px 5px; }
+.notice h2 { width: 120px; color: #fff; text-align: center; font-size: 18px; padding: 10px 0; background: #014c29; border-radius: 15px 15px 0 0; }
+.notice ul { border-top: 3px solid #014c29; padding: 5px 15px; }
+.notice ul li { border-bottom: 1px solid #014c29; }
+.notice ul li a { display: block; padding: 5px 0; position: relative; }
+.notice ul li p { width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.notice ul li span { position: absolute; right: 0; top: 5px; }
+.gall { margin-top: 20px; }
+.gall h2 { width: 120px; color: #fff; text-align: center; font-size: 18px; padding: 10px 0; background: #014c29; border-radius: 15px 15px 0 0; }
+.gall ul { border-top: 3px solid #014c29; padding-top: 20px; display: flex; gap: 10px; justify-content: center; }
+.gall ul li { text-align: center; }
+.gall ul li a { display: block; height: 100%; }
+.gall ul li img { width: 150px; height: 180px; object-fit: cover; }
+.gall ul li .txt { font-weight: bold; margin-top: 10px; }
+.go { margin-top: 20px; }
+.go ul { border-top: 3px solid #014c29; padding-top: 50px; display: flex; gap: 30px; justify-content: center; }
+.go ul li { text-align: center; }
+.go ul li .txt { margin-top: 10px; font-size: 16px; }
 
-/* ══ 왼쪽 aside ══ */
-.aside-left {
-  width: 200px;
-  flex-shrink: 0;
-  background: #f5f5f5;
-  border-right: 1px solid #ddd;
-}
-.gnb .menu > li > a {
-  display: block;
-  padding: 12px 16px;
-  font-weight: bold;
-  font-size: 14px;
-  border-bottom: 1px solid #ddd;
-}
-.gnb .menu > li > a:hover { background: #e74c3c; color: #fff; }
-.gnb .sub { display: none; background: #fafafa; }
-.gnb .sub li a {
-  display: block;
-  padding: 8px 16px 8px 28px;
-  font-size: 13px;
-  border-bottom: 1px solid #eee;
-  color: #555;
-}
-.gnb .sub li a:hover { color: #e74c3c; }
+/* ══ 슬라이드: 오른쪽에 위치, 세로 marginTop animate ══ */
+.slide { width: calc(100% - 600px); overflow: hidden; }
+.slide ul li { width: 100%; height: 700px; position: relative; }
+.slide ul li a { display: block; height: 100%; }
+.slide ul li.s1 { background: url(../images/s1.jpg) no-repeat center/cover; }
+.slide ul li.s2 { background: url(../images/s2.jpg) no-repeat center/cover; }
+.slide ul li.s3 { background: url(../images/s3.jpg) no-repeat center/cover; }
+.slide ul li .text { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); background: #014c29; color: #fff; text-align: center; padding: 20px; border-radius: 20px 0; font-size: 20px; }
+.slide ul li .text h2 { margin-bottom: 20px; }
 
-/* ══ main 중앙 ══ */
-.main {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-}
+/* ══ 푸터 ══ */
+footer { height: 100px; background: #666; color: #fff; display: flex; gap: 50px; align-items: center; padding-left: 10px; }
+.flogo img { height: 40px; width: auto; }
+footer ul { display: flex; gap: 20px; }
+footer ul li { border-right: 1px solid #fff; padding-right: 20px; font-size: 14px; }
+footer ul li:last-child { border: none; }
+.fcopy { margin-top: 10px; font-size: 14px; }
 
-/* ══ 슬라이드 (animate left 방식) ══ */
-.slider { height: 350px; overflow: hidden; position: relative; }
-.slider-wrap { position: relative; height: 100%; }
-.slider-wrap ul {
-  display: flex;
-  width: 300%;
-  position: absolute;
-  top: 0; left: 0;
-  height: 100%;
-}
-.slider-wrap ul li { width: calc(100% / 3); height: 100%; }
-.slider-wrap ul li img { width: 100%; height: 100%; object-fit: cover; }
+/* ══ 팝업 ══ */
+.popup { position: absolute; width: 500px; top: 50%; left: 50%; transform: translate(-50%,-50%); background: #fff; text-align: center; padding: 20px; border: 2px solid #014c29; border-radius: 20px; z-index: 9999; display: none; }
+.popup h2 { color: #014c29; margin-bottom: 20px; }
+.popup .text { margin: 20px 0; }
+.popup .close { text-align: right; }
+.popup .close button { background: #014c29; border: 0; padding: 10px; color: #fff; }
+.popup .close button:hover { background: #333; }`,
+
+  F:`@charset "UTF-8";
+* { margin: 0; padding: 0; box-sizing: border-box; }
+li { list-style: none; }
+a { text-decoration: none; color: inherit; }
+img { vertical-align: top; max-width: 100%; }
+button { cursor: pointer; }
+
+/* ══ F유형 핵심: wrap/header/footer 모두 1340px ══ */
+header { width: 1340px; margin: auto; height: 100px; padding-top: 20px; position: relative; }
+nav { position: absolute; top: 60px; right: 0; z-index: 10; }
+nav > ul { display: flex; }
+nav > ul > li > a { background: #1b3b86; color: #fff; padding: 10px 0; display: block; width: 160px; text-align: center; }
+nav > ul > li:hover > a { background: #212121; }
+.sub { height: 125px; background: #212121; display: none; }
+.sub a { background: #212121; display: block; padding: 5px; text-align: center; color: #fff; }
+.sub a:hover { background: #1b3b86; }
+
+/* ══ 슬라이드: fadeIn 방식 ══ */
+.slide { height: 300px; position: relative; }
+.slide ul li { width: 100%; height: 300px; position: absolute; top: 0; left: 0; display: none; }
+.slide ul li a { display: block; height: 100%; }
+.slide ul li.s1 { background: url(../images/s1.jpg) no-repeat center/cover; display: block; }
+.slide ul li.s2 { background: url(../images/s2.jpg) no-repeat center/cover; }
+.slide ul li.s3 { background: url(../images/s3.jpg) no-repeat center/cover; }
+.slide li h2 { color: #1b3b86; font-size: 35px; position: absolute; top: 50px; left: 50%; background: rgba(255,255,255,0.5); padding: 20px; border-radius: 20px; transform: translate(-50%, 0); }
 
 /* ══ 콘텐츠 ══ */
-.contents { padding: 20px 16px; }
-.tab-btn { display: flex; border-bottom: 2px solid #ddd; }
-.tab-btn li a { display: block; padding: 9px 14px; color: #888; font-size: 14px; }
-.tab-btn li.on a { color: #e74c3c; border-bottom: 2px solid #e74c3c; }
-.tab-cont li { display: none; padding-top: 12px; }
-.tab-cont li.on { display: block; }
+.contents { width: 1340px; margin: auto; position: relative; }
 
-/* ══ 오른쪽 aside ══ */
-.aside-right {
-  width: 200px;
-  flex-shrink: 0;
-  border-left: 1px solid #ddd;
-  padding: 16px 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+/* ══ 바로가기: 슬라이드 위에 absolute ══ */
+.go { height: 100px; background: #00d2a5; position: absolute; top: -100px; left: 0; width: 100%; }
+.go ul { display: flex; color: #fff; height: 100%; }
+.go ul li { flex-grow: 1; text-align: center; background: #1b3b86; }
+.go ul li a { display: block; height: 100%; padding-top: 30px; }
+.go ul li:nth-child(even) { background: #212121; }
+.go ul li h2 { font-size: 18px; }
+.go ul li img { vertical-align: middle; margin-right: 10px; }
 
-.popup { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center; }
-.popup.on { display: flex; }
-.popup-inner { background:#fff; padding:30px; border-radius:8px; text-align:center; }
-.footer { background:#333; color:#fff; padding:20px; text-align:center; font-size:14px; }
-.btn-open { display:inline-block; margin-bottom:10px; padding:8px 20px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }
-.btn-close { display:block; margin:16px auto 0; padding:8px 20px; background:#333; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }`,
-  F:`@charset "UTF-8";
+/* ══ 배너 ══ */
+.banner { height: 250px; background: #f4f8fb; padding: 20px; }
+.banner a { display: flex; height: 100%; gap: 30px; align-items: center; }
+.banner .imgBox img { width: 300px; height: 160px; object-fit: cover; border-radius: 20px; }
+.banner .txtBox { flex-grow: 1; }
+.banner .txtBox h2 { color: #1b3b86; margin-bottom: 10px; font-size: 30px; }
+.banner .arrow { flex-grow: 1; text-align: center; }
 
-/* ══ 리셋 ══ */
-* { margin: 0; padding: 0; box-sizing: border-box; }
-ul, ol { list-style: none; }
-a { text-decoration: none; color: inherit; }
-img { display: block; width: 100%; }
+/* ══ 공지+갤러리 ══ */
+.board { height: 250px; display: flex; }
+.board div { width: 50%; padding: 20px; }
+.board div h2 { background: #1b3b86; color: #fff; text-align: center; width: 150px; padding: 10px 0; font-size: 20px; }
+.notice ul { border-top: 3px solid #1b3b86; padding: 5px 0; }
+.notice ul li:nth-child(even) { background: #ccc; }
+.notice ul li a { display: block; padding: 5px; position: relative; }
+.notice ul li p { width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.notice ul li span { position: absolute; right: 5px; top: 5px; }
+.gall ul { display: flex; gap: 20px; border-top: 3px solid #1b3b86; padding-top: 10px; }
+.gall ul li { text-align: center; font-weight: bold; }
+.gall ul li a { display: block; height: 100%; }
+.gall ul li:hover img { opacity: 0.5; }
+.gall .box { margin-bottom: 10px; }
+.gall .box img { width: 200px; height: 100px; object-fit: cover; }
 
-/* ══ F유형 핵심 ①: wrap 1340px (A유형의 1200px과 다름!) ══ */
-.wrap {
-  width: 1340px;
-  margin: 0 auto;
-}
+/* ══ 푸터: 1340px ══ */
+footer { width: 1340px; height: 120px; margin: auto; background: #666; padding-left: 20px; padding-top: 40px; color: #fff; position: relative; }
+footer div { position: absolute; top: 30px; right: 20px; }
+.fsns { display: flex; gap: 5px; }
+.fsns a { width: 30px; height: 30px; display: block; border-radius: 50%; text-align: center; padding-top: 9px; }
+.fsns li:nth-child(1) a { background: #47b749; }
+.fsns li:nth-child(2) a { background: #3c5b9a; }
+.fsns li:nth-child(3) a { background: red; }
+footer select { margin-top: 10px; }
+.fcopy { font-size: 12px; }
 
-/* ══ 헤더 ══ */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 80px;
-  padding: 0 20px;
-  background: #fff;
-  border-bottom: 1px solid #ddd;
-}
-.logo a { font-size: 24px; font-weight: bold; }
-
-/* ══ 수평 메뉴 (A유형과 동일) ══ */
-.gnb .menu { display: flex; }
-.gnb .menu > li { position: relative; }
-.gnb .menu > li > a { display: block; padding: 0 20px; line-height: 80px; }
-.gnb .menu > li:hover > a { color: #e74c3c; }
-.gnb .sub {
-  display: none;
-  position: absolute;
-  top: 80px; left: 0;
-  min-width: 120px;
-  background: #fff;
-  border: 1px solid #ddd;
-  z-index: 100;
-}
-.gnb .menu > li:hover .sub { display: block; }
-.gnb .sub li a { display: block; padding: 10px 16px; font-size: 14px; }
-
-/* ══ F유형 핵심 ②: 슬라이드만 100% ══ */
-/* body에 overflow:hidden 추가하면 calc 없이 가능! */
-body { overflow-x: hidden; }
-.slider {
-  width: 100vw;
-  margin-left: 50%;
-  transform: translateX(-50%);
-  height: 450px;
-  overflow: hidden;
-  position: relative;
-}
-.slider-wrap { position: relative; height: 100%; }
-.slider-wrap ul {
-  display: flex;
-  width: 300%;
-  position: absolute;
-  top: 0; left: 0;
-  height: 100%;
-}
-.slider-wrap ul li { width: calc(100% / 3); height: 100%; }
-.slider-wrap ul li img { width: 100%; height: 100%; object-fit: cover; }
-
-/* ══ 콘텐츠 (1340px 안에서) ══ */
-.contents { display: flex; gap: 20px; padding: 40px 20px; }
-.notice { flex: 1; }
-.tab-btn { display: flex; border-bottom: 2px solid #ddd; }
-.tab-btn li a { display: block; padding: 10px 20px; color: #888; }
-.tab-btn li.on a { color: #e74c3c; border-bottom: 2px solid #e74c3c; }
-.tab-cont li { display: none; padding-top: 16px; }
-.tab-cont li.on { display: block; }
-.banner { width: 300px; }
-
-.popup { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center; }
-.popup.on { display: flex; }
-.popup-inner { background:#fff; padding:30px; border-radius:8px; text-align:center; }
-.footer { background:#333; color:#fff; padding:20px; text-align:center; font-size:14px; }
-.btn-open { display:inline-block; margin-bottom:10px; padding:8px 20px; background:#e74c3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }
-.btn-close { display:block; margin:16px auto 0; padding:8px 20px; background:#333; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }`,
+/* ══ 팝업 ══ */
+.popup { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: none; }
+.popcon { position: absolute; width: 500px; top: 50%; left: 50%; transform: translate(-50%,-50%); background: #fff; text-align: center; padding: 20px; border: 2px solid #1b3b86; border-radius: 20px; }
+.popcon h2 { color: #1b3b86; margin-bottom: 20px; }
+.popup .text { margin: 20px 0; }
+.popup .close { text-align: right; }
+.popup .close button { background: #1b3b86; border: 0; padding: 10px; color: #fff; }
+.popup .close button:hover { background: #333; }`,
 };
 
+// ─── JS 코드 ───
 const JS_CODE = {
   A:`$(function(){
-
-    /* ========================================
-       ※ 무조건 $(function(){ }) 안에 작성!
-       head에 script 태그가 있으면 body보다 js가 먼저 실행됨.
-       $(function(){})은 html 전체 로드 후 실행을 보장해줌.
-    ======================================== */
-
-    /* ========================================
-       1. 팝업 기능
-       css: .popup { display: none; }
-            .popup.on { display: flex; }
-    ======================================== */
-
-    // 열기버튼 클릭 → .popup에 on 클래스 추가
-    $(".btn-open").click(function(){
-        $(".popup").addClass("on")
+    // 메뉴: mouseenter/mouseleave + slideDown/slideUp
+    $("nav>ul>li").mouseenter(function(){
+        $(this).children(".sub").stop().slideDown();
+    })
+    $("nav>ul>li").mouseleave(function(){
+        $(".sub").stop().slideUp();
     })
 
-    // 닫기버튼 클릭 → .popup에서 on 클래스 제거
-    $(".btn-close").click(function(){
-        $(".popup").removeClass("on")
+    // 슬라이드: marginLeft animate 방식
+    // -1200px씩 이동 (슬라이드 너비에 맞게 변경)
+    let i = 0;
+    function slide(){
+        if(i < 2){ i++; }else{ i = 0; }
+        $(".slide ul").animate({ marginLeft: -1200 * i }, 1000);
+    }
+    setInterval(slide, 3000);
+
+    // 팝업: show/hide 방식
+    $(".pop").click(function(){
+        $(".popup").show();
     })
-
-
-    /* ========================================
-       2. 탭 메뉴
-       css: .tab-cont li { display: none; }
-            .tab-cont li.on { display: block; }
-    ======================================== */
-
-    // 공지사항(0번 탭) 클릭
-    $(".tab-btn li").eq(0).click(function(){
-        $(".tab-cont li").removeClass("on")    // 콘텐츠 전부 끄기
-        $(".tab-cont li").eq(0).addClass("on") // 0번 콘텐츠만 켜기
-        $(".tab-btn li").removeClass("on")     // 탭버튼 전부 끄기
-        $(this).addClass("on")                 // 클릭한 탭만 켜기
+    $(".close button").click(function(){
+        $(".popup").hide();
     })
-
-    // 갤러리(1번 탭) 클릭
-    $(".tab-btn li").eq(1).click(function(){
-        $(".tab-cont li").removeClass("on")
-        $(".tab-cont li").eq(1).addClass("on")
-        $(".tab-btn li").removeClass("on")
-        $(this).addClass("on")
-    })
-
-
-    /* ========================================
-       3. 이미지 슬라이드 기능
-       setInterval(function(){실행내용}, 3000)
-       setInterval()  ← JS에서 만들어놓은 함수
-       function(){}   우리가 실행할 함수
-       , 2500         2500ms = 2.5초 (원하는 초 × 1000)
-
-       3-1. 가로 슬라이드 (animate left)
-       슬라이드 3개 기준 (4개면 > 3, 5개면 > 4로 변경)
-       css: .slider { height:400px; overflow:hidden; position:relative; }
-            .slider-wrap { position:relative; height:100%; }
-            .slider-wrap ul { display:flex; width:300%;
-                              position:absolute; top:0; left:0; height:100%; }
-            .slider-wrap ul li { width:calc(100%/3); height:100%; }
-    ======================================== */
-
-    let count = 0  // 현재 슬라이드 인덱스 (0, 1, 2)
-
-    setInterval(function(){
-        count++  // 다음 슬라이드로 이동
-
-        // 슬라이드가 3개라 0,1,2 → 2까지만. 4개면 3, 5개면 4까지
-        if(count > 2){ count = 0 }
-
-        // CSS transform으로 슬라이드 이동
-        // translateX(가로방향), translateY(세로방향)
-        // -33.333% × count = 0%, -33.333%, -66.666%
-        $(".slider-wrap ul").animate({ left: -(100/3) * count + "%" }, 600)
-    }, 2500)
-
-
-    /* ========================================
-       3-2. 세로 슬라이드 → left → top 으로만 변경!
-       css: .slider-wrap ul { flex-direction:column; height:300%;
-                              position:absolute; top:0; left:0; }
-            .slider-wrap ul li { height:calc(100%/3); }
-    ======================================== */
-
-    // let count = 0
-    // setInterval(function(){
-    //     count++
-    //     if(count > 2){ count = 0 }
-    //     $(".slider-wrap ul").animate({ top: -(100/3) * count + "%" }, 600)
-    // }, 2500)
-
-
-    /* ========================================
-       3-3. 슬라이드 - fadeIn/fadeOut 방식 (study.js 원본 방식)
-       css: .imgSlide { position:relative; height:400px; }
-            .imgSlide a { position:absolute; top:0; left:0; width:100%; height:100%; }
-    ======================================== */
-
-    // $(".imgSlide a:gt(0)").hide()  // 첫번째 제외 나머지 숨기기
-    // setInterval(function(){
-    //     $(".imgSlide a:first-child").fadeOut() // 현재 이미지 사라지게
-    //         .next("a").fadeIn()                 // 다음 이미지 나타나게
-    //         .end().appendTo(".imgSlide")        // 사라진 이미지를 맨 뒤로 → 무한 순환!
-    // }, 2500)
-
 })`,
-  B:`/* B유형 JS = A유형과 완전히 동일 */
-/* wrap이 100%로 바뀌어도 JS는 하나도 안 바뀜! */
 
-$(function(){
-
-    // 팝업 열기
-    $(".btn-open").click(function(){
-        $(".popup").addClass("on")
+  B:`$(function(){
+    // 메뉴: mouseover/mouseout + menuBg 함께 제어
+    $("nav>ul>li").mouseover(function(){
+        $(".sub, .menuBg").stop().slideDown();
+    })
+    $("nav>ul>li").mouseout(function(){
+        $(".sub, .menuBg").stop().slideUp();
     })
 
-    // 팝업 닫기
-    $(".btn-close").click(function(){
-        $(".popup").removeClass("on")
+    // 슬라이드: fadeIn/fadeOut 방식 (li position:absolute)
+    let i = 0;
+    function slide(){
+        if(i < 2){ i++; }else{ i = 0; }
+        $(".slide ul li").fadeOut();
+        $(".slide ul li").eq(i).fadeIn();
+    }
+    setInterval(slide, 3000);
+
+    // 탭메뉴: index() 방식
+    let t;
+    $(".tabmenu>li").click(function(){
+        $(".tabmenu>li").removeClass("on");
+        $(this).addClass("on");
+        t = $(this).index();
+        $(".tabcon").hide();
+        $(".tabcon").eq(t).show();
+        return false; // 링크 차단
     })
 
-
-    // 탭 메뉴
-    $(".tab-btn li").eq(0).click(function(){
-        $(".tab-cont li").removeClass("on")
-        $(".tab-cont li").eq(0).addClass("on")
-        $(".tab-btn li").removeClass("on")
-        $(this).addClass("on")
+    // 팝업: show/hide 방식
+    $(".pop").click(function(){
+        $(".popup").show();
     })
-
-    $(".tab-btn li").eq(1).click(function(){
-        $(".tab-cont li").removeClass("on")
-        $(".tab-cont li").eq(1).addClass("on")
-        $(".tab-btn li").removeClass("on")
-        $(this).addClass("on")
+    $(".close button").click(function(){
+        $(".popup").hide();
     })
-
-
-    // 슬라이드 (A유형과 완전 동일 - 3가지 방식 중 택1)
-
-    // 3-1. 가로 이동 (animate left 방식)
-    let count = 0
-
-    setInterval(function(){
-        count++
-        if(count > 2){ count = 0 }
-        $(".slider-wrap ul").animate({ left: -(100/3) * count + "%" }, 600)
-    }, 2500)
-
-    // 3-2. 세로 이동 → left → top 으로만 변경!
-    //     $(".slider-wrap ul").animate({ top: -(100/3) * count + "%" }, 600)
-
-    // 3-3. fadeIn 방식 → css 구조 다름! (위 코드 주석처리 후 사용)
-    // $(".imgSlide a:gt(0)").hide()
-    // setInterval(function(){
-    //     $(".imgSlide a:first-child").fadeOut()
-    //         .next("a").fadeIn()
-    //         .end().appendTo(".imgSlide")
-    // }, 2500)
-
 })`,
+
   C:`$(function(){
-
-    /* ========================================
-       1. 팝업 (A유형과 동일)
-    ======================================== */
-
-    $(".btn-open").click(function(){
-        $(".popup").addClass("on")
+    // 메뉴: mouseenter/mouseleave + fadeIn/fadeOut
+    $("nav>ul>li").mouseenter(function(){
+        $(this).children(".sub").stop().fadeIn();
+    })
+    $("nav>ul>li").mouseleave(function(){
+        $(".sub").stop().fadeOut();
     })
 
-    $(".btn-close").click(function(){
-        $(".popup").removeClass("on")
+    // 슬라이드: 세로 marginTop animate 방식
+    // -350px씩 이동 (슬라이드 높이에 맞게 변경)
+    let i = 0;
+    function slide(){
+        if(i < 2){ i++; }else{ i = 0; }
+        $(".slide ul").animate({ marginTop: -350 * i }, 1000);
+    }
+    setInterval(slide, 3000);
+
+    // 팝업: show/hide 방식
+    $(".pop").click(function(){
+        $(".popup").show();
     })
-
-
-    /* ========================================
-       2. 탭 메뉴 (A유형과 동일)
-    ======================================== */
-
-    $(".tab-btn li").eq(0).click(function(){
-        $(".tab-cont li").removeClass("on")
-        $(".tab-cont li").eq(0).addClass("on")
-        $(".tab-btn li").removeClass("on")
-        $(this).addClass("on")
+    $(".close button").click(function(){
+        $(".popup").hide();
     })
-
-    $(".tab-btn li").eq(1).click(function(){
-        $(".tab-cont li").removeClass("on")
-        $(".tab-cont li").eq(1).addClass("on")
-        $(".tab-btn li").removeClass("on")
-        $(this).addClass("on")
-    })
-
-
-    /* ========================================
-       3. 슬라이드 (A유형과 동일 - 3가지 방식 중 택1)
-    ======================================== */
-
-    // 3-1. 가로 이동 (animate left 방식)
-    let count = 0
-
-    setInterval(function(){
-        count++
-        if(count > 2){ count = 0 }
-        $(".slider-wrap ul").animate({ left: -(100/3) * count + "%" }, 600)
-    }, 2500)
-
-    // 3-2. 세로 이동 → left → top 으로만 변경!
-    //     $(".slider-wrap ul").animate({ top: -(100/3) * count + "%" }, 600)
-
-    // 3-3. fadeIn 방식 → css 구조 다름! (위 코드 주석처리 후 사용)
-    // $(".imgSlide a:gt(0)").hide()
-    // setInterval(function(){
-    //     $(".imgSlide a:first-child").fadeOut()
-    //         .next("a").fadeIn()
-    //         .end().appendTo(".imgSlide")
-    // }, 2500)
-
-
-    /* ========================================
-       4. 세로 메뉴 (C유형만 추가!)
-       클릭하면 서브메뉴 열고 닫기
-    ======================================== */
-
-    $(".gnb .menu > li > a").click(function(e){
-        e.preventDefault()  // a태그 기본 동작(페이지 이동) 막기
-        let sub = $(this).next(".sub")
-
-        // 다른 서브메뉴 먼저 닫기
-        $(".gnb .sub").not(sub).slideUp(200)
-
-        // 클릭한 서브메뉴 열고 닫기 토글
-        sub.slideToggle(200)
-    })
-
 })`,
+
   D:`$(function(){
-
-    /* ========================================
-       1. 팝업 (A유형과 동일)
-    ======================================== */
-
-    $(".btn-open").click(function(){
-        $(".popup").addClass("on")
+    // 메뉴: mouseenter/mouseleave + slideDown/slideUp
+    $("nav>ul>li").mouseenter(function(){
+        $(this).children(".sub").stop().slideDown();
+    })
+    $("nav>ul>li").mouseleave(function(){
+        $(".sub").stop().slideUp();
     })
 
-    $(".btn-close").click(function(){
-        $(".popup").removeClass("on")
+    // 슬라이드: 가로 marginLeft animate (width:300% 방식)
+    // -100%씩 이동
+    let i = 0;
+    function slide(){
+        if(i < 2){ i++; }else{ i = 0; }
+        $(".slide ul").animate({ marginLeft: -100 * i + "%" }, 1000);
+    }
+    setInterval(slide, 3000);
+
+    // 탭메뉴: index() 방식
+    let t;
+    $(".tabmenu>li").click(function(){
+        $(".tabmenu>li").removeClass("on");
+        $(this).addClass("on");
+        t = $(this).index();
+        $(".tabcon").hide();
+        $(".tabcon").eq(t).show();
+        return false; // 링크 차단
     })
 
-
-    /* ========================================
-       2. 탭 메뉴 (A유형과 동일)
-    ======================================== */
-
-    $(".tab-btn li").eq(0).click(function(){
-        $(".tab-cont li").removeClass("on")
-        $(".tab-cont li").eq(0).addClass("on")
-        $(".tab-btn li").removeClass("on")
-        $(this).addClass("on")
+    // 팝업: show/hide 방식
+    $(".pop").click(function(){
+        $(".popup").show();
     })
-
-    $(".tab-btn li").eq(1).click(function(){
-        $(".tab-cont li").removeClass("on")
-        $(".tab-cont li").eq(1).addClass("on")
-        $(".tab-btn li").removeClass("on")
-        $(this).addClass("on")
+    $(".close button").click(function(){
+        $(".popup").hide();
     })
-
-
-    /* ========================================
-       3. 슬라이드 (A유형과 동일 - 3가지 방식 중 택1)
-       100vw/fixed 처리는 CSS에서! JS는 그대로
-    ======================================== */
-
-    let count = 0
-
-    setInterval(function(){
-        count++
-        if(count > 2){ count = 0 }
-        $(".slider-wrap ul").animate({ left: -(100/3) * count + "%" }, 600)
-    }, 2500)
-
-
-    /* ========================================
-       4. 세로 메뉴 (C유형과 동일)
-    ======================================== */
-
-    $(".gnb .menu > li > a").click(function(e){
-        e.preventDefault()  // a태그 기본 동작(페이지 이동) 막기
-        let sub = $(this).next(".sub")
-        $(".gnb .sub").not(sub).slideUp(200)
-        sub.slideToggle(200)
-    })
-
 })`,
+
   E:`$(function(){
-
-    /* ========================================
-       1. 팝업 (A유형과 동일)
-    ======================================== */
-
-    $(".btn-open").click(function(){
-        $(".popup").addClass("on")
+    // 메뉴: mouseenter/mouseleave + fadeIn/fadeOut
+    $("nav>ul>li").mouseenter(function(){
+        $(this).children(".sub").stop().fadeIn();
+    })
+    $("nav>ul>li").mouseleave(function(){
+        $(".sub").stop().fadeOut();
     })
 
-    $(".btn-close").click(function(){
-        $(".popup").removeClass("on")
+    // 슬라이드: 세로 marginTop animate 방식
+    // -700px씩 이동 (슬라이드 높이에 맞게 변경)
+    let i = 0;
+    function slide(){
+        if(i < 2){ i++; }else{ i = 0; }
+        $(".slide ul").animate({ marginTop: -700 * i }, 1000);
+    }
+    setInterval(slide, 3000);
+
+    // 팝업: show/hide 방식
+    $(".pop").click(function(){
+        $(".popup").show();
     })
-
-
-    /* ========================================
-       2. 탭 메뉴 (A유형과 동일)
-    ======================================== */
-
-    $(".tab-btn li").eq(0).click(function(){
-        $(".tab-cont li").removeClass("on")
-        $(".tab-cont li").eq(0).addClass("on")
-        $(".tab-btn li").removeClass("on")
-        $(this).addClass("on")
+    $(".close button").click(function(){
+        $(".popup").hide();
     })
-
-    $(".tab-btn li").eq(1).click(function(){
-        $(".tab-cont li").removeClass("on")
-        $(".tab-cont li").eq(1).addClass("on")
-        $(".tab-btn li").removeClass("on")
-        $(this).addClass("on")
-    })
-
-
-    /* ========================================
-       3. 슬라이드 (A유형과 동일 - 3가지 방식 중 택1)
-    ======================================== */
-
-    // 3-1. 가로 이동 (animate left 방식)
-    let count = 0
-
-    setInterval(function(){
-        count++
-        if(count > 2){ count = 0 }
-        $(".slider-wrap ul").animate({ left: -(100/3) * count + "%" }, 600)
-    }, 2500)
-
-    // 3-2. 세로 이동 → left → top 으로만 변경!
-    //     $(".slider-wrap ul").animate({ top: -(100/3) * count + "%" }, 600)
-
-    // 3-3. fadeIn 방식 → css 구조 다름! (위 코드 주석처리 후 사용)
-    // $(".imgSlide a:gt(0)").hide()
-    // setInterval(function(){
-    //     $(".imgSlide a:first-child").fadeOut()
-    //         .next("a").fadeIn()
-    //         .end().appendTo(".imgSlide")
-    // }, 2500)
-
-
-    /* ========================================
-       4. 세로 메뉴 (C,D유형과 동일)
-    ======================================== */
-
-    $(".gnb .menu > li > a").click(function(e){
-        e.preventDefault()
-        let sub = $(this).next(".sub")
-        $(".gnb .sub").not(sub).slideUp(200)
-        sub.slideToggle(200)
-    })
-
 })`,
-  F:`/* F유형 JS = A유형과 완전히 동일 */
-/* 슬라이드 100vw 이탈은 CSS calc()로 처리 → JS 변경 없음 */
 
-$(function(){
-
-    // 팝업 열기
-    $(".btn-open").click(function(){
-        $(".popup").addClass("on")
+  F:`$(function(){
+    // 메뉴: mouseenter/mouseleave + slideDown/slideUp
+    $("nav>ul>li").mouseenter(function(){
+        $(".sub").stop().slideDown();
+    })
+    $("nav>ul>li").mouseleave(function(){
+        $(".sub").stop().slideUp();
     })
 
-    // 팝업 닫기
-    $(".btn-close").click(function(){
-        $(".popup").removeClass("on")
+    // 슬라이드: fadeIn/fadeOut 방식 (li position:absolute)
+    let i = 0;
+    function slide(){
+        if(i < 2){ i++; }else{ i = 0; }
+        $(".slide ul li").fadeOut();
+        $(".slide ul li").eq(i).fadeIn();
+    }
+    setInterval(slide, 3000);
+
+    // 팝업: show/hide 방식
+    $(".pop").click(function(){
+        $(".popup").show();
     })
-
-
-    // 탭 메뉴
-    $(".tab-btn li").eq(0).click(function(){
-        $(".tab-cont li").removeClass("on")
-        $(".tab-cont li").eq(0).addClass("on")
-        $(".tab-btn li").removeClass("on")
-        $(this).addClass("on")
+    $(".close button").click(function(){
+        $(".popup").hide();
     })
-
-    $(".tab-btn li").eq(1).click(function(){
-        $(".tab-cont li").removeClass("on")
-        $(".tab-cont li").eq(1).addClass("on")
-        $(".tab-btn li").removeClass("on")
-        $(this).addClass("on")
-    })
-
-
-    // 슬라이드 (A유형과 완전 동일 - 3가지 방식 중 택1)
-
-    // 3-1. 가로 이동 (animate left 방식)
-    let count = 0
-
-    setInterval(function(){
-        count++
-        if(count > 2){ count = 0 }
-        $(".slider-wrap ul").animate({ left: -(100/3) * count + "%" }, 600)
-    }, 2500)
-
-    // 3-2. 세로 이동 → left → top 으로만 변경!
-    //     $(".slider-wrap ul").animate({ top: -(100/3) * count + "%" }, 600)
-
-    // 3-3. fadeIn 방식 → css 구조 다름! (위 코드 주석처리 후 사용)
-    // $(".imgSlide a:gt(0)").hide()
-    // setInterval(function(){
-    //     $(".imgSlide a:first-child").fadeOut()
-    //         .next("a").fadeIn()
-    //         .end().appendTo(".imgSlide")
-    // }, 2500)
-
-})`
+})`,
 };
 
 // 암기 카드 데이터
 const MEMORY_CARDS = [
-  // ── 필수 기본 ──
-  {type:'필수 기본', q:'왜 $(function(){}) 안에 코드를 작성해야 하나?', a:'head에 js를 불러오면 body보다 js가 먼저 실행됨. $(function(){})은 HTML이 모두 로드된 후 실행을 보장해줌.', code:'$(function(){\n    // 여기 안에 모든 js 코드 작성!\n})', color:'#2dd4bf'},
-  {type:'필수 기본', q:'팝업 CSS 핵심 구조는?', a:'기본은 display:none, on 클래스 추가 시 display:flex (가운데 정렬용)', code:'.popup { display: none; position: fixed;\n  top:0; left:0; width:100%; height:100%;\n  background: rgba(0,0,0,0.5);\n  z-index: 999;\n  justify-content: center;\n  align-items: center; }\n.popup.on { display: flex; }', color:'#2dd4bf'},
-  {type:'A유형', q:'wrap의 핵심 CSS는?', a:'width:1200px + margin:0 auto 중앙정렬', code:'.wrap {\n  width: 1200px;\n  margin: 0 auto;\n}', color:'#4ade80'},
-  {type:'B유형', q:'A유형과 다른 점은?', a:'wrap의 width만 100%로 변경, 나머지 동일', code:'.wrap { width: 100%; }\n.inner { width:1200px; margin:0 auto; }', color:'#60a5fa'},
-  {type:'C유형', q:'2컬럼 레이아웃 핵심 CSS는?', a:'container에 display:flex', code:'.container { display: flex; }\n.aside { width: 200px; flex-shrink: 0; }\n.main { flex: 1; }', color:'#fbbf24'},
-  {type:'D유형', q:'aside 고정 + main 배치 CSS는?', a:'position:fixed / margin-left:200px', code:'.aside { position: fixed; width: 200px; height: 100vh; }\n.main { margin-left: 200px; }', color:'#f87171'},
-  {type:'D유형', q:'슬라이드 100vw 이탈 CSS는? (D유형)', a:'width:100vw + margin-left:-200px', code:'.slider {\n  width: 100vw;\n  margin-left: -200px;\n}', color:'#f87171'},
-  {type:'E유형', q:'3컬럼 레이아웃 구조는?', a:'aside-left + main(flex:1) + aside-right', code:'.container { display: flex; }\n.aside-left  { width: 200px; flex-shrink: 0; }\n.main        { flex: 1; min-width: 0; }\n.aside-right { width: 200px; flex-shrink: 0; }', color:'#c792ea'},
-  {type:'F유형', q:'wrap 너비 + 슬라이드 100% 방법은?', a:'1340px / body overflow-x:hidden + margin+transform', code:'.wrap { width: 1340px; margin: 0 auto; }\nbody { overflow-x: hidden; }\n.slider {\n  width: 100vw;\n  margin-left: 50%;\n  transform: translateX(-50%);\n}', color:'#f472b6'},
+  // ── 공통 기본 ──
+  {type:'공통 기본', q:'팝업 열기/닫기 JS는? (show/hide 방식)', a:'.pop 클릭 → show() / .close button 클릭 → hide()', code:'$(".pop").click(function(){\n    $(".popup").show();\n})\n$(".close button").click(function(){\n    $(".popup").hide();\n})', color:'#2dd4bf'},
+  {type:'공통 기본', q:'팝업 CSS 핵심은?', a:'기본 display:none, 열릴 때 show()로 표시', code:'.popup {\n  position: absolute;\n  width: 500px; top: 50%; left: 50%;\n  transform: translate(-50%, -50%);\n  background: #fff;\n  z-index: 9999;\n  display: none;\n}', color:'#2dd4bf'},
+  {type:'공통 기본', q:'슬라이드 배경이미지 CSS 방식은?', a:'li마다 클래스(s1,s2,s3) 부여 후 background url로 설정', code:'.slide ul li.s1 {\n  background: url(../images/s1.jpg)\n  no-repeat center/cover;\n}', color:'#2dd4bf'},
 
-  // ── 팝업 ──
-  {type:'공통 JS', q:'팝업 열기/닫기 JS는? (study.js 방식)', a:'.btn-open 클릭→addClass / .btn-close 클릭→removeClass', code:'$(".btn-open").click(function(){\n    $(".popup").addClass("on")\n})\n$(".btn-close").click(function(){\n    $(".popup").removeClass("on")\n})', color:'#2dd4bf'},
+  // ── A유형 ──
+  {type:'A유형', q:'A유형 기본 구조는?', a:'wrap > inner > header + slide + contents(notice+gall+go) + footer / 팝업은 inner 밖', code:'<div class="wrap">\n  <div class="inner">\n    <header>...</header>\n    <section class="slide">...</section>\n    <div class="contents">...</div>\n    <footer>...</footer>\n  </div>\n  <div class="popup">...</div>\n</div>', color:'#4ade80'},
+  {type:'A유형', q:'A유형 슬라이드 CSS 핵심은?', a:'ul 전체 너비=슬라이드수×1200px, display:flex', code:'.slide { height: 300px; overflow: hidden; }\n.slide ul {\n  width: 3600px; /* 1200 × 3 */\n  display: flex;\n}\n.slide ul li { width: 1200px; height: 300px; }', color:'#4ade80'},
+  {type:'A유형', q:'A유형 슬라이드 JS는?', a:'marginLeft에 -1200 × i 로 animate 이동', code:'let i = 0;\nfunction slide(){\n  if(i < 2){ i++; }else{ i = 0; }\n  $(".slide ul").animate({marginLeft: -1200 * i}, 1000);\n}\nsetInterval(slide, 3000);', color:'#4ade80'},
+  {type:'A유형', q:'A유형 메뉴 JS는?', a:'mouseenter → slideDown / mouseleave → slideUp', code:'$("nav>ul>li").mouseenter(function(){\n  $(this).children(".sub").stop().slideDown();\n})\n$("nav>ul>li").mouseleave(function(){\n  $(".sub").stop().slideUp();\n})', color:'#4ade80'},
 
-  // ── 탭메뉴 ──
-  {type:'공통 JS', q:'탭메뉴 JS는? (study.js 방식)', a:'eq(0), eq(1)로 번호 맞춰 on 클래스 교체', code:'$(".tab-btn li").eq(0).click(function(){\n    $(".tab-cont li").removeClass("on")\n    $(".tab-cont li").eq(0).addClass("on")\n    $(".tab-btn li").removeClass("on")\n    $(this).addClass("on")\n})', color:'#2dd4bf'},
+  // ── B유형 ──
+  {type:'B유형', q:'B유형 A유형과 다른 구조는?', a:'wrap이 100% / header,footer 안에 inner / menuBg 있음 / 슬라이드 fadeIn / 탭메뉴 있음', code:'header { /* wrap 100% 풀스크린 */ }\nheader .inner { width: 1200px; margin: auto; }\n.menuBg { /* 드롭다운 배경 */ display: none; }', color:'#60a5fa'},
+  {type:'B유형', q:'B유형 슬라이드 CSS (fadeIn 방식)는?', a:'li를 position:absolute로 겹쳐 쌓기, 첫번째만 display:block', code:'.slide { position: relative; width: 1200px; margin: auto; }\n.slide ul li {\n  position: absolute; top: 0; left: 0;\n  display: none;\n}\n.slide ul li.s1 { display: block; }', color:'#60a5fa'},
+  {type:'B유형', q:'B유형 슬라이드 JS (fadeIn 방식)는?', a:'li 전체 fadeOut 후 해당 번호만 fadeIn', code:'let i = 0;\nfunction slide(){\n  if(i < 2){ i++; }else{ i = 0; }\n  $(".slide ul li").fadeOut();\n  $(".slide ul li").eq(i).fadeIn();\n}\nsetInterval(slide, 3000);', color:'#60a5fa'},
+  {type:'B유형', q:'B유형 탭메뉴 JS는?', a:'index()로 클릭 번호 파악 → tabcon show/hide', code:'$(".tabmenu>li").click(function(){\n  $(".tabmenu>li").removeClass("on");\n  $(this).addClass("on");\n  let t = $(this).index();\n  $(".tabcon").hide();\n  $(".tabcon").eq(t).show();\n  return false;\n})', color:'#60a5fa'},
+  {type:'B유형', q:'menuBg JS는?', a:'sub와 menuBg를 같이 slideDown/slideUp', code:'$("nav>ul>li").mouseover(function(){\n  $(".sub, .menuBg").stop().slideDown();\n})\n$("nav>ul>li").mouseout(function(){\n  $(".sub, .menuBg").stop().slideUp();\n})', color:'#60a5fa'},
 
-  // ── 슬라이드 3종 ──
-  {type:'슬라이드 3-1', q:'가로 슬라이드 (animate left) JS는?', a:'count++ → if(count>2) 초기화 → animate left 이동', code:'let count = 0\nsetInterval(function(){\n    count++\n    if(count > 2){ count = 0 }\n    $(".slider-wrap ul").css("transform",\n        `translateX(${-33.333 * count}%)`)\n}, 2500)', color:'#fb923c'},
-  {type:'슬라이드 3-1', q:'가로 슬라이드 CSS 구조는?', a:'position:absolute + overflow:hidden 조합', code:'.slider { height: 400px; overflow: hidden; position: relative; }\n.slider-wrap { position: relative; height: 100%; }\n.slider-wrap ul {\n    display: flex; width: 300%;\n    position: absolute; top: 0; left: 0;\n}\n.slider-wrap ul li { width: calc(100% / 3); }', color:'#fb923c'},
-  {type:'슬라이드 3-2', q:'세로 슬라이드 JS는?', a:'left → top 으로만 변경!', code:'$(".slider-wrap ul").css("transform",\n    `translateY(${-33.333 * count}%)`)', color:'#a78bfa'},
-  {type:'슬라이드 3-2', q:'세로 슬라이드 CSS 구조는?', a:'flex-direction:column + height:300%', code:'.slider-wrap ul {\n    flex-direction: column;\n    height: 300%;\n    position: absolute;\n    top: 0; left: 0;\n}\n.slider-wrap ul li { height: calc(100% / 3); }', color:'#a78bfa'},
-  {type:'슬라이드 3-3', q:'fadeIn 슬라이드 JS는? (study.js 방식)', a:'첫번째 gt(0) 숨기고 → fadeOut → next fadeIn → appendTo', code:'$(".imgSlide a:gt(0)").hide()\nsetInterval(function(){\n    $(".imgSlide a:first-child").fadeOut()\n        .next("a").fadeIn()\n        .end().appendTo(".imgSlide")\n}, 2500)', color:'#f472b6'},
-  {type:'슬라이드 3-3', q:'fadeIn 슬라이드 CSS 구조는?', a:'position:relative + absolute로 겹쳐 쌓기', code:'.slider-wrap { position: relative; }\n.imgSlide { position: relative; }\n.imgSlide a {\n    position: absolute;\n    top: 0; left: 0;\n    width: 100%;\n}', color:'#f472b6'},
+  // ── C유형 ──
+  {type:'C유형', q:'C유형 기본 구조는?', a:'wrap { display:flex } → header(왼쪽) + contents(오른쪽) 2컬럼', code:'.wrap {\n  width: 1000px; height: 670px;\n  display: flex; /* 핵심! */\n  position: relative;\n}\nheader { width: 200px; }\n.contents { width: 800px; }', color:'#fbbf24'},
+  {type:'C유형', q:'C유형 세로 슬라이드 JS는?', a:'marginTop에 -슬라이드높이 × i 로 이동', code:'let i = 0;\nfunction slide(){\n  if(i < 2){ i++; }else{ i = 0; }\n  $(".slide ul").animate({marginTop: -350 * i}, 1000);\n}\nsetInterval(slide, 3000);', color:'#fbbf24'},
+  {type:'C유형', q:'C유형 sub 메뉴 위치 CSS는?', a:'nav에 position:relative, sub는 absolute로 왼쪽 이탈', code:'nav { position: relative; }\n.sub {\n  position: absolute;\n  left: 180px; top: -10px;\n  z-index: 9;\n}', color:'#fbbf24'},
+  {type:'C유형', q:'C유형 메뉴 JS는?', a:'mouseenter → fadeIn / mouseleave → fadeOut (slideDown 아님!)', code:'$("nav>ul>li").mouseenter(function(){\n  $(this).children(".sub").stop().fadeIn();\n})\n$("nav>ul>li").mouseleave(function(){\n  $(".sub").stop().fadeOut();\n})', color:'#fbbf24'},
 
-  // ── 세로메뉴 ──
-  {type:'공통 JS', q:'세로 메뉴 서브메뉴 JS는? (C,D,E유형)', a:'클릭한 것만 slideToggle, 나머지는 slideUp', code:'$(".gnb .menu > li > a").click(function(e){\n    e.preventDefault()\n    let sub = $(this).next(".sub")\n    $(".gnb .sub").not(sub).slideUp(200)\n    sub.slideToggle(200)\n})', color:'#2dd4bf'},
+  // ── D유형 ──
+  {type:'D유형', q:'D유형 기본 구조는?', a:'wrap > top(flex) → header(250px) + contents / footer는 top 밖', code:'.wrap { height: 950px; position: relative; }\n.top { height: 850px; display: flex; }\nheader { width: 250px; }\n.contents { width: calc(100% - 250px); }', color:'#f87171'},
+  {type:'D유형', q:'D유형 슬라이드 CSS는?', a:'width:300% + display:flex + li는 calc(100%/3)', code:'.slide { height: 400px; overflow: hidden; }\n.slide ul { width: 300%; display: flex; }\n.slide ul li { width: calc(100% / 3); height: 400px; }', color:'#f87171'},
+  {type:'D유형', q:'D유형 슬라이드 JS는?', a:'-100% × i 로 이동 (px 아닌 % 사용!)', code:'let i = 0;\nfunction slide(){\n  if(i < 2){ i++; }else{ i = 0; }\n  $(".slide ul").animate({marginLeft: -100 * i + "%"}, 1000);\n}\nsetInterval(slide, 3000);', color:'#f87171'},
+  {type:'D유형', q:'D유형 go(바로가기) CSS는?', a:'position:fixed로 화면 오른쪽에 항상 고정', code:'.go {\n  position: fixed;\n  top: 20px; right: 20px;\n  z-index: 10;\n}', color:'#f87171'},
 
-  // ── 유형별 핵심 CSS 추가 ──
-  {type:'A유형', q:'헤더 로고+메뉴 양쪽 배치 CSS는?', a:'display:flex + justify-content:space-between', code:'.header {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  height: 80px;\n}', color:'#4ade80'},
-  {type:'A유형', q:'수평 메뉴 서브메뉴 hover 시 보이게 하는 CSS는?', a:'li:hover .sub { display: block }', code:'.gnb .sub { display: none; position: absolute; }\n.gnb .menu > li:hover .sub { display: block; }', color:'#4ade80'},
-  {type:'B유형', q:'B유형 inner 클래스 역할과 CSS는?', a:'100% wrap 안에서 콘텐츠 너비를 1200px로 제한', code:'.inner {\n  width: 1200px;\n  margin: 0 auto;\n}', color:'#60a5fa'},
-  {type:'C유형', q:'aside가 줄어들지 않게 하는 CSS는?', a:'flex-shrink: 0 — flex 컨테이너에서 크기 고정', code:'.aside {\n  width: 200px;\n  flex-shrink: 0;\n}', color:'#fbbf24'},
-  {type:'D유형', q:'fixed aside 때문에 main이 가려지지 않게 하는 CSS는?', a:'margin-left: aside 너비(200px) 만큼 밀기', code:'.main { margin-left: 200px; }', color:'#f87171'},
-  {type:'E유형', q:'3컬럼에서 main이 찌그러지지 않게 하는 CSS는?', a:'min-width: 0 — flex 아이템 기본 min-width 제거', code:'.main {\n  flex: 1;\n  min-width: 0;\n}', color:'#c792ea'},
-  {type:'F유형', q:'슬라이드만 100vw로 이탈시키는 CSS 전체는?', a:'body overflow-x:hidden + margin-left:50% + translateX(-50%)', code:'body { overflow-x: hidden; }\n.slider {\n  width: 100vw;\n  margin-left: 50%;\n  transform: translateX(-50%);\n}', color:'#f472b6'},
+  // ── E유형 ──
+  {type:'E유형', q:'E유형 기본 구조는?', a:'top(flex 3컬럼) → header(200px) + contents(400px) + slide(나머지)', code:'.top { height: 700px; display: flex; }\nheader { width: 200px; }\n.contents { width: 400px; }\n.slide { width: calc(100% - 600px); }', color:'#c792ea'},
+  {type:'E유형', q:'E유형이 C유형과 다른 점은?', a:'슬라이드가 오른쪽에 위치! (C는 슬라이드가 contents 위)', code:'/* top flex 순서 */\n/* header > contents > slide */\n/* slide가 마지막 → 자동으로 오른쪽 배치 */', color:'#c792ea'},
+  {type:'E유형', q:'E유형 슬라이드 JS는?', a:'세로 marginTop 방식, 슬라이드 높이 700px × i', code:'let i = 0;\nfunction slide(){\n  if(i < 2){ i++; }else{ i = 0; }\n  $(".slide ul").animate({marginTop: -700 * i}, 1000);\n}\nsetInterval(slide, 3000);', color:'#c792ea'},
 
-  // ── CSS 속성 암기 ──
+  // ── F유형 ──
+  {type:'F유형', q:'F유형 기본 구조는?', a:'header/contents/footer 모두 1340px. go가 슬라이드 위에 absolute', code:'header { width: 1340px; margin: auto; }\n.contents { width: 1340px; margin: auto; position: relative; }\n.go { position: absolute; top: -100px; width: 100%; }\nfooter { width: 1340px; margin: auto; }', color:'#f472b6'},
+  {type:'F유형', q:'F유형 슬라이드 JS는?', a:'B유형과 동일한 fadeIn/fadeOut 방식', code:'let i = 0;\nfunction slide(){\n  if(i < 2){ i++; }else{ i = 0; }\n  $(".slide ul li").fadeOut();\n  $(".slide ul li").eq(i).fadeIn();\n}\nsetInterval(slide, 3000);', color:'#f472b6'},
+  {type:'F유형', q:'F유형 go(바로가기)가 슬라이드 위에 올라가는 원리는?', a:'contents { position:relative } + go { position:absolute; top:-100px }', code:'.contents { position: relative; }\n.go {\n  position: absolute;\n  top: -100px; left: 0;\n  width: 100%; height: 100px;\n}', color:'#f472b6'},
+  {type:'F유형', q:'F유형 메뉴 JS는?', a:'$(this) 없이 전체 .sub를 slideDown/slideUp', code:'$("nav>ul>li").mouseenter(function(){\n  $(".sub").stop().slideDown();\n})\n$("nav>ul>li").mouseleave(function(){\n  $(".sub").stop().slideUp();\n})', color:'#f472b6'},
+
+  // ── CSS 기본 ──
   {type:'CSS 기본', q:'display 속성 종류 4가지는?', a:'block / inline-block / flex / none', code:'display: block;         /* 블록 요소 */\ndisplay: inline-block;  /* 인라인+크기지정 */\ndisplay: flex;          /* 플렉스 컨테이너 */\ndisplay: none;          /* 숨기기 */', color:'#38bdf8'},
-  {type:'CSS 기본', q:'position 속성 종류 3가지와 차이는?', a:'relative(자기위치기준) / absolute(부모기준) / fixed(화면기준)', code:'position: relative;  /* 자기 원래 위치 기준 */\nposition: absolute;  /* relative 부모 기준 */\nposition: fixed;     /* 브라우저 화면 기준 */\n/* absolute/fixed는 top,left,right,bottom 사용 */', color:'#38bdf8'},
-  {type:'CSS 기본', q:'flex 가로 정렬 속성은?', a:'justify-content — flex-start/center/space-between/space-around', code:'.wrap {\n  display: flex;\n  justify-content: space-between; /* 양쪽 끝 */\n  justify-content: center;        /* 가운데 */\n  justify-content: flex-start;    /* 왼쪽 */\n}', color:'#38bdf8'},
-  {type:'CSS 기본', q:'flex 세로 정렬 속성은?', a:'align-items — center/flex-start/flex-end/stretch', code:'.wrap {\n  display: flex;\n  align-items: center;     /* 세로 가운데 */\n  align-items: flex-start; /* 세로 위 */\n  align-items: stretch;    /* 늘이기(기본값) */\n}', color:'#38bdf8'},
-  {type:'CSS 기본', q:'flex-direction 이란?', a:'flex 아이템 배치 방향 설정 — row(가로)/column(세로)', code:'flex-direction: row;     /* 가로 배치 (기본값) */\nflex-direction: column;  /* 세로 배치 */\n/* 슬라이드 세로 방식에서 column 사용! */', color:'#38bdf8'},
-  {type:'CSS 기본', q:'z-index 란?', a:'요소 쌓임 순서 — 숫자 클수록 위에 표시. position 있어야 적용됨', code:'.popup {\n  position: fixed;\n  z-index: 999; /* 팝업은 항상 위에 */\n}\n.gnb .sub {\n  position: absolute;\n  z-index: 100;\n}', color:'#38bdf8'},
-  {type:'CSS 기본', q:'overflow 속성 종류는?', a:'hidden(숨김) / auto(자동스크롤) / scroll(항상스크롤) / visible(기본)', code:'.slider { overflow: hidden; }  /* 슬라이드 넘치는 부분 숨김 */\n.box { overflow: auto; }      /* 넘치면 스크롤 생성 */\n.wrap { overflow: visible; }  /* 넘쳐도 보임(기본) */', color:'#38bdf8'},
-  {type:'CSS 기본', q:'object-fit 이란?', a:'이미지/비디오가 컨테이너에 맞게 채워지는 방식', code:'img {\n  width: 100%;\n  height: 400px;\n  object-fit: cover;   /* 비율유지+꽉채움(잘림) */\n  object-fit: contain; /* 비율유지+전체보임 */\n}', color:'#38bdf8'},
-
-  // ── 슬라이드 CSS 구조 ──
-  {type:'슬라이드 CSS', q:'가로 슬라이드 전체 CSS 구조는?', a:'slider overflow:hidden → slider-wrap position:relative → ul display:flex width:300% position:absolute', code:'.slider {\n  height: 400px;\n  overflow: hidden;\n  position: relative;\n}\n.slider-wrap { position: relative; height: 100%; }\n.slider-wrap ul {\n  display: flex;\n  width: 300%;         /* 슬라이드 3개 × 100% */\n  position: absolute;\n  top: 0; left: 0;\n  height: 100%;\n}\n.slider-wrap ul li {\n  width: calc(100% / 3); /* 전체의 1/3 */\n  height: 100%;\n}\n.slider-wrap ul li img {\n  width: 100%; height: 100%;\n  object-fit: cover;\n}', color:'#fb923c'},
-  {type:'슬라이드 CSS', q:'세로 슬라이드 CSS에서 가로와 다른 부분은?', a:'flex-direction:column + height:300% + li는 height:calc(100%/3)', code:'/* 가로와 다른 부분만! */\n.slider-wrap ul {\n  flex-direction: column; /* 세로로 쌓기 */\n  height: 300%;           /* width 대신 height */\n  width: 100%;            /* width는 100%로 */\n}\n.slider-wrap ul li {\n  height: calc(100% / 3); /* width 대신 height */\n  width: 100%;\n}', color:'#a78bfa'},
-  {type:'슬라이드 CSS', q:'fadeIn 슬라이드 CSS 구조는?', a:'imgSlide position:relative → a position:absolute로 겹쳐 쌓기', code:'.slider { height: 400px; position: relative; }\n.imgSlide {\n  position: relative;\n  height: 100%;\n}\n.imgSlide a {\n  position: absolute; /* 모두 같은 위치에 겹침 */\n  top: 0; left: 0;\n  width: 100%; height: 100%;\n}\n.imgSlide a img {\n  width: 100%; height: 100%;\n  object-fit: cover;\n}', color:'#f472b6'},
+  {type:'CSS 기본', q:'position 속성 종류 3가지와 차이는?', a:'relative(자기위치기준) / absolute(부모기준) / fixed(화면기준)', code:'position: relative;  /* 자기 원래 위치 기준 */\nposition: absolute;  /* relative 부모 기준 */\nposition: fixed;     /* 브라우저 화면 기준 */', color:'#38bdf8'},
+  {type:'CSS 기본', q:'flex 가로/세로 정렬 속성은?', a:'justify-content(가로) / align-items(세로)', code:'display: flex;\njustify-content: space-between; /* 가로 양쪽 */\njustify-content: center;        /* 가로 가운데 */\nalign-items: center;            /* 세로 가운데 */', color:'#38bdf8'},
+  {type:'CSS 기본', q:'overflow: hidden 이란?', a:'넘치는 내용 숨기기 → 슬라이드에서 핵심!', code:'.slide { height: 300px; overflow: hidden; }\n/* overflow:hidden 이 없으면\n   슬라이드 나머지 이미지가 다 보임! */', color:'#38bdf8'},
+  {type:'CSS 기본', q:'object-fit: cover 이란?', a:'이미지가 비율 유지하며 컨테이너를 꽉 채움 (잘림)', code:'img {\n  width: 100%; height: 300px;\n  object-fit: cover; /* 비율유지+꽉채움 */\n}', color:'#38bdf8'},
+  {type:'CSS 기본', q:'z-index 란?', a:'요소 쌓임 순서. 숫자 클수록 위. position 있어야 적용', code:'.popup { z-index: 9999; } /* 맨 위 */\n.go { z-index: 10; }\n/* position이 없으면 z-index 적용 안됨! */', color:'#38bdf8'},
 ];
 
 // 퀴즈 데이터
 const QUIZ = [
-  // ── 필수 기본 ──
-  {type:'필수 기본', q:'왜 JS 코드를 $(function(){}) 안에 작성해야 하나?', code:'', opts:['코드가 더 짧아져서','head에 script가 있으면 body보다 먼저 실행되어 HTML을 못 찾기 때문','CSS보다 JS가 먼저 적용되기 때문','jQuery 문법이라 반드시 필요해서'], ans:1, fb:'head에 script 태그가 있으면 body(HTML)보다 JS가 먼저 실행돼요. $(function(){})은 HTML이 모두 로드된 후 실행을 보장해줘요!'},
-  {type:'필수 기본', q:'팝업이 열렸을 때 CSS 상태는?', code:'.popup { display: none; }\n.popup.??? { display: flex; }', opts:['active','open','show','on'], ans:3, fb:'js에서 addClass("on")으로 on 클래스를 추가하면 .popup.on{ display:flex } 가 적용돼서 팝업이 보여요!'},
+  // ── 공통 기본 ──
+  {type:'공통 기본', q:'팝업을 여는 JS 코드는?', code:'$(".pop").click(function(){\n    ???\n})', opts:['$(".popup").addClass("on")','$(".popup").show()','$(".popup").fadeIn()','$(".popup").open()'], ans:1, fb:'show() 방식! 실제 문제지에서는 $(".popup").show() 를 사용해요.'},
+  {type:'공통 기본', q:'팝업을 닫는 JS 코드는?', code:'$(".close button").click(function(){\n    ???\n})', opts:['$(".popup").removeClass("on")','$(".popup").hide()','$(".popup").fadeOut()','$(".popup").close()'], ans:1, fb:'hide() 방식! show()로 열고 hide()로 닫아요.'},
+  {type:'공통 기본', q:'슬라이드 배경이미지를 적용하는 방법은?', code:'.slide ul li.s1 {\n  ???\n}', opts:['src="../images/s1.jpg"','background: url(../images/s1.jpg) no-repeat center/cover','img src="s1.jpg"','background-image: s1.jpg'], ans:1, fb:'background: url() no-repeat center/cover 로 배경이미지 설정! img 태그 아닌 CSS로!'},
 
-  // ── 레이아웃 ──
-  {type:'A유형', q:'A유형 wrap을 1200px 고정 중앙정렬하는 CSS는?', code:'', opts:['.wrap { width:100%; margin:0 auto }','.wrap { width:1200px; margin:0 auto }','.wrap { width:1200px; padding:0 auto }','max-width:1200px; text-align:center'], ans:1, fb:'width:1200px 고정 + margin:0 auto 중앙 정렬! A유형의 핵심이에요.'},
-  {type:'B유형', q:'B유형이 A유형과 다른 핵심 한 줄은?', code:'', opts:['.wrap { width: 100% }','.wrap { max-width: 100% }','.wrap { display: flex }','.inner { width: 100% }'], ans:0, fb:'.wrap { width: 100% } 단 한 줄만 달라요! 나머지는 A유형 그대로예요.'},
-  {type:'C유형', q:'C유형에서 aside와 main을 나란히 배치하는 CSS는?', code:'.container { ??? }', opts:['display: block','display: grid','display: flex','float: left'], ans:2, fb:'.container { display: flex } 로 aside와 main이 가로로 나란히 배치돼요.'},
-  {type:'D유형', q:'D유형에서 aside를 화면에 고정하는 CSS 속성은?', code:'.aside {\n  ???: fixed;\n  width: 200px;\n  height: 100vh;\n}', opts:['display','float','position','z-index'], ans:2, fb:'position: fixed! 스크롤해도 aside가 항상 고정돼요. main은 margin-left:200px 필수!'},
-  {type:'D유형', q:'D유형 슬라이드 100vw 이탈 CSS는? (aside:200px)', code:'.slider {\n  width: 100vw;\n  margin-left: ???;\n}', opts:['-100px','-200px','calc(-50vw)','200px'], ans:1, fb:'aside가 200px이므로 margin-left: -200px 으로 왼쪽으로 당겨서 화면 전체를 채워요.'},
-  {type:'E유형', q:'E유형의 레이아웃 구조로 맞는 것은?', code:'', opts:['header + main + footer','aside + main 2컬럼','aside-left + main + aside-right 3컬럼','header + aside + main'], ans:2, fb:'E유형은 왼쪽aside + main + 오른쪽aside 3컬럼이에요. 가장 복잡한 유형!'},
-  {type:'F유형', q:'F유형의 wrap 너비는? (A유형과 다름 주의!)', code:'', opts:['1000px','1200px','1340px','100%'], ans:2, fb:'F유형은 1340px! A유형(1200px)이랑 헷갈리지 마세요.'},
-  {type:'F유형', q:'F유형 슬라이드를 100vw로 만들 때 body에 추가해야 하는 CSS는?', code:'.slider {\n  width: 100vw;\n  margin-left: 50%;\n  transform: translateX(-50%);\n}', opts:['overflow: hidden','overflow-x: hidden','overflow-y: hidden','display: flex'], ans:1, fb:'body { overflow-x: hidden } 이 없으면 슬라이드가 가로 스크롤바를 만들어요! 반드시 세트로 써야 해요.'},
+  // ── A유형 ──
+  {type:'A유형', q:'A유형 슬라이드 ul 전체 너비는? (슬라이드 3개, 각 1200px)', code:'.slide ul { width: ???; display: flex; }', opts:['1200px','2400px','3600px','100%'], ans:2, fb:'슬라이드 3개 × 1200px = 3600px! 슬라이드 수 × 너비로 계산해요.'},
+  {type:'A유형', q:'A유형 슬라이드 JS에서 이동 방식은?', code:'$(".slide ul").animate({ ??? }, 1000);', opts:['left: -1200 * i','marginLeft: -1200 * i','translateX: -1200 * i','top: -1200 * i'], ans:1, fb:'marginLeft! left가 아닌 marginLeft를 사용해요. -1200 × i 로 이동.'},
+  {type:'A유형', q:'A유형 메뉴에서 서브메뉴 나타나게 하는 JS는?', code:'$("nav>ul>li").mouseenter(function(){\n    ???\n})', opts:['$(this).children(".sub").show()','$(this).children(".sub").stop().slideDown()','$(".sub").slideDown()','$(this).find(".sub").fadeIn()'], ans:1, fb:'$(this).children(".sub").stop().slideDown() — stop()으로 중간 애니메이션 멈추고 slideDown!'},
 
-  // ── 팝업 ──
-  {type:'공통 JS', q:'팝업 열기 버튼 클래스명은? (study.js 방식)', code:'$("???").click(function(){\n    $(".popup").addClass("on")\n})', opts:['".btn-popup"','".btn-open"','".open-btn"','".popup-btn"'], ans:1, fb:'study.js 방식은 .btn-open 으로 열고 .btn-close 로 닫아요!'},
-  {type:'공통 JS', q:'팝업을 닫을 때 사용하는 jQuery 메서드는?', code:'$(".btn-close").click(function(){\n    $(".popup").???\n})', opts:['addClass("off")','removeClass("on")','hide()','toggleClass("on")'], ans:1, fb:'removeClass("on") 으로 on 클래스를 제거하면 .popup{display:none} 이 적용돼 팝업이 닫혀요.'},
+  // ── B유형 ──
+  {type:'B유형', q:'B유형 슬라이드(fadeIn) CSS에서 li의 position은?', code:'.slide ul li {\n  position: ???;\n  top: 0; left: 0;\n  display: none;\n}', opts:['relative','absolute','fixed','static'], ans:1, fb:'absolute! li들을 같은 위치에 겹쳐 쌓아야 하므로 position:absolute. 첫번째만 display:block.'},
+  {type:'B유형', q:'B유형 탭메뉴 JS에서 클릭한 li의 번호를 얻는 방법은?', code:'$(".tabmenu>li").click(function(){\n    let t = $(this).???;\n})', opts:['length','index()','number()','count()'], ans:1, fb:'index()! 클릭한 요소의 인덱스(순서번호)를 반환해요. 0부터 시작.'},
+  {type:'B유형', q:'menuBg를 sub와 함께 제어하는 JS는?', code:'$("nav>ul>li").mouseover(function(){\n    ???\n})', opts:['$(".sub").slideDown()','$(".sub, .menuBg").stop().slideDown()','$(".menuBg").slideDown()','$(".sub").show()'], ans:1, fb:'$(".sub, .menuBg") — 콤마로 두 선택자를 동시에 선택해서 함께 제어!'},
 
-  // ── 탭메뉴 ──
-  {type:'공통 JS', q:'study.js 방식 탭메뉴에서 0번 탭 클릭 시 처리 순서는?', code:'$(".tab-btn li").eq(0).click(function(){\n    $(".tab-cont li").???\n    $(".tab-cont li").eq(0).???\n    ...\n})', opts:['addClass → removeClass','removeClass → addClass','hide → show','fadeOut → fadeIn'], ans:1, fb:'먼저 전체 removeClass("on")으로 다 끄고, 해당 번호만 addClass("on")으로 켜요!'},
+  // ── C유형 ──
+  {type:'C유형', q:'C유형 wrap의 핵심 CSS는?', code:'.wrap {\n  width: 1000px; height: 670px;\n  ???\n  position: relative;\n}', opts:['display: block','display: flex','display: grid','float: left'], ans:1, fb:'display: flex! 이게 핵심. header와 contents가 가로로 나란히 배치돼요.'},
+  {type:'C유형', q:'C유형 세로 슬라이드에서 가로 슬라이드와 다른 점은?', code:'$(".slide ul").animate({\n    ??? : -350 * i\n}, 1000);', opts:['left','marginLeft','marginTop','top'], ans:2, fb:'marginTop! 가로는 marginLeft, 세로는 marginTop. -350은 슬라이드 높이.'},
+  {type:'C유형', q:'C유형 sub 메뉴 위치를 오른쪽으로 이탈시키는 CSS는?', code:'.sub {\n  position: absolute;\n  left: ???;\n  top: -10px;\n}', opts:['0','100px','180px','200px'], ans:2, fb:'left: 180px — header 너비(200px)보다 약간 작게 설정해서 header 오른쪽으로 이탈.'},
 
-  // ── 슬라이드 ──
-  {type:'슬라이드', q:'슬라이드 3개일 때 count 초기화 조건은?', code:'count++\nif(count > ???){ count = 0 }', opts:['0','1','2','3'], ans:2, fb:'슬라이드 3개는 인덱스 0, 1, 2를 사용해요. count가 2를 넘으면(3이 되면) 다시 0으로!'},
-  {type:'슬라이드', q:'가로 슬라이드(animate left)와 세로 슬라이드(animate top)의 차이는?', code:'', opts:['JS 코드가 완전히 다름','left를 top으로만 바꾸면 됨','setInterval 시간이 다름','count 숫자가 다름'], ans:1, fb:'animate({left:}) → animate({top:}) 으로 딱 하나만 바꾸면 돼요! CSS도 flex-direction:column으로만 변경.'},
-  {type:'슬라이드', q:'fadeIn 슬라이드에서 첫 번째 이미지 제외 나머지를 숨기는 코드는?', code:'', opts:['$(".imgSlide a").hide()','$(".imgSlide a:gt(0)").hide()','$(".imgSlide a:first").hide()','$(".imgSlide a:last").hide()'], ans:1, fb:':gt(0) 은 "0번보다 큰 것(1번 이후 전부)"를 선택해요. 첫번째(0번)는 놔두고 나머지만 숨겨요.'},
-  {type:'슬라이드', q:'fadeIn 슬라이드에서 .appendTo(".imgSlide")의 역할은?', code:'$(".imgSlide a:first-child").fadeOut()\n    .next("a").fadeIn()\n    .end().appendTo(".imgSlide")', opts:['이미지 새로 추가','fadeOut된 첫번째를 맨 뒤로 이동 (순환)','이미지 삭제','이미지 복사'], ans:1, fb:'사라진 첫번째 이미지를 맨 뒤로 보내서 무한 순환이 돼요! 이게 핵심이에요.'},
+  // ── D유형 ──
+  {type:'D유형', q:'D유형 슬라이드 ul CSS에서 width는?', code:'.slide ul { width: ???; display: flex; }', opts:['3600px','100%','300%','1200px'], ans:2, fb:'300%! D유형은 px 대신 % 방식. li는 calc(100%/3). JS도 -100% × i 로 이동.'},
+  {type:'D유형', q:'D유형 슬라이드 JS animate 값은?', code:'$(".slide ul").animate({\n    marginLeft: ???\n}, 1000);', opts:['-1200 * i','-100 * i','-100 * i + "%"','-33.333 * i + "%"'], ans:2, fb:'-100 * i + "%" — % 문자열을 붙여야 해요! px가 아닌 % 단위.'},
+  {type:'D유형', q:'D유형에서 바로가기(go)가 항상 화면에 보이는 이유는?', code:'.go {\n  position: ???;\n  top: 20px; right: 20px;\n}', opts:['absolute','relative','fixed','sticky'], ans:2, fb:'fixed! 스크롤해도 화면 오른쪽에 항상 고정돼요.'},
 
-  // ── 세로메뉴 ──
-  {type:'공통 JS', q:'세로 메뉴에서 다른 서브메뉴를 닫는 코드는?', code:'let sub = $(this).next(".sub")\n$(".gnb .sub").???.slideUp(200)\nsub.slideToggle(200)', opts:['eq(0)','not(sub)','first()','last()'], ans:1, fb:'.not(sub) 으로 "현재 클릭한 것 빼고 나머지"를 선택해서 slideUp으로 닫아요.'},
+  // ── E유형 ──
+  {type:'E유형', q:'E유형에서 슬라이드 위치는?', code:'.top { display: flex; }\n/* 순서: ??? */', opts:['header > slide > contents','slide > header > contents','header > contents > slide','contents > header > slide'], ans:2, fb:'header > contents > slide 순서! 슬라이드가 마지막이라 자동으로 오른쪽에 배치.'},
+  {type:'E유형', q:'E유형 슬라이드 높이가 700px일 때 JS animate 값은?', code:'$(".slide ul").animate({marginTop: ???}, 1000);', opts:['-350 * i','-300 * i','-700 * i','-i * 100 + "%"'], ans:2, fb:'-700 * i — 슬라이드 높이가 700px이면 700 × i씩 이동!'},
+
+  // ── F유형 ──
+  {type:'F유형', q:'F유형 너비는? (A유형과 다름!)', code:'header { width: ???; margin: auto; }', opts:['1000px','1200px','1300px','1340px'], ans:3, fb:'1340px! A유형(1200px)과 헷갈리지 마세요.'},
+  {type:'F유형', q:'F유형에서 go(바로가기)가 슬라이드 위에 올라가는 CSS는?', code:'.contents { position: relative; }\n.go {\n  position: absolute;\n  top: ???;\n}', opts:['0','-50px','-100px','100px'], ans:2, fb:'top: -100px — 음수값으로 위로 이탈! go 높이가 100px이라 -100px.'},
+  {type:'F유형', q:'F유형 슬라이드 JS 방식은?', code:'// F유형 슬라이드는 어떤 방식?', opts:['marginLeft animate','marginTop animate','fadeIn/fadeOut','translate animate'], ans:2, fb:'fadeIn/fadeOut! B유형과 동일. li를 position:absolute로 겹쳐 쌓고 fadeIn/fadeOut.'},
 ];
 
 // ═══════════════════════════════════════
